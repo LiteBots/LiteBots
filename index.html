@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lite Bots - Redefining Digital Experience</title>
+    <meta name="description" content="Doświadcz przyszłości automatyzacji. Lite Bots dostarcza przełomowe rozwiązania z niezrównaną precyzją i designem.">
+    <meta name="keywords" content="boty, discord, automatyzacja, technologia, vuejs, ux, design, premium">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" href="/images/favicon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        :root {
+            --primary-color: #d300ff;
+            --primary-glow: rgba(211, 0, 255, 0.5);
+            --background-color: #050505;
+            --surface-color: #111111;
+            --text-color: #f0f0f0;
+            --text-secondary-color: #a0a0a0;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --header-blur: 12px;
+            --border-radius: 16px;
+            --transition-speed: 0.4s;
+            --transition-timing: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body.loading {
+            overflow: hidden;
+        }
+        
+        /* --- PRELOADER STYLES --- */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            place-items: center;
+            z-index: 9999;
+            background-color: rgba(5, 5, 5, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+        #preloader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #ghost {
+            position: relative;
+            scale: 0.8;
+        }
+        #red {
+            animation: upNDown infinite 0.5s;
+            position: relative;
+            width: 140px;
+            height: 140px;
+            display: grid;
+            grid-template-columns: repeat(14, 1fr);
+            grid-template-rows: repeat(14, 1fr);
+            grid-column-gap: 0px;
+            grid-row-gap: 0px;
+            grid-template-areas:
+                "a1  a2  a3  a4  a5  top0 top0 top0 top0 a10 a11 a12 a13 a14"
+                "b1  b2  b3  top1 top1 top1 top1 top1 top1 top1 top1 b12 b13 b14"
+                "c1 c2 top2 top2 top2 top2 top2 top2 top2 top2 top2 top2 c13 c14"
+                "d1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 d14"
+                "e1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 e14"
+                "f1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 f14"
+                "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
+                "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
+                "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
+                "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
+                "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
+                "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
+                "st0 st0 an4 st1 an7 st2 an10 an10 st3 an13 st4 an16 st5 st5"
+                "an1 an2 an3 an5 an6 an8 an9 an9 an11 an12 an14 an15 an17 an18";
+        }
+        @keyframes upNDown { 0%, 49% { transform: translateY(0px); } 50%, 100% { transform: translateY(-10px); } }
+        #top0, #top1, #top2, #top3, #top4, #st0, #st1, #st2, #st3, #st4, #st5 { background-color: var(--primary-color); }
+        #top0 { grid-area: top0; }
+        #top1 { grid-area: top1; }
+        #top2 { grid-area: top2; }
+        #top3 { grid-area: top3; }
+        #top4 { grid-area: top4; }
+        #st0 { grid-area: st0; }
+        #st1 { grid-area: st1; }
+        #st2 { grid-area: st2; }
+        #st3 { grid-area: st3; }
+        #st4 { grid-area: st4; }
+        #st5 { grid-area: st5; }
+        #an1 { grid-area: an1; animation: flicker0 infinite 0.5s; }
+        #an18 { grid-area: an18; animation: flicker0 infinite 0.5s; }
+        #an2 { grid-area: an2; animation: flicker1 infinite 0.5s; }
+        #an17 { grid-area: an17; animation: flicker1 infinite 0.5s; }
+        #an3 { grid-area: an3; animation: flicker1 infinite 0.5s; }
+        #an16 { grid-area: an16; animation: flicker1 infinite 0.5s; }
+        #an4 { grid-area: an4; animation: flicker1 infinite 0.5s; }
+        #an15 { grid-area: an15; animation: flicker1 infinite 0.5s; }
+        #an6 { grid-area: an6; animation: flicker0 infinite 0.5s; }
+        #an12 { grid-area: an12; animation: flicker0 infinite 0.5s; }
+        #an7 { grid-area: an7; animation: flicker0 infinite 0.5s; }
+        #an13 { grid-area: an13; animation: flicker0 infinite 0.5s; }
+        #an9 { grid-area: an9; animation: flicker1 infinite 0.5s; }
+        #an10 { grid-area: an10; animation: flicker1 infinite 0.5s; }
+        #an8 { grid-area: an8; animation: flicker0 infinite 0.5s; }
+        #an11 { grid-area: an11; animation: flicker0 infinite 0.5s; }
+        @keyframes flicker0 { 0%, 49% { background-color: var(--primary-color); } 50%, 100% { background-color: transparent; } }
+        @keyframes flicker1 { 0%, 49% { background-color: transparent; } 50%, 100% { background-color: var(--primary-color); } }
+        #eye { width: 40px; height: 50px; position: absolute; top: 30px; left: 10px; }
+        #eye::before { content: ""; background-color: white; width: 20px; height: 50px; transform: translateX(10px); display: block; position: absolute; }
+        #eye::after { content: ""; background-color: white; width: 40px; height: 30px; transform: translateY(10px); display: block; position: absolute; }
+        #eye1 { width: 40px; height: 50px; position: absolute; top: 30px; right: 30px; }
+        #eye1::before { content: ""; background-color: white; width: 20px; height: 50px; transform: translateX(10px); display: block; position: absolute; }
+        #eye1::after { content: ""; background-color: white; width: 40px; height: 30px; transform: translateY(10px); display: block; position: absolute; }
+        #pupil { width: 20px; height: 20px; background-color: black; position: absolute; top: 50px; left: 10px; z-index: 1; animation: eyesMovement infinite 3s; }
+        #pupil1 { width: 20px; height: 20px; background-color: black; position: absolute; top: 50px; right: 50px; z-index: 1; animation: eyesMovement infinite 3s; }
+        @keyframes eyesMovement { 0%, 49% { transform: translateX(0px); } 50%, 99% { transform: translateX(10px); } 100% { transform: translateX(0px); } }
+        #shadow { background-color: black; width: 140px; height: 140px; position: absolute; border-radius: 50%; transform: rotateX(80deg); filter: blur(20px); top: 80%; animation: shadowMovement infinite 0.5s; }
+        @keyframes shadowMovement { 0%, 49% { opacity: 0.5; } 50%, 100% { opacity: 0.2; } }
+
+        /* --- TŁO W KRATKĘ --- */
+        #grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: pan-grid 60s linear infinite;
+        }
+
+        @keyframes pan-grid {
+            0% { background-position: 0 0; }
+            100% { background-position: 1200px 600px; }
+        }
+        
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+        #app-header { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 1000; }
+        .header-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(17, 17, 17, 0.6); backdrop-filter: blur(var(--header-blur)); -webkit-backdrop-filter: blur(var(--header-blur)); border-radius: 50px; border: 1px solid var(--border-color); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo img { height: 36px; transition: transform var(--transition-speed) var(--transition-timing); }
+        .logo:hover img { transform: rotate(-15deg) scale(1.1); }
+        .logo-text { font-weight: 700; font-size: 1.1rem; color: var(--text-color); }
+        .nav-links { display: flex; gap: 20px; list-style: none; flex-grow: 1; justify-content: center; }
+        @media (max-width: 860px) { .nav-links { display: none; } }
+        .nav-links a { color: var(--text-secondary-color); text-decoration: none; font-weight: 500; padding: 8px 12px; border-radius: 50px; position: relative; transition: all var(--transition-speed) var(--transition-timing); }
+        .nav-links a:hover { color: var(--text-color); }
+        .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--primary-color); transform: scaleX(0); transition: transform var(--transition-speed) var(--transition-timing); }
+        .nav-links a:hover::after { transform: scaleX(1); }
+        
+        .header-actions { display: flex; align-items: center; gap: 15px; }
+        
+        .cta-button { display: inline-flex; align-items: center; gap: 12px; font-family: inherit; cursor: pointer; font-weight: 600; font-size: 1.1rem; padding: 0.8em 1.6em; color: var(--text-color); background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); letter-spacing: 0.05em; border-radius: 50px; text-decoration: none; backdrop-filter: blur(4px); transition: all var(--transition-speed) var(--transition-timing); }
+        .cta-button:hover { background-color: rgba(255, 255, 255, 0.1); border-color: var(--primary-color); color: #fff; box-shadow: 0 0 20px rgba(211, 0, 255, 0.4); transform: scale(1.05); }
+        .cta-button img.icon-discord-hero { height: 30px; transition: transform 0.4s var(--transition-timing); }
+        .cta-button:hover img.icon-discord-hero { transform: scale(1.15) rotate(-10deg); }
+        .cta-button-header { padding: 0.6em 1.2em; }
+        .cta-button-header img.icon-discord-header { height: 24px; transition: transform 0.4s var(--transition-timing); }
+        .cta-button-header:hover img.icon-discord-header { transform: scale(1.1) rotate(-5deg); }
+
+        .section { padding: 140px 0; position: relative; }
+        .section-title { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; margin-bottom: 20px; text-align: center; letter-spacing: -2px; line-height: 1.1; background: linear-gradient(90deg, #e0e0e0, #ffffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .highlight { background: linear-gradient(90deg, #8A2BE2, var(--primary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .section-subtitle { text-align: center; max-width: 600px; margin: 0 auto 80px auto; color: var(--text-secondary-color); font-size: 1.1rem; }
+        #hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden; }
+        #hero-content { position: relative; z-index: 2; }
+        #aurora-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .aurora-blob { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.5; animation: move 20s infinite alternate; }
+        .aurora-blob:nth-child(1) { background-color: #430d4b; width: 500px; height: 500px; top: -10%; left: -15%; animation-duration: 25s; }
+        .aurora-blob:nth-child(2) { background-color: #5d00ff; width: 400px; height: 400px; top: 20%; left: 40%; animation-duration: 30s; }
+        .aurora-blob:nth-child(3) { background-color: #21003d; width: 300px; height: 300px; bottom: 5%; right: -10%; animation-duration: 20s; }
+        @keyframes move { from { transform: rotate(0deg) scale(1.2) translate(5%, 5%); } to { transform: rotate(360deg) scale(1) translate(-5%, -5%); } }
+        .hero-title { font-size: clamp(3rem, 8vw, 6rem); font-weight: 900; letter-spacing: -0.05em; margin-bottom: 20px; line-height: 1; background: linear-gradient(180deg, #fff, #b3b3b3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-subtitle { font-size: clamp(1rem, 2vw, 1.25rem); color: var(--text-secondary-color); margin: 0 auto 40px auto; max-width: 550px; }
+        .fade-out-mask { position: absolute; bottom: 0; left: 0; right: 0; height: 250px; background: linear-gradient(to bottom, transparent, var(--background-color)); z-index: 3; pointer-events: none; }
+        .bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: minmax(150px, auto); gap: 20px; }
+        .bento-item { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 25px; transition: all var(--transition-speed) var(--transition-timing); }
+        .bento-item:hover { transform: scale(1.03); border-color: var(--primary-color); }
+        .bento-item h3 { font-size: 1.2rem; margin-bottom: 10px; }
+        .bento-item--large { grid-column: span 2; grid-row: span 2; }
+        .bento-item--wide { grid-column: span 3; }
+        .bento-item h2 { font-size: 2.5rem; }
+        .bento-item p { color: var(--text-secondary-color); }
+        .offer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .offer-card { background-color: var(--surface-color); padding: 30px; border-radius: var(--border-radius); border: 1px solid var(--border-color); position: relative; overflow: hidden; transition: all var(--transition-speed) var(--transition-timing); animation: breathe 5s infinite alternate; }
+        @keyframes breathe { from { box-shadow: 0 0 5px rgba(211, 0, 255, 0.1); } to { box-shadow: 0 0 20px rgba(211, 0, 255, 0.3); } }
+        .offer-card:hover { transform: translateY(-5px) scale(1.02); border-color: var(--primary-color); animation-play-state: paused; box-shadow: 0 10px 40px rgba(0,0,0,0.3), 0 0 30px var(--primary-glow); }
+        .offer-icon { margin-bottom: 20px; color: var(--primary-color); height: 48px; display: flex; align-items: center; justify-content: center; }
+        .offer-icon img { width: 48px; height: 48px; object-fit: contain; }
+        .offer-card h3 { font-size: 1.5rem; margin-bottom: 15px; color: var(--text-color); }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+        }
+        .team-card { position: relative; border-radius: var(--border-radius); overflow: hidden; aspect-ratio: 3/4; }
+        .team-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--transition-timing); }
+        .team-card:hover img { transform: scale(1.1); }
+        .team-card-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); transform: translateY(100%); transition: transform 0.6s var(--transition-timing); }
+        .team-card-overlay-content { transform: translateY(100%); transition: transform 0.6s var(--transition-timing); transition-delay: 0.1s; }
+        .team-card:hover .team-card-overlay, .team-card:hover .team-card-overlay-content { transform: translateY(0); }
+        .team-card h3 { font-size: 1.2rem; margin: 0; }
+        .team-card p { font-weight: 700; }
+        
+        .role-gradient { background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+        .role-ceo { background-image: linear-gradient(to right, #ff0000, #ffae00); }
+        .role-manager { background-image: linear-gradient(to right, #aa00ff, #590db6); }
+        .role-engineer { background-image: linear-gradient(to right, #4a9bff, #524bcf); }
+
+        footer { padding: 50px 0; text-align: center; color: var(--text-secondary-color); border-top: 1px solid var(--border-color); }
+        .reveal-on-scroll { opacity: 0; transform: translateY(40px); transition: opacity 1s var(--transition-timing), transform 1s var(--transition-timing); }
+        .reveal-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
+        
+        #chat-toggle { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background: var(--primary-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1001; box-shadow: 0 5px 20px var(--primary-glow); transition: transform 0.3s ease; }
+        #chat-toggle:hover { transform: scale(1.1); }
+        #chat-toggle svg { width: 32px; height: 32px; color: white; }
+        #chat-widget { position: fixed; bottom: 100px; right: 25px; width: 370px; max-width: 90vw; height: 500px; max-height: 70vh; background: var(--surface-color); border-radius: var(--border-radius); border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; z-index: 1000; opacity: 0; transform: scale(0.9) translateY(20px); transform-origin: bottom right; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
+        #chat-widget.is-open { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+        .chat-header { padding: 15px 20px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .chat-header h3 { margin: 0; font-size: 1rem; }
+        .chat-close-btn { background: none; border: none; color: var(--text-secondary-color); cursor: pointer; font-size: 1.5rem; line-height: 1; }
+        .chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; }
+        .message { display: flex; margin-bottom: 15px; max-width: 85%; }
+        .message.bot { align-self: flex-start; }
+        .message.user { margin-left: auto; flex-direction: row-reverse; }
+        .message-avatar { width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; background: var(--background-color); padding: 4px; }
+        .message.user .message-avatar { display: none; }
+        .message-content { background: var(--background-color); padding: 10px 15px; border-radius: var(--border-radius); color: var(--text-secondary-color); }
+        .message.user .message-content { background: var(--primary-color); color: #fff; }
+        .typing-indicator { display: flex; align-items: center; padding: 10px 0; }
+        .typing-indicator span { height: 8px; width: 8px; background-color: var(--text-secondary-color); border-radius: 50%; margin: 0 2px; animation: typing 1.4s infinite; }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        .chat-options { padding: 15px; border-top: 1px solid var(--border-color); display: flex; flex-wrap: wrap; gap: 10px; }
+        .option-btn { background: none; border: 1px solid var(--border-color); color: var(--text-color); padding: 8px 15px; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; }
+        .option-btn:hover { background: var(--primary-color); border-color: var(--primary-color); }
+    </style>
+</head>
+<body class="loading">
+
+<div id="preloader">
+    <div id="ghost">
+        <div id="red">
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+        </div>
+        <div id="eye"></div>
+        <div id="eye1"></div>
+        <div id="pupil"></div>
+        <div id="pupil1"></div>
+        <div id="shadow"></div>
+    </div>
+</div>
+
+<div id="app">
+    <div id="grid-background"></div>
+    <header id="app-header">
+        <div class="container">
+            <nav class="header-nav">
+                <a href="#hero" class="logo" @click="scrollTo('#hero')">
+                    <img src="https://i.imgur.com/U0XKhNz.png" alt="Lite Bots Logo">
+                    <span class="logo-text">Lite Bots</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#about" @click="scrollTo('#about')">O nas</a></li>
+                    <li><a href="#offer" @click="scrollTo('#offer')">Oferta</a></li>
+                    <li><a href="#team" @click="scrollTo('#team')">Zespół</a></li>
+                </ul>
+                <div class="header-actions">
+                    <a href="https://discord.gg/litebots" target="_blank" class="cta-button cta-button-header">
+                        <img src="https://i.imgur.com/UOb8xvv.png" alt="Discord Icon" class="icon-discord-header">
+                        <span>Dołącz</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero">
+            <div id="aurora-background">
+                <div class="aurora-blob"></div> <div class="aurora-blob"></div> <div class="aurora-blob"></div>
+            </div>
+            <div id="hero-content">
+                <h1 class="hero-title">Tworzymy Przyszłość<br>Twojego Projektu</h1>
+                <p class="hero-subtitle">Lite Bots to innowacja na najwyższym poziomie, sprawdź już sam!!</p>
+                <a href="https://discord.gg/litebots" target="_blank" class="cta-button" style="margin-top: 40px;">
+                    <img src="https://i.imgur.com/UOb8xvv.png" alt="Discord 3D Logo" class="icon-discord-hero">
+                    <span>Dołącz na Discord</span>
+                </a>
+            </div>
+            <div class="fade-out-mask"></div>
+        </section>
+
+        <section id="about" class="section">
+            <div class="container">
+                <div class="reveal-on-scroll">
+                    <h2 class="section-title">Nasza misja to <span class="highlight">Rewolucja</span></h2>
+                    <p class="section-subtitle">Nie tworzymy tylko botów. Budujemy inteligentne ekosystemy, które rewolucjonizują interakcję, automatyzują złożone procesy i dostarczają mierzalną wartość dla naszych partnerów.</p>
+                </div>
+                <div class="bento-grid">
+                    <div class="bento-item bento-item--large reveal-on-scroll">
+                        <h2>Synergia <span class="highlight">Kodu i Designu</span></h2>
+                        <p>Wierzymy, że najbardziej eleganckie rozwiązania powstają na styku precyzyjnej inżynierii i intuicyjnego projektowania. Technologia bez empatii jest bezużyteczna. Design bez solidnych fundamentów jest tylko ozdobą.</p>
+                    </div>
+                    <div class="bento-item reveal-on-scroll" style="transition-delay: 200ms">
+                        <h3>Innowacja</h3><p>Nieustannie kwestionujemy status quo, szukając nowych, lepszych dróg do celu.</p>
+                    </div>
+                    <div class="bento-item reveal-on-scroll" style="transition-delay: 300ms">
+                        <h3>Precyzja</h3><p>Każda linia kodu i każdy piksel mają znaczenie. Dążymy do absolutnej perfekcji.</p>
+                    </div>
+                    <div class="bento-item bento-item--wide reveal-on-scroll" style="transition-delay: 400ms">
+                        <h3>Skalowalność jako Standard</h3>
+                        <p>Budujemy systemy gotowe na jutro. Nasze rozwiązania rosną razem z Twoimi ambicjami, zapewniając stabilność i wydajność bez względu na skalę.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="offer" class="section">
+            <div class="container">
+                <div class="reveal-on-scroll">
+                    <h2 class="section-title">Arsenał Innowacji</h2>
+                    <p class="section-subtitle">Każda usługa to owoc dogłębnych analiz, precyzyjego projektowania i mistrzowskiego wdrożenia. To coś więcej niż oferta — to zaproszenie do przyszłości.</p>
+                </div>
+                <div class="offer-grid">
+                    <div class="offer-card reveal-on-scroll" style="transition-delay: 200ms">
+                        <div class="offer-icon">
+                            <img src="https://i.imgur.com/Hzy7GSD.png" alt="Ikona Bota">
+                        </div>
+                        <h3>Discord Bot</h3>
+                        <p>Projektowane na zamówienie, inteligentne boty, które stają się kręgosłupem Twojej społeczności lub biznesu.</p>
+                    </div>
+                    <div class="offer-card reveal-on-scroll" style="transition-delay: 400ms">
+                        <div class="offer-icon">
+                            <img src="https://i.imgur.com/si0292m.png" alt="Ikona Strony WWW">
+                        </div>
+                        <h3>Strony Internetowe</h3>
+                        <p>Tworzymy responsywne i zoptymalizowane pod SEO strony, które stanowią doskonałą wizytówkę Twojej marki w sieci.</p>
+                    </div>
+                    <div class="offer-card reveal-on-scroll" style="transition-delay: 600ms">
+                       <div class="offer-icon">
+                            <img src="https://i.imgur.com/7yYwf8b.png" alt="Ikona Bezpieczeństwa">
+                       </div>
+                        <h3>Zabezpieczenia</h3>
+                        <p>Tworzymy zaawansowane bariery ochronne dla twoich projektów, które nie przepuszczą nawet mrówki!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="team" class="section">
+            <div class="container">
+                 <div class="reveal-on-scroll">
+                    <h2 class="section-title">Architekci <span class="highlight">Lite Bots</span></h2>
+                    <p class="section-subtitle">Elita ekspertów, dla których kod jest formą sztuki, a wyzwania techniczne paliwem do działania.</p>
+                </div>
+                 <div class="team-grid">
+                      <div class="team-card reveal-on-scroll" style="transition-delay: 200ms">
+                        <img src="https://i.imgur.com/PCctkzH.png" alt="Zdjęcie CEO">
+                        <div class="team-card-overlay">
+                            <div class="team-card-overlay-content">
+                                <h3>zxq0</h3>
+                                <p class="role-gradient role-ceo">CEO</p>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="team-card reveal-on-scroll" style="transition-delay: 400ms">
+                        <img src="https://i.imgur.com/VhduoxM.png" alt="Zdjęcie Managera">
+                        <div class="team-card-overlay">
+                            <div class="team-card-overlay-content">
+                                <h3>KacpeR</h3>
+                                <p class="role-gradient role-manager">Manager</p>
+                            </div>
+                        </div>
+                      </div>
+                      <div class="team-card reveal-on-scroll" style="transition-delay: 600ms">
+                        <img src="https://i.imgur.com/vKU1INs.jpeg" alt="Zdjęcie Inżyniera">
+                        <div class="team-card-overlay">
+                            <div class="team-card-overlay-content">
+                                <h3>kubus</h3>
+                                <p class="role-gradient role-engineer">Engineer</p>
+                            </div>
+                        </div>
+                      </div>
+                 </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Lite Bots. Engineering the Future.</p>
+        </div>
+    </footer>
+
+    <div id="chat-widget" :class="{ 'is-open': isChatOpen }">
+        <div class="chat-header">
+            <h3>Lite Bot's - Centrum Wsparcia</h3>
+            <button class="chat-close-btn" @click="toggleChat">&times;</button>
+        </div>
+        <div class="chat-messages" ref="chatMessages">
+            <div v-for="message in messages" :key="message.id" class="message" :class="message.sender">
+                <img v-if="message.sender === 'bot'" class="message-avatar" src="https://i.imgur.com/U0XKhNz.png" alt="Bot Avatar">
+                <div class="message-content" v-html="message.text"></div>
+            </div>
+             <div v-if="isBotThinking" class="message bot">
+                <img class="message-avatar" src="https://i.imgur.com/U0XKhNz.png" alt="Bot Avatar">
+                <div class="message-content typing-indicator">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+        <div class="chat-options">
+            <button v-for="option in currentOptions" :key="option.text" class="option-btn" @click="handleOptionClick(option)">
+                {{ option.text }}
+            </button>
+        </div>
+    </div>
+    <div id="chat-toggle" @click="toggleChat">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.413 15.187L10.93 14.14C11.121 13.766 11.519 13.5 11.96 13.5H12.04C12.482 13.5 12.879 13.766 13.07 14.14L13.587 15.187C14.052 16.117 13.334 17.125 12.333 17.125H11.667C10.666 17.125 9.948 16.117 10.413 15.187zM21 4H3C1.897 4 1 4.897 1 6V16C1 17.103 1.897 18 3 18H8.813C8.901 18.411 9.034 18.809 9.208 19.187L9.687 20.14C10.152 21.07 11.053 21.625 12 21.625C12.947 21.625 13.848 21.07 14.313 20.14L14.792 19.187C14.966 18.809 15.099 18.411 15.187 18H21C22.103 18 23 17.103 23 16V6C23 4.897 22.103 4 21 4zM8 11C7.448 11 7 10.552 7 10S7.448 9 8 9S9 9.448 9 10S8.552 11 8 11zm8 0c-0.552 0-1-0.448-1-1s0.448-1 1-1s1 0.448 1 1S16.552 11 16 11z"></path></svg>
+    </div>
+</div>
+
+<script>
+    const { createApp, onMounted, ref, nextTick } = Vue;
+
+    createApp({
+        setup() {
+            onMounted(() => {
+                const preloader = document.getElementById('preloader');
+                document.body.classList.add('loading');
+                
+                setTimeout(() => {
+                    preloader.classList.add('hidden');
+                    document.body.classList.remove('loading');
+                }, 3000);
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                        }
+                    });
+                }, { threshold: 0.2, rootMargin: '0px 0px -50px 0px' });
+                document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+            });
+
+            const scrollTo = (selector) => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            };
+
+            const isChatOpen = ref(false);
+            const isBotThinking = ref(false);
+            const chatMessages = ref(null);
+            
+            const initialMessage = { id: Date.now(), sender: 'bot', text: 'Witaj! W czym mogę pomóc?' };
+            const messages = ref([initialMessage]);
+            
+            const mainOptions = [
+                { text: 'Discord Bot', action: 'showDiscordOptions' },
+                { text: 'Strony Internetowe', action: 'showWebOptions' },
+                { text: 'Inne', action: 'showOther' }
+            ];
+            const currentOptions = ref(mainOptions);
+
+            const optionMap = {
+                showDiscordOptions: [
+                    { text: 'Discord Bot Nie Działa', action: 'showResponse', response: 'Rozumiem problem. Standardowa procedura w takim przypadku to sprawdzenie logów bota oraz statusu API Discorda. Prosimy o kontakt na naszym kanale wsparcia na Discordzie, podając ID serwera oraz przybliżony czas wystąpienia problemu.' },
+                    { text: 'Chcę Wprowadzić Zmianę W Bocie', action: 'showResponse', response: 'Oczywiście. Wszelkie modyfikacje i nowe funkcjonalności wyceniamy indywidualnie. Opisz proszę szczegółowo swoje potrzeby w ticket na Discordzie, a nasz zespół przygotuje dla Ciebie ofertę.' }
+                ],
+                showWebOptions: [
+                    { text: 'Strona Internetowa Nie Działa', action: 'showResponse', response: 'Przykro nam z powodu problemów. Prosimy o sprawdzenie, czy domena została poprawnie opłacona. Jeśli tak, skontaktuj się z nami na Discordzie, a nasi technicy niezwłocznie zdiagnozują i rozwiążą problem.' },
+                    { text: 'Chcę Wprowadzić Zmianę Na Stronie', action: 'showResponse', response: 'Świetnie! Skontaktuj się z nami na Discordzie, opisując zakres potrzebnych zmian. Chętnie pomożemy w rozwoju Twojego projektu.' }
+                ],
+                showOther: [
+                    { text: 'Zacznij od nowa', action: 'reset' }
+                ]
+            };
+            
+            const responseMap = {
+                showOther: 'Jeśli masz jakiś problem lub chcesz podjąć się współpracy, wejdź na naszego Discorda: <a href="https://discord.gg/litebots" target="_blank" style="color: var(--primary-color);">https://discord.gg/litebots</a>'
+            };
+
+            const scrollToBottom = () => {
+                nextTick(() => {
+                    if (chatMessages.value) {
+                        chatMessages.value.scrollTop = chatMessages.value.scrollHeight;
+                    }
+                });
+            };
+
+            const toggleChat = () => {
+                isChatOpen.value = !isChatOpen.value;
+                if (isChatOpen.value && messages.value.length <= 1) {
+                    resetChat();
+                } else if (isChatOpen.value) {
+                    scrollToBottom();
+                }
+            };
+            
+            const resetChat = () => {
+                messages.value = [JSON.parse(JSON.stringify(initialMessage))];
+                currentOptions.value = mainOptions;
+                scrollToBottom();
+            };
+
+            const handleOptionClick = (option) => {
+                messages.value.push({ id: Date.now(), sender: 'user', text: option.text });
+                currentOptions.value = [];
+                isBotThinking.value = true;
+                scrollToBottom();
+
+                setTimeout(() => {
+                    isBotThinking.value = false;
+                    
+                    if (option.action === 'showResponse') {
+                        messages.value.push({ id: Date.now() + 1, sender: 'bot', text: option.response });
+                        currentOptions.value = [{ text: 'Zacznij od nowa', action: 'reset' }];
+                    } else if (option.action === 'reset') {
+                        resetChat();
+                    } else {
+                        if (responseMap[option.action]) {
+                             messages.value.push({ id: Date.now() + 1, sender: 'bot', text: responseMap[option.action] });
+                        }
+                        currentOptions.value = optionMap[option.action] || [];
+                    }
+                    scrollToBottom();
+                }, 1500);
+            };
+
+            return { 
+                scrollTo,
+                isChatOpen, 
+                messages, 
+                currentOptions, 
+                isBotThinking, 
+                chatMessages, 
+                toggleChat, 
+                handleOptionClick 
+            };
+        }
+    }).mount('#app');
+</script>
+
+</body>
+</html>
