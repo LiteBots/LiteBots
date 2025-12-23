@@ -1,592 +1,1297 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lite Bots - Redefining Digital Experience</title>
-    <meta name="description" content="Doświadcz przyszłości automatyzacji. Lite Bots dostarcza przełomowe rozwiązania z niezrównaną precyzją i designem.">
-    <meta name="keywords" content="boty, discord, automatyzacja, technologia, vuejs, ux, design, premium">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="icon" href="/images/favicon.png" type="image/png">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <style>
-        :root {
-            --primary-color: #d300ff;
-            --primary-glow: rgba(211, 0, 255, 0.5);
-            --background-color: #050505;
-            --surface-color: #111111;
-            --text-color: #f0f0f0;
-            --text-secondary-color: #a0a0a0;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --header-blur: 12px;
-            --border-radius: 16px;
-            --transition-speed: 0.4s;
-            --transition-timing: cubic-bezier(0.16, 1, 0.3, 1);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <title>Lite Bots — Discord Boty, Panele, AI i Zabezpieczenia</title>
+  <meta name="description" content="Lite Bots: Discord Boty, panele webowe do zarządzania botem, zabezpieczenia, rozwiązania AI i automatyzacje AI (bot odpowiada na zgłoszenia użytkowników)." />
+  <meta name="keywords" content="discord bot, panel do bota, automatyzacje ai, ai, zabezpieczenia, tickets, support bot, premium" />
+  <meta name="theme-color" content="#0b0b0f" />
 
-        html { scroll-behavior: smooth; }
+  <!-- OpenGraph -->
+  <meta property="og:title" content="Lite Bots — Boty, Panele, AI i Zabezpieczenia" />
+  <meta property="og:description" content="Discord Boty, panele do zarządzania botem, zabezpieczenia oraz automatyzacje AI." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://i.imgur.com/U0XKhNz.png" />
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.7;
-            overflow-x: hidden;
-            position: relative;
-        }
-        
-        body.loading {
-            overflow: hidden;
-        }
-        
-        /* --- PRELOADER STYLES --- */
-        #preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            display: grid;
-            place-items: center;
-            z-index: 9999;
-            background-color: rgba(5, 5, 5, 0.5);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            opacity: 1;
-            transition: opacity 0.5s ease;
-        }
-        #preloader.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="/images/favicon.png" type="image/png" />
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-        #ghost {
-            position: relative;
-            scale: 0.8;
-        }
-        #red {
-            animation: upNDown infinite 0.5s;
-            position: relative;
-            width: 140px;
-            height: 140px;
-            display: grid;
-            grid-template-columns: repeat(14, 1fr);
-            grid-template-rows: repeat(14, 1fr);
-            grid-column-gap: 0px;
-            grid-row-gap: 0px;
-            grid-template-areas:
-                "a1  a2  a3  a4  a5  top0 top0 top0 top0 a10 a11 a12 a13 a14"
-                "b1  b2  b3  top1 top1 top1 top1 top1 top1 top1 top1 b12 b13 b14"
-                "c1 c2 top2 top2 top2 top2 top2 top2 top2 top2 top2 top2 c13 c14"
-                "d1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 d14"
-                "e1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 e14"
-                "f1 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 top3 f14"
-                "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
-                "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
-                "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
-                "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
-                "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
-                "top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4 top4"
-                "st0 st0 an4 st1 an7 st2 an10 an10 st3 an13 st4 an16 st5 st5"
-                "an1 an2 an3 an5 an6 an8 an9 an9 an11 an12 an14 an15 an17 an18";
-        }
-        @keyframes upNDown { 0%, 49% { transform: translateY(0px); } 50%, 100% { transform: translateY(-10px); } }
-        #top0, #top1, #top2, #top3, #top4, #st0, #st1, #st2, #st3, #st4, #st5 { background-color: var(--primary-color); }
-        #top0 { grid-area: top0; }
-        #top1 { grid-area: top1; }
-        #top2 { grid-area: top2; }
-        #top3 { grid-area: top3; }
-        #top4 { grid-area: top4; }
-        #st0 { grid-area: st0; }
-        #st1 { grid-area: st1; }
-        #st2 { grid-area: st2; }
-        #st3 { grid-area: st3; }
-        #st4 { grid-area: st4; }
-        #st5 { grid-area: st5; }
-        #an1 { grid-area: an1; animation: flicker0 infinite 0.5s; }
-        #an18 { grid-area: an18; animation: flicker0 infinite 0.5s; }
-        #an2 { grid-area: an2; animation: flicker1 infinite 0.5s; }
-        #an17 { grid-area: an17; animation: flicker1 infinite 0.5s; }
-        #an3 { grid-area: an3; animation: flicker1 infinite 0.5s; }
-        #an16 { grid-area: an16; animation: flicker1 infinite 0.5s; }
-        #an4 { grid-area: an4; animation: flicker1 infinite 0.5s; }
-        #an15 { grid-area: an15; animation: flicker1 infinite 0.5s; }
-        #an6 { grid-area: an6; animation: flicker0 infinite 0.5s; }
-        #an12 { grid-area: an12; animation: flicker0 infinite 0.5s; }
-        #an7 { grid-area: an7; animation: flicker0 infinite 0.5s; }
-        #an13 { grid-area: an13; animation: flicker0 infinite 0.5s; }
-        #an9 { grid-area: an9; animation: flicker1 infinite 0.5s; }
-        #an10 { grid-area: an10; animation: flicker1 infinite 0.5s; }
-        #an8 { grid-area: an8; animation: flicker0 infinite 0.5s; }
-        #an11 { grid-area: an11; animation: flicker0 infinite 0.5s; }
-        @keyframes flicker0 { 0%, 49% { background-color: var(--primary-color); } 50%, 100% { background-color: transparent; } }
-        @keyframes flicker1 { 0%, 49% { background-color: transparent; } 50%, 100% { background-color: var(--primary-color); } }
-        #eye { width: 40px; height: 50px; position: absolute; top: 30px; left: 10px; }
-        #eye::before { content: ""; background-color: white; width: 20px; height: 50px; transform: translateX(10px); display: block; position: absolute; }
-        #eye::after { content: ""; background-color: white; width: 40px; height: 30px; transform: translateY(10px); display: block; position: absolute; }
-        #eye1 { width: 40px; height: 50px; position: absolute; top: 30px; right: 30px; }
-        #eye1::before { content: ""; background-color: white; width: 20px; height: 50px; transform: translateX(10px); display: block; position: absolute; }
-        #eye1::after { content: ""; background-color: white; width: 40px; height: 30px; transform: translateY(10px); display: block; position: absolute; }
-        #pupil { width: 20px; height: 20px; background-color: black; position: absolute; top: 50px; left: 10px; z-index: 1; animation: eyesMovement infinite 3s; }
-        #pupil1 { width: 20px; height: 20px; background-color: black; position: absolute; top: 50px; right: 50px; z-index: 1; animation: eyesMovement infinite 3s; }
-        @keyframes eyesMovement { 0%, 49% { transform: translateX(0px); } 50%, 99% { transform: translateX(10px); } 100% { transform: translateX(0px); } }
-        #shadow { background-color: black; width: 140px; height: 140px; position: absolute; border-radius: 50%; transform: rotateX(80deg); filter: blur(20px); top: 80%; animation: shadowMovement infinite 0.5s; }
-        @keyframes shadowMovement { 0%, 49% { opacity: 0.5; } 50%, 100% { opacity: 0.2; } }
+  <style>
+    :root{
+      --bg: #06060a;
+      --bg2:#0b0b10;
+      --surface: rgba(18,18,24,.66);
+      --text: #f4f4f7;
+      --muted: rgba(244,244,247,.72);
+      --border: rgba(255,255,255,.10);
 
-        /* --- TŁO W KRATKĘ --- */
-        #grid-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background-image:
-                linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
-            animation: pan-grid 60s linear infinite;
-        }
+      --p1: #d300ff;
+      --p2: #6d5bff;
+      --p3: #00d9ff;
+      --pGlow: rgba(211,0,255,.45);
 
-        @keyframes pan-grid {
-            0% { background-position: 0 0; }
-            100% { background-position: 1200px 600px; }
-        }
-        
-        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+      --radius: 18px;
+      --radius2: 26px;
 
-        #app-header { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 1000; }
-        .header-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(17, 17, 17, 0.6); backdrop-filter: blur(var(--header-blur)); -webkit-backdrop-filter: blur(var(--header-blur)); border-radius: 50px; border: 1px solid var(--border-color); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-        .logo img { height: 36px; transition: transform var(--transition-speed) var(--transition-timing); }
-        .logo:hover img { transform: rotate(-15deg) scale(1.1); }
-        .logo-text { font-weight: 700; font-size: 1.1rem; color: var(--text-color); }
-        .nav-links { display: flex; gap: 20px; list-style: none; flex-grow: 1; justify-content: center; }
-        @media (max-width: 860px) { .nav-links { display: none; } }
-        .nav-links a { color: var(--text-secondary-color); text-decoration: none; font-weight: 500; padding: 8px 12px; border-radius: 50px; position: relative; transition: all var(--transition-speed) var(--transition-timing); }
-        .nav-links a:hover { color: var(--text-color); }
-        .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--primary-color); transform: scaleX(0); transition: transform var(--transition-speed) var(--transition-timing); }
-        .nav-links a:hover::after { transform: scaleX(1); }
-        
-        .header-actions { display: flex; align-items: center; gap: 15px; }
-        
-        .cta-button { display: inline-flex; align-items: center; gap: 12px; font-family: inherit; cursor: pointer; font-weight: 600; font-size: 1.1rem; padding: 0.8em 1.6em; color: var(--text-color); background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); letter-spacing: 0.05em; border-radius: 50px; text-decoration: none; backdrop-filter: blur(4px); transition: all var(--transition-speed) var(--transition-timing); }
-        .cta-button:hover { background-color: rgba(255, 255, 255, 0.1); border-color: var(--primary-color); color: #fff; box-shadow: 0 0 20px rgba(211, 0, 255, 0.4); transform: scale(1.05); }
-        .cta-button img.icon-discord-hero { height: 30px; transition: transform 0.4s var(--transition-timing); }
-        .cta-button:hover img.icon-discord-hero { transform: scale(1.15) rotate(-10deg); }
-        .cta-button-header { padding: 0.6em 1.2em; }
-        .cta-button-header img.icon-discord-header { height: 24px; transition: transform 0.4s var(--transition-timing); }
-        .cta-button-header:hover img.icon-discord-header { transform: scale(1.1) rotate(-5deg); }
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --shadow2: 0 12px 28px rgba(0,0,0,.35);
 
-        .section { padding: 140px 0; position: relative; }
-        .section-title { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; margin-bottom: 20px; text-align: center; letter-spacing: -2px; line-height: 1.1; background: linear-gradient(90deg, #e0e0e0, #ffffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .highlight { background: linear-gradient(90deg, #8A2BE2, var(--primary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .section-subtitle { text-align: center; max-width: 600px; margin: 0 auto 80px auto; color: var(--text-secondary-color); font-size: 1.1rem; }
-        #hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden; }
-        #hero-content { position: relative; z-index: 2; }
-        #aurora-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        .aurora-blob { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.5; animation: move 20s infinite alternate; }
-        .aurora-blob:nth-child(1) { background-color: #430d4b; width: 500px; height: 500px; top: -10%; left: -15%; animation-duration: 25s; }
-        .aurora-blob:nth-child(2) { background-color: #5d00ff; width: 400px; height: 400px; top: 20%; left: 40%; animation-duration: 30s; }
-        .aurora-blob:nth-child(3) { background-color: #21003d; width: 300px; height: 300px; bottom: 5%; right: -10%; animation-duration: 20s; }
-        @keyframes move { from { transform: rotate(0deg) scale(1.2) translate(5%, 5%); } to { transform: rotate(360deg) scale(1) translate(-5%, -5%); } }
-        .hero-title { font-size: clamp(3rem, 8vw, 6rem); font-weight: 900; letter-spacing: -0.05em; margin-bottom: 20px; line-height: 1; background: linear-gradient(180deg, #fff, #b3b3b3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-subtitle { font-size: clamp(1rem, 2vw, 1.25rem); color: var(--text-secondary-color); margin: 0 auto 40px auto; max-width: 550px; }
-        .fade-out-mask { position: absolute; bottom: 0; left: 0; right: 0; height: 250px; background: linear-gradient(to bottom, transparent, var(--background-color)); z-index: 3; pointer-events: none; }
-        .bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: minmax(150px, auto); gap: 20px; }
-        .bento-item { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 25px; transition: all var(--transition-speed) var(--transition-timing); }
-        .bento-item:hover { transform: scale(1.03); border-color: var(--primary-color); }
-        .bento-item h3 { font-size: 1.2rem; margin-bottom: 10px; }
-        .bento-item--large { grid-column: span 2; grid-row: span 2; }
-        .bento-item--wide { grid-column: span 3; }
-        .bento-item h2 { font-size: 2.5rem; }
-        .bento-item p { color: var(--text-secondary-color); }
-        .offer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .offer-card { background-color: var(--surface-color); padding: 30px; border-radius: var(--border-radius); border: 1px solid var(--border-color); position: relative; overflow: hidden; transition: all var(--transition-speed) var(--transition-timing); animation: breathe 5s infinite alternate; }
-        @keyframes breathe { from { box-shadow: 0 0 5px rgba(211, 0, 255, 0.1); } to { box-shadow: 0 0 20px rgba(211, 0, 255, 0.3); } }
-        .offer-card:hover { transform: translateY(-5px) scale(1.02); border-color: var(--primary-color); animation-play-state: paused; box-shadow: 0 10px 40px rgba(0,0,0,0.3), 0 0 30px var(--primary-glow); }
-        .offer-icon { margin-bottom: 20px; color: var(--primary-color); height: 48px; display: flex; align-items: center; justify-content: center; }
-        .offer-icon img { width: 48px; height: 48px; object-fit: contain; }
-        .offer-card h3 { font-size: 1.5rem; margin-bottom: 15px; color: var(--text-color); }
-        
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            justify-content: center;
-            align-items: center;
-        }
-        .team-card { position: relative; border-radius: var(--border-radius); overflow: hidden; aspect-ratio: 3/4; }
-        .team-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--transition-timing); }
-        .team-card:hover img { transform: scale(1.1); }
-        .team-card-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); transform: translateY(100%); transition: transform 0.6s var(--transition-timing); }
-        .team-card-overlay-content { transform: translateY(100%); transition: transform 0.6s var(--transition-timing); transition-delay: 0.1s; }
-        .team-card:hover .team-card-overlay, .team-card:hover .team-card-overlay-content { transform: translateY(0); }
-        .team-card h3 { font-size: 1.2rem; margin: 0; }
-        .team-card p { font-weight: 700; }
-        
-        .role-gradient { background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
-        .role-ceo { background-image: linear-gradient(to right, #ff0000, #ffae00); }
-        .role-manager { background-image: linear-gradient(to right, #aa00ff, #590db6); }
-        .role-engineer { background-image: linear-gradient(to right, #4a9bff, #524bcf); }
+      --speed: .35s;
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      --headerBlur: 14px;
 
-        footer { padding: 50px 0; text-align: center; color: var(--text-secondary-color); border-top: 1px solid var(--border-color); }
-        .reveal-on-scroll { opacity: 0; transform: translateY(40px); transition: opacity 1s var(--transition-timing), transform 1s var(--transition-timing); }
-        .reveal-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
-        
-        #chat-toggle { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background: var(--primary-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1001; box-shadow: 0 5px 20px var(--primary-glow); transition: transform 0.3s ease; }
-        #chat-toggle:hover { transform: scale(1.1); }
-        #chat-toggle svg { width: 32px; height: 32px; color: white; }
-        #chat-widget { position: fixed; bottom: 100px; right: 25px; width: 370px; max-width: 90vw; height: 500px; max-height: 70vh; background: var(--surface-color); border-radius: var(--border-radius); border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; z-index: 1000; opacity: 0; transform: scale(0.9) translateY(20px); transform-origin: bottom right; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
-        #chat-widget.is-open { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
-        .chat-header { padding: 15px 20px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-        .chat-header h3 { margin: 0; font-size: 1rem; }
-        .chat-close-btn { background: none; border: none; color: var(--text-secondary-color); cursor: pointer; font-size: 1.5rem; line-height: 1; }
-        .chat-messages { flex-grow: 1; padding: 20px; overflow-y: auto; }
-        .message { display: flex; margin-bottom: 15px; max-width: 85%; }
-        .message.bot { align-self: flex-start; }
-        .message.user { margin-left: auto; flex-direction: row-reverse; }
-        .message-avatar { width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; flex-shrink: 0; background: var(--background-color); padding: 4px; }
-        .message.user .message-avatar { display: none; }
-        .message-content { background: var(--background-color); padding: 10px 15px; border-radius: var(--border-radius); color: var(--text-secondary-color); }
-        .message.user .message-content { background: var(--primary-color); color: #fff; }
-        .typing-indicator { display: flex; align-items: center; padding: 10px 0; }
-        .typing-indicator span { height: 8px; width: 8px; background-color: var(--text-secondary-color); border-radius: 50%; margin: 0 2px; animation: typing 1.4s infinite; }
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
-        .chat-options { padding: 15px; border-top: 1px solid var(--border-color); display: flex; flex-wrap: wrap; gap: 10px; }
-        .option-btn { background: none; border: 1px solid var(--border-color); color: var(--text-color); padding: 8px 15px; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; }
-        .option-btn:hover { background: var(--primary-color); border-color: var(--primary-color); }
-    </style>
+      --grid: rgba(255,255,255,.05);
+    }
+
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    html{ scroll-behavior:smooth; }
+    body{
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(109,91,255,.18), transparent 65%),
+                  radial-gradient(1000px 700px at 90% 30%, rgba(211,0,255,.16), transparent 60%),
+                  radial-gradient(900px 700px at 60% 90%, rgba(0,217,255,.10), transparent 55%),
+                  linear-gradient(180deg, var(--bg), var(--bg2));
+      color: var(--text);
+      line-height:1.65;
+      overflow-x:hidden;
+    }
+    body.loading{ overflow:hidden; }
+
+    a{ color: inherit; text-decoration:none; }
+    img{ max-width:100%; display:block; }
+
+    .container{ max-width:1150px; margin:0 auto; padding:0 20px; }
+    .section{ padding: 120px 0; position:relative; }
+
+    /* ===== Backgrounds ===== */
+    #grid-background{
+      position:fixed; inset:0; z-index:-3;
+      background-image:
+        linear-gradient(to right, var(--grid) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+      background-size: 44px 44px;
+      animation: pan-grid 70s linear infinite;
+      mask-image: radial-gradient(900px 600px at 50% 10%, rgba(0,0,0,.9), transparent 70%);
+      opacity:.9;
+    }
+    @keyframes pan-grid{ 0%{ background-position: 0 0; } 100%{ background-position: 1200px 700px; } }
+
+    .noise{
+      position:fixed; inset:0; z-index:-2; pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity:.35;
+    }
+
+    .aurora{
+      position:fixed; inset:0; z-index:-4; pointer-events:none;
+      filter: blur(80px);
+      opacity:.75;
+    }
+    .blob{
+      position:absolute; width:540px; height:540px; border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, rgba(211,0,255,.55), transparent 60%),
+                  radial-gradient(circle at 70% 70%, rgba(109,91,255,.50), transparent 58%),
+                  radial-gradient(circle at 40% 80%, rgba(0,217,255,.35), transparent 62%);
+      animation: float 18s var(--ease) infinite alternate;
+    }
+    .blob.b1{ top:-180px; left:-160px; animation-duration: 22s; }
+    .blob.b2{ top: 25vh; left: 52vw; width:460px; height:460px; animation-duration: 28s; opacity:.65;}
+    .blob.b3{ bottom:-220px; right:-200px; width:520px; height:520px; animation-duration: 24s; opacity:.55;}
+
+    @keyframes float{
+      from{ transform: translate3d(0,0,0) rotate(0deg) scale(1); }
+      to{ transform: translate3d(80px, -40px, 0) rotate(25deg) scale(1.08); }
+    }
+
+    /* ===== Preloader ===== */
+    #preloader{
+      position:fixed; inset:0; display:grid; place-items:center; z-index:9999;
+      background: rgba(6,6,10,.55);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: opacity .55s ease, transform .55s ease;
+      opacity:1;
+    }
+    #preloader.hidden{ opacity:0; pointer-events:none; transform: scale(1.03); }
+    .loading-hint{
+      margin-top: 16px; text-align:center; color: var(--muted);
+      font-size:.95rem;
+      letter-spacing:.02em;
+    }
+    .loading-bar{
+      margin: 12px auto 0; width: 220px; height: 10px; border-radius: 999px;
+      background: rgba(255,255,255,.08); overflow:hidden; border:1px solid rgba(255,255,255,.10);
+    }
+    .loading-bar > div{
+      height:100%;
+      width: 40%;
+      background: linear-gradient(90deg, var(--p2), var(--p1), var(--p3));
+      filter: drop-shadow(0 0 12px var(--pGlow));
+      animation: load 1.1s infinite var(--ease);
+    }
+    @keyframes load{ 0%{ transform: translateX(-60%);} 100%{ transform: translateX(220%);} }
+
+    /* ===== Header ===== */
+    #app-header{ position:fixed; top:18px; left:18px; right:18px; z-index:2000; }
+    .header-nav{
+      display:flex; align-items:center; justify-content:space-between;
+      gap: 14px;
+      padding: 12px 16px;
+      background: rgba(18,18,24,.55);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      backdrop-filter: blur(var(--headerBlur));
+      -webkit-backdrop-filter: blur(var(--headerBlur));
+      box-shadow: var(--shadow2);
+    }
+    .logo{ display:flex; align-items:center; gap:12px; padding: 6px 10px; border-radius:999px; }
+    .logo img{ height: 34px; transition: transform var(--speed) var(--ease); filter: drop-shadow(0 0 14px rgba(211,0,255,.25)); }
+    .logo:hover img{ transform: rotate(-12deg) scale(1.08); }
+    .logo-text{ font-weight:800; letter-spacing:-.02em; }
+
+    .nav-links{ display:flex; gap: 8px; list-style:none; align-items:center; justify-content:center; flex:1; }
+    .nav-links a{
+      padding: 10px 14px; border-radius: 999px;
+      color: rgba(244,244,247,.75);
+      transition: background var(--speed) var(--ease), color var(--speed) var(--ease), transform var(--speed) var(--ease);
+      position:relative;
+      outline: none;
+      border: 1px solid transparent;
+    }
+    .nav-links a:hover{
+      color: var(--text);
+      background: rgba(255,255,255,.06);
+      transform: translateY(-1px);
+    }
+    .nav-links a.active{
+      color: var(--text);
+      background: linear-gradient(90deg, rgba(211,0,255,.20), rgba(109,91,255,.16), rgba(0,217,255,.12));
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    @media (max-width: 980px){
+      .nav-links{ display:none; }
+    }
+
+    .header-actions{ display:flex; gap: 10px; align-items:center; }
+    .pill{
+      display:inline-flex; gap:10px; align-items:center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), box-shadow var(--speed) var(--ease);
+      cursor:pointer;
+      font-weight: 800;
+      color: rgba(244,244,247,.92);
+    }
+    .pill:hover{
+      transform: translateY(-1px) scale(1.02);
+      border-color: rgba(211,0,255,.45);
+      box-shadow: 0 0 24px rgba(211,0,255,.18);
+    }
+    .pill img{ width: 22px; height: 22px; }
+
+    /* Scroll progress */
+    .scroll-progress{
+      position:fixed; top:0; left:0; height:3px; width: 0%;
+      background: linear-gradient(90deg, var(--p2), var(--p1), var(--p3));
+      z-index:3000;
+      box-shadow: 0 0 14px rgba(211,0,255,.25);
+    }
+
+    /* ===== Hero ===== */
+    #hero{ min-height:100vh; display:flex; align-items:center; padding-top: 120px; }
+    /* ZAMIANA: było 2-kolumny, teraz 1-kolumna (tablet usunięty) */
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 26px;
+      align-items:center;
+    }
+
+    .kicker{
+      display:inline-flex; gap:10px; align-items:center;
+      padding: 8px 12px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color: rgba(244,244,247,.78);
+      width: fit-content;
+    }
+    .dot{
+      width: 10px; height: 10px; border-radius:50%;
+      background: linear-gradient(180deg, var(--p1), var(--p2));
+      box-shadow: 0 0 14px var(--pGlow);
+    }
+    .hero-title{
+      font-size: clamp(2.9rem, 6.5vw, 5.6rem);
+      font-weight: 900;
+      letter-spacing: -.05em;
+      line-height: 1.02;
+      margin: 16px 0 14px;
+      background: linear-gradient(180deg, #fff, rgba(244,244,247,.70));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .hero-subtitle{
+      color: var(--muted);
+      font-size: clamp(1.05rem, 1.6vw, 1.2rem);
+      max-width: 60ch;
+    }
+    .hero-cta{
+      margin-top: 26px;
+      display:flex; gap: 12px; flex-wrap:wrap; align-items:center;
+    }
+
+    .btn{
+      display:inline-flex; gap: 12px; align-items:center; justify-content:center;
+      padding: 14px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      font-weight: 900;
+      letter-spacing:.01em;
+      transition: transform var(--speed) var(--ease), box-shadow var(--speed) var(--ease), border-color var(--speed) var(--ease), background var(--speed) var(--ease);
+      cursor:pointer;
+      user-select:none;
+    }
+    .btn:hover{
+      transform: translateY(-1px) scale(1.02);
+      border-color: rgba(211,0,255,.45);
+      box-shadow: 0 0 26px rgba(211,0,255,.22);
+      background: rgba(255,255,255,.07);
+    }
+    .btn.primary{
+      border: 1px solid rgba(211,0,255,.35);
+      background: linear-gradient(90deg, rgba(109,91,255,.35), rgba(211,0,255,.28), rgba(0,217,255,.20));
+      box-shadow: 0 18px 60px rgba(211,0,255,.12);
+    }
+    .btn.primary:hover{
+      box-shadow: 0 20px 70px rgba(211,0,255,.18), 0 0 30px rgba(0,217,255,.10);
+    }
+    .btn img{ width: 26px; height: 26px; }
+
+    /* ===== Shared components ===== */
+    .section-title{
+      text-align:center;
+      font-size: clamp(2.3rem, 4.8vw, 3.6rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height:1.1;
+      margin-bottom: 14px;
+      background: linear-gradient(90deg, rgba(255,255,255,.92), rgba(244,244,247,.72));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .highlight{
+      background: linear-gradient(90deg, var(--p2), var(--p1), var(--p3));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      filter: drop-shadow(0 0 18px rgba(211,0,255,.15));
+    }
+    .section-subtitle{
+      text-align:center;
+      color: var(--muted);
+      max-width: 78ch;
+      margin: 0 auto 56px;
+      font-size: 1.08rem;
+    }
+
+    .grid-3{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    @media (max-width: 980px){ .grid-3{ grid-template-columns: 1fr; } }
+
+    .card{
+      background: rgba(18,18,24,.55);
+      border: 1px solid rgba(255,255,255,.11);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.22);
+      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), box-shadow var(--speed) var(--ease);
+      position:relative;
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .card::before{
+      content:""; position:absolute; inset:-2px; opacity:0;
+      background: radial-gradient(420px 180px at 20% 0%, rgba(211,0,255,.22), transparent 60%),
+                  radial-gradient(420px 180px at 80% 30%, rgba(0,217,255,.12), transparent 62%);
+      transition: opacity var(--speed) var(--ease);
+      pointer-events:none;
+    }
+    .card:hover{
+      transform: translateY(-4px);
+      border-color: rgba(211,0,255,.35);
+      box-shadow: 0 18px 60px rgba(0,0,0,.45);
+    }
+    .card:hover::before{ opacity: 1; }
+
+    .icon{
+      width: 44px; height: 44px; border-radius: 14px;
+      background: linear-gradient(180deg, rgba(109,91,255,.30), rgba(211,0,255,.22));
+      border: 1px solid rgba(255,255,255,.12);
+      display:grid; place-items:center;
+      box-shadow: 0 0 22px rgba(211,0,255,.12);
+      margin-bottom: 14px;
+    }
+    .icon svg{ width: 22px; height: 22px; color: rgba(255,255,255,.92); }
+
+    .muted{ color: var(--muted); }
+    .hr{
+      width: 100%; height: 1px; background: rgba(255,255,255,.08);
+      margin: 18px 0;
+    }
+
+    /* Stats */
+    .stats{
+      display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+      margin-top: 22px;
+    }
+    @media (max-width: 980px){ .stats{ grid-template-columns: 1fr 1fr; } }
+    .stat{
+      border-radius: 18px;
+      background: rgba(10,10,14,.45);
+      border: 1px solid rgba(255,255,255,.10);
+      padding: 16px;
+    }
+    .stat .num{
+      font-size: 1.7rem;
+      font-weight: 900;
+      letter-spacing:-.02em;
+      background: linear-gradient(90deg, rgba(255,255,255,.92), rgba(244,244,247,.65));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .stat .lbl{ color: rgba(244,244,247,.70); font-weight: 800; font-size: .95rem; margin-top: 2px; }
+
+    /* FAQ */
+    .faq{
+      max-width: 920px; margin: 0 auto;
+      display:flex; flex-direction:column; gap: 12px;
+      margin-top: 24px;
+    }
+    .faq details{
+      background: rgba(18,18,24,.50);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 16px;
+      padding: 14px 16px;
+    }
+    .faq summary{
+      cursor:pointer;
+      font-weight: 900;
+      color: rgba(244,244,247,.9);
+      list-style:none;
+      display:flex; justify-content:space-between; align-items:center;
+      gap: 12px;
+    }
+    .faq summary::-webkit-details-marker{ display:none; }
+    .faq .ans{ margin-top: 10px; color: rgba(244,244,247,.72); }
+
+    /* Team */
+    .team-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    @media (max-width: 980px){ .team-grid{ grid-template-columns: 1fr; } }
+    .team-card{
+      position:relative; overflow:hidden;
+      border-radius: var(--radius2);
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      aspect-ratio: 3/4;
+      box-shadow: var(--shadow2);
+      transform: translateZ(0);
+    }
+    .team-card img{
+      width:100%; height:100%;
+      object-fit: cover;
+      transition: transform .8s var(--ease), filter .8s var(--ease);
+      filter: saturate(1.05) contrast(1.02);
+    }
+    .team-card:hover img{ transform: scale(1.12); filter: saturate(1.15) contrast(1.08); }
+    .team-overlay{
+      position:absolute; inset:0;
+      background: linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,.0) 60%);
+      display:flex; align-items:flex-end;
+      padding: 18px;
+      transform: translateY(18px);
+      transition: transform .6s var(--ease);
+    }
+    .team-card:hover .team-overlay{ transform: translateY(0); }
+    .role{
+      font-weight: 900;
+      background: linear-gradient(90deg, #ffb000, #ff3d00);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      letter-spacing:.02em;
+    }
+    .role.manager{ background-image: linear-gradient(90deg, #aa00ff, #590db6); }
+    .role.engineer{ background-image: linear-gradient(90deg, #00d9ff, #6d5bff); }
+
+    /* Lead form */
+    .form{
+      max-width: 860px;
+      margin: 0 auto;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 24px;
+    }
+    @media (max-width: 980px){ .form{ grid-template-columns: 1fr; } }
+    .field{
+      background: rgba(10,10,14,.45);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 16px;
+      padding: 12px 14px;
+      display:flex; flex-direction:column; gap: 6px;
+    }
+    .field label{ font-size: .88rem; font-weight: 900; color: rgba(244,244,247,.78); }
+    .field input, .field textarea, .field select{
+      background: transparent;
+      border: none;
+      outline: none;
+      color: rgba(244,244,247,.92);
+      font-size: 1rem;
+      padding: 4px 0;
+    }
+    .field textarea{ min-height: 110px; resize: vertical; }
+    .form .full{ grid-column: 1/-1; }
+
+    /* Footer */
+    footer{
+      padding: 60px 0;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: rgba(244,244,247,.65);
+      text-align:center;
+    }
+    .footer-links{
+      display:flex; gap: 14px; justify-content:center; flex-wrap:wrap;
+      margin: 14px 0 0;
+    }
+    .footer-links a{
+      padding: 8px 12px; border-radius: 999px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.08);
+      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease);
+    }
+    .footer-links a:hover{ transform: translateY(-1px); border-color: rgba(211,0,255,.35); }
+
+    /* ===== Reveal animations ===== */
+    .reveal{
+      opacity: 0;
+      transform: translateY(26px) scale(.98);
+      transition: opacity .9s var(--ease), transform .9s var(--ease);
+      will-change: opacity, transform;
+    }
+    .reveal.is-visible{
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* ===== Chat Widget ===== */
+    #chat-toggle{
+      position:fixed; right: 22px; bottom: 22px;
+      width: 62px; height: 62px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(109,91,255,1), rgba(211,0,255,1));
+      box-shadow: 0 10px 30px rgba(211,0,255,.25), 0 0 24px rgba(0,217,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      display:grid; place-items:center;
+      cursor:pointer;
+      z-index: 2500;
+      transition: transform var(--speed) var(--ease);
+    }
+    #chat-toggle:hover{ transform: scale(1.07); }
+    #chat-toggle svg{ width: 30px; height: 30px; color:white; }
+
+    #chat-widget{
+      position:fixed; right: 22px; bottom: 96px;
+      width: 380px; max-width: 92vw;
+      height: 520px; max-height: 72vh;
+      border-radius: 22px;
+      background: rgba(18,18,24,.75);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow);
+      display:flex; flex-direction:column;
+      overflow:hidden;
+      z-index: 2400;
+      opacity:0; transform: translateY(14px) scale(.96);
+      pointer-events:none;
+      transition: all .28s var(--ease);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    #chat-widget.is-open{
+      opacity:1; transform: translateY(0) scale(1);
+      pointer-events:auto;
+    }
+    .chat-header{
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(90deg, rgba(109,91,255,.18), rgba(211,0,255,.14));
+      display:flex; justify-content:space-between; align-items:center;
+      gap: 10px;
+    }
+    .chat-header h3{
+      font-size: .98rem;
+      font-weight: 900;
+      letter-spacing:-.01em;
+      display:flex; align-items:center; gap: 10px;
+    }
+    .chat-header img{ width: 22px; height: 22px; }
+    .chat-close-btn{
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      color: rgba(244,244,247,.9);
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      cursor:pointer;
+      transition: transform var(--speed) var(--ease);
+    }
+    .chat-close-btn:hover{ transform: scale(1.05); }
+
+    .chat-messages{ flex:1; overflow:auto; padding: 16px; }
+    .message{ display:flex; gap: 10px; margin-bottom: 12px; max-width: 88%; }
+    .message.user{ margin-left:auto; flex-direction: row-reverse; }
+    .message-avatar{
+      width: 30px; height: 30px; border-radius: 10px;
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.10);
+      padding: 5px;
+      flex-shrink:0;
+    }
+    .message.user .message-avatar{ display:none; }
+    .message-content{
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(10,10,14,.55);
+      border: 1px solid rgba(255,255,255,.10);
+      color: rgba(244,244,247,.78);
+    }
+    .message.user .message-content{
+      background: linear-gradient(180deg, rgba(211,0,255,.95), rgba(109,91,255,.92));
+      border-color: rgba(255,255,255,.18);
+      color: white;
+    }
+
+    .typing-indicator{ display:flex; gap: 5px; align-items:center; }
+    .typing-indicator span{
+      width: 7px; height: 7px; border-radius:50%;
+      background: rgba(244,244,247,.7);
+      animation: typing 1.2s infinite;
+    }
+    .typing-indicator span:nth-child(2){ animation-delay: .15s; }
+    .typing-indicator span:nth-child(3){ animation-delay: .3s; }
+    @keyframes typing{ 0%,80%,100%{ transform: scale(.3); opacity:.4; } 40%{ transform: scale(1); opacity:1; } }
+
+    .chat-options{
+      padding: 12px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      display:flex; gap: 10px; flex-wrap: wrap;
+      background: rgba(0,0,0,.14);
+    }
+    .option-btn{
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.10);
+      color: rgba(244,244,247,.92);
+      cursor:pointer;
+      font-weight: 900;
+      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), background var(--speed) var(--ease);
+    }
+    .option-btn:hover{ transform: translateY(-1px); border-color: rgba(211,0,255,.35); background: rgba(255,255,255,.06); }
+
+    /* Focus visibility */
+    :focus-visible{
+      outline: 2px solid rgba(0,217,255,.55);
+      outline-offset: 3px;
+      border-radius: 12px;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      html{ scroll-behavior: auto; }
+      *{ animation: none !important; transition: none !important; }
+      .reveal{ opacity: 1; transform:none; }
+    }
+  </style>
 </head>
+
 <body class="loading">
+  <div class="scroll-progress" id="scrollProgress"></div>
+  <div id="grid-background"></div>
+  <div class="noise"></div>
+  <div class="aurora" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
 
-<div id="preloader">
-    <div id="ghost">
-        <div id="red">
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-        </div>
-        <div id="eye"></div>
-        <div id="eye1"></div>
-        <div id="pupil"></div>
-        <div id="pupil1"></div>
-        <div id="shadow"></div>
+  <!-- PRELOADER -->
+  <div id="preloader" aria-label="Ładowanie strony">
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <img src="https://i.imgur.com/U0XKhNz.png" alt="Lite Bots" style="width:76px; filter: drop-shadow(0 0 24px rgba(211,0,255,.25));" />
+      <div class="loading-hint">Ładuję doświadczenie premium…</div>
+      <div class="loading-bar" aria-hidden="true"><div></div></div>
     </div>
-</div>
+  </div>
 
-<div id="app">
-    <div id="grid-background"></div>
+  <div id="app">
+    <!-- HEADER -->
     <header id="app-header">
-        <div class="container">
-            <nav class="header-nav">
-                <a href="#hero" class="logo" @click="scrollTo('#hero')">
-                    <img src="https://i.imgur.com/U0XKhNz.png" alt="Lite Bots Logo">
-                    <span class="logo-text">Lite Bots</span>
-                </a>
-                <ul class="nav-links">
-                    <li><a href="#about" @click="scrollTo('#about')">O nas</a></li>
-                    <li><a href="#offer" @click="scrollTo('#offer')">Oferta</a></li>
-                    <li><a href="#team" @click="scrollTo('#team')">Zespół</a></li>
-                </ul>
-                <div class="header-actions">
-                    <a href="https://discord.gg/litebots" target="_blank" class="cta-button cta-button-header">
-                        <img src="https://i.imgur.com/UOb8xvv.png" alt="Discord Icon" class="icon-discord-header">
-                        <span>Dołącz</span>
-                    </a>
-                </div>
-            </nav>
-        </div>
+      <div class="container">
+        <nav class="header-nav" aria-label="Główna nawigacja">
+          <a class="logo" href="#hero" @click.prevent="scrollTo('#hero')" aria-label="Przejdź do sekcji start">
+            <img src="https://i.imgur.com/U0XKhNz.png" alt="Lite Bots Logo">
+            <span class="logo-text">Lite Bots</span>
+          </a>
+
+          <ul class="nav-links" role="list">
+            <li><a :class="{active: activeSection==='about'}" href="#about" @click.prevent="scrollTo('#about')">O nas</a></li>
+            <li><a :class="{active: activeSection==='services'}" href="#services" @click.prevent="scrollTo('#services')">Usługi</a></li>
+            <li><a :class="{active: activeSection==='ai'}" href="#ai" @click.prevent="scrollTo('#ai')">AI</a></li>
+            <li><a :class="{active: activeSection==='process'}" href="#process" @click.prevent="scrollTo('#process')">Proces</a></li>
+            <li><a :class="{active: activeSection==='team'}" href="#team" @click.prevent="scrollTo('#team')">Zespół</a></li>
+            <li><a :class="{active: activeSection==='contact'}" href="#contact" @click.prevent="scrollTo('#contact')">Kontakt</a></li>
+          </ul>
+
+          <div class="header-actions">
+            <a class="pill" href="workspace.html" aria-label="Przejdź do kreatora bota">
+              <span>Zaprojektuj swojego bota</span>
+            </a>
+            <a class="pill" href="https://discord.gg/litebots" target="_blank" rel="noopener">
+              <img src="https://i.imgur.com/UOb8xvv.png" alt="Discord">
+              <span>Dołącz</span>
+            </a>
+          </div>
+        </nav>
+      </div>
     </header>
 
+    <!-- MAIN -->
     <main>
-        <section id="hero">
-            <div id="aurora-background">
-                <div class="aurora-blob"></div> <div class="aurora-blob"></div> <div class="aurora-blob"></div>
-            </div>
-            <div id="hero-content">
-                <h1 class="hero-title">Tworzymy Przyszłość<br>Twojego Projektu</h1>
-                <p class="hero-subtitle">Lite Bots to innowacja na najwyższym poziomie, sprawdź już sam!!</p>
-                <a href="https://discord.gg/litebots" target="_blank" class="cta-button" style="margin-top: 40px;">
-                    <img src="https://i.imgur.com/UOb8xvv.png" alt="Discord 3D Logo" class="icon-discord-hero">
-                    <span>Dołącz na Discord</span>
-                </a>
-            </div>
-            <div class="fade-out-mask"></div>
-        </section>
+      <!-- HERO -->
+      <section id="hero" class="section">
+        <div class="container">
+          <div class="hero-grid">
+            <div class="reveal">
+              <div class="kicker"><span class="dot"></span> Boty • Panele • AI • Zabezpieczenia</div>
+              <h1 class="hero-title">
+                Budujemy <span class="highlight">Discord boty</span><br>
+                z panelami, AI i pełnym zabezpieczeniem.
+              </h1>
+              <p class="hero-subtitle">
+                Lite Bots tworzy systemy, które działają jak produkt: stabilne moduły, panel do zarządzania botem,
+                automatyzacje AI (np. bot sam odpowiada na zgłoszenia) i bezpieczeństwo na poziomie premium.
+              </p>
 
-        <section id="about" class="section">
-            <div class="container">
-                <div class="reveal-on-scroll">
-                    <h2 class="section-title">Nasza misja to <span class="highlight">Rewolucja</span></h2>
-                    <p class="section-subtitle">Nie tworzymy tylko botów. Budujemy inteligentne ekosystemy, które rewolucjonizują interakcję, automatyzują złożone procesy i dostarczają mierzalną wartość dla naszych partnerów.</p>
+              <div class="hero-cta">
+                <a class="btn primary" href="workspace.html">
+                  <span>Zaprojektuj swojego bota</span>
+                </a>
+                <a class="btn" href="https://discord.gg/litebots" target="_blank" rel="noopener">
+                  <img src="https://i.imgur.com/UOb8xvv.png" alt="">
+                  <span>Wejdź na Discord</span>
+                </a>
+                <button class="btn" @click="scrollTo('#services')">
+                  Poznaj usługi
+                </button>
+              </div>
+
+              <div class="stats" aria-label="Najważniejsze liczby">
+                <div class="stat">
+                  <div class="num">{{ animatedStats.projects }}</div>
+                  <div class="lbl">wdrożeń</div>
                 </div>
-                <div class="bento-grid">
-                    <div class="bento-item bento-item--large reveal-on-scroll">
-                        <h2>Synergia <span class="highlight">Kodu i Designu</span></h2>
-                        <p>Wierzymy, że najbardziej eleganckie rozwiązania powstają na styku precyzyjnej inżynierii i intuicyjnego projektowania. Technologia bez empatii jest bezużyteczna. Design bez solidnych fundamentów jest tylko ozdobą.</p>
-                    </div>
-                    <div class="bento-item reveal-on-scroll" style="transition-delay: 200ms">
-                        <h3>Innowacja</h3><p>Nieustannie kwestionujemy status quo, szukając nowych, lepszych dróg do celu.</p>
-                    </div>
-                    <div class="bento-item reveal-on-scroll" style="transition-delay: 300ms">
-                        <h3>Precyzja</h3><p>Każda linia kodu i każdy piksel mają znaczenie. Dążymy do absolutnej perfekcji.</p>
-                    </div>
-                    <div class="bento-item bento-item--wide reveal-on-scroll" style="transition-delay: 400ms">
-                        <h3>Skalowalność jako Standard</h3>
-                        <p>Budujemy systemy gotowe na jutro. Nasze rozwiązania rosną razem z Twoimi ambicjami, zapewniając stabilność i wydajność bez względu na skalę.</p>
-                    </div>
+                <div class="stat">
+                  <div class="num">{{ animatedStats.uptime }}%</div>
+                  <div class="lbl">uptime (SLA)</div>
                 </div>
+                <div class="stat">
+                  <div class="num">{{ animatedStats.response }}h</div>
+                  <div class="lbl">czas reakcji</div>
+                </div>
+                <div class="stat">
+                  <div class="num">{{ animatedStats.delivery }}d</div>
+                  <div class="lbl">MVP średnio</div>
+                </div>
+              </div>
             </div>
-        </section>
-        <section id="offer" class="section">
-            <div class="container">
-                <div class="reveal-on-scroll">
-                    <h2 class="section-title">Arsenał Innowacji</h2>
-                    <p class="section-subtitle">Każda usługa to owoc dogłębnych analiz, precyzyjego projektowania i mistrzowskiego wdrożenia. To coś więcej niż oferta — to zaproszenie do przyszłości.</p>
-                </div>
-                <div class="offer-grid">
-                    <div class="offer-card reveal-on-scroll" style="transition-delay: 200ms">
-                        <div class="offer-icon">
-                            <img src="https://i.imgur.com/Hzy7GSD.png" alt="Ikona Bota">
-                        </div>
-                        <h3>Discord Bot</h3>
-                        <p>Projektowane na zamówienie, inteligentne boty, które stają się kręgosłupem Twojej społeczności lub biznesu.</p>
-                    </div>
-                    <div class="offer-card reveal-on-scroll" style="transition-delay: 400ms">
-                        <div class="offer-icon">
-                            <img src="https://i.imgur.com/si0292m.png" alt="Ikona Strony WWW">
-                        </div>
-                        <h3>Strony Internetowe</h3>
-                        <p>Tworzymy responsywne i zoptymalizowane pod SEO strony, które stanowią doskonałą wizytówkę Twojej marki w sieci.</p>
-                    </div>
-                    <div class="offer-card reveal-on-scroll" style="transition-delay: 600ms">
-                       <div class="offer-icon">
-                            <img src="https://i.imgur.com/7yYwf8b.png" alt="Ikona Bezpieczeństwa">
-                       </div>
-                        <h3>Zabezpieczenia</h3>
-                        <p>Tworzymy zaawansowane bariery ochronne dla twoich projektów, które nie przepuszczą nawet mrówki!</p>
-                    </div>
-                </div>
+
+            <!-- USUNIĘTO: RIGHT TABLET + CTA -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="about" class="section">
+        <div class="container">
+          <div class="reveal">
+            <h2 class="section-title">Misja: <span class="highlight">produkt</span>, nie “skrypt”</h2>
+            <p class="section-subtitle">
+              Nie robimy botów “na chwilę”. Budujemy rozwiązania, które da się rozwijać: moduły, panel, monitoring, AI i zabezpieczenia.
+            </p>
+          </div>
+
+          <div class="grid-3">
+            <div class="card reveal">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v10H6l-2 2V6zm3 3h10v2H7V9zm0 4h7v2H7v-2z"/></svg>
+              </div>
+              <h3 style="font-weight:900;">Jasna architektura</h3>
+              <p class="muted">Moduły, logika uprawnień, logi i monitoring — gotowe na rozwój.</p>
             </div>
-        </section>
-        <section id="team" class="section">
-            <div class="container">
-                 <div class="reveal-on-scroll">
-                    <h2 class="section-title">Architekci <span class="highlight">Lite Bots</span></h2>
-                    <p class="section-subtitle">Elita ekspertów, dla których kod jest formą sztuki, a wyzwania techniczne paliwem do działania.</p>
-                </div>
-                 <div class="team-grid">
-                      <div class="team-card reveal-on-scroll" style="transition-delay: 200ms">
-                        <img src="https://i.imgur.com/PCctkzH.png" alt="Zdjęcie CEO">
-                        <div class="team-card-overlay">
-                            <div class="team-card-overlay-content">
-                                <h3>zxq0</h3>
-                                <p class="role-gradient role-ceo">CEO</p>
-                            </div>
-                        </div>
-                      </div>
-                      <div class="team-card reveal-on-scroll" style="transition-delay: 400ms">
-                        <img src="https://i.imgur.com/VhduoxM.png" alt="Zdjęcie Managera">
-                        <div class="team-card-overlay">
-                            <div class="team-card-overlay-content">
-                                <h3>KacpeR</h3>
-                                <p class="role-gradient role-manager">Manager</p>
-                            </div>
-                        </div>
-                      </div>
-                      <div class="team-card reveal-on-scroll" style="transition-delay: 600ms">
-                        <img src="https://i.imgur.com/vKU1INs.jpeg" alt="Zdjęcie Inżyniera">
-                        <div class="team-card-overlay">
-                            <div class="team-card-overlay-content">
-                                <h3>kubus</h3>
-                                <p class="role-gradient role-engineer">Engineer</p>
-                            </div>
-                        </div>
-                      </div>
-                 </div>
+            <div class="card reveal" style="transition-delay:120ms;">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"/></svg>
+              </div>
+              <h3 style="font-weight:900;">UX premium</h3>
+              <p class="muted">Panel i komendy tak zaprojektowane, żeby były szybkie i intuicyjne.</p>
             </div>
-        </section>
+            <div class="card reveal" style="transition-delay:240ms;">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l9 4v6c0 5-3.8 9.4-9 12-5.2-2.6-9-7-9-12V5l9-4zm0 6a3 3 0 100 6 3 3 0 000-6z"/></svg>
+              </div>
+              <h3 style="font-weight:900;">Bezpieczeństwo</h3>
+              <p class="muted">Rate-limit, antyspam, audyty i kontrola dostępu — mniej incydentów.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SERVICES -->
+      <section id="services" class="section">
+        <div class="container">
+          <div class="reveal">
+            <h2 class="section-title">Usługi Lite Bots</h2>
+            <p class="section-subtitle">
+              Tylko to, co robimy najlepiej: Discord Boty, panele do zarządzania botem, zabezpieczenia, AI i automatyzacje AI.
+            </p>
+          </div>
+
+          <div class="grid-3">
+            <div class="card reveal">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v2h4a2 2 0 012 2v10a2 2 0 01-2 2h-5l-3 3-3-3H6a2 2 0 01-2-2V6a2 2 0 012-2h4V2zm-3 7h10v2H7V9zm0 4h7v2H7v-2z"/></svg>
+              </div>
+              <h3 style="font-weight:900;">Discord Bot</h3>
+              <p class="muted">
+                Systemy: moderacja, ekonomia, rankingi, role, logi, tickets, automaty, integracje.
+              </p>
+              <div class="hr"></div>
+              <p class="muted"><strong>Opcjonalnie:</strong> hosting, monitoring, SLA, aktualizacje.</p>
+            </div>
+
+            <div class="card reveal" style="transition-delay:120ms;">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16v14H4V5zm2 2v2h12V7H6zm0 4v6h12v-6H6z"/></svg>
+              </div>
+              <h3 style="font-weight:900;">Panele webowe do zarządzania botem</h3>
+              <p class="muted">
+                Panel admina: konfiguracja modułów, role, logi, tickets, integracje, statystyki i uprawnienia.
+              </p>
+              <div class="hr"></div>
+              <p class="muted"><strong>Efekt:</strong> mniej ręcznej roboty, pełna kontrola.</p>
+            </div>
+
+            <div class="card reveal" style="transition-delay:240ms;">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l9 4v6c0 5-3.8 9.4-9 12-5.2-2.6-9-7-9-12V5l9-4z"/></svg>
+              </div>
+              <h3 style="font-weight:900;">Zabezpieczenia</h3>
+              <p class="muted">
+                Antyspam, antyraid, rate-limit, wykrywanie anomalii, logi, alerty, audyt uprawnień.
+              </p>
+              <div class="hr"></div>
+              <p class="muted"><strong>Cel:</strong> stabilność i spokój.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI -->
+      <section id="ai" class="section">
+        <div class="container">
+          <div class="reveal">
+            <h2 class="section-title">AI i Automatyzacje AI</h2>
+            <p class="section-subtitle">
+              Wprowadzamy AI tam, gdzie realnie oszczędza czas i zwiększa jakość obsługi użytkowników.
+            </p>
+          </div>
+
+          <div class="grid-3">
+            <div class="card reveal">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 2h6v2h2a2 2 0 012 2v2h-2V6H5v2H3V6a2 2 0 012-2h2V2zm-6 8h18v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10zm4 3h6v2H7v-2z"/></svg>
+              </div>
+              <h3 style="font-weight:900;">Rozwiązania AI</h3>
+              <p class="muted">
+                Inteligentne klasyfikowanie, rekomendacje, analiza treści, automatyczne akcje na bazie reguł + AI.
+              </p>
+            </div>
+
+            <div class="card reveal" style="transition-delay:120ms;">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 019 9v3a3 3 0 01-3 3h-2v-2h2a1 1 0 001-1v-3a7 7 0 10-14 0v3a1 1 0 001 1h2v2H6a3 3 0 01-3-3v-3a9 9 0 019-9zm-1 6h2v6h-2V9zm0 8h2v2h-2v-2z"/></svg>
+              </div>
+              <h3 style="font-weight:900;">Bot odpowiada na zgłoszenia</h3>
+              <p class="muted">
+                Automatyzacja tickets: bot zbiera dane, odpowiada, proponuje rozwiązanie i eskaluje do staffu, gdy trzeba.
+              </p>
+            </div>
+
+            <div class="card reveal" style="transition-delay:240ms;">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10v2H7V2zm-2 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zm2 4v2h10v-2H7zm0 4v2h7v-2H7z"/></svg>
+              </div>
+              <h3 style="font-weight:900;">Automatyzacje workflow</h3>
+              <p class="muted">
+                Akcje typu: “jeśli X → zrób Y”, auto-raporty, auto-notyfikacje, synchronizacja danych, webhooki.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROCESS -->
+      <section id="process" class="section">
+        <div class="container">
+          <div class="reveal">
+            <h2 class="section-title">Proces współpracy</h2>
+            <p class="section-subtitle">
+              Prosto i szybko: ustalamy cel, projektujemy moduły + panel, wdrażamy i dowozimy opiekę.
+            </p>
+          </div>
+
+          <div class="grid-3">
+            <div class="card reveal">
+              <h3 style="font-weight:900;">1) Analiza</h3>
+              <p class="muted">Zakres, priorytety, role, tickets, integracje, wymagania AI i bezpieczeństwa.</p>
+              <div class="hr"></div>
+              <p class="muted"><strong>Wynik:</strong> plan + wycena + harmonogram.</p>
+            </div>
+
+            <div class="card reveal" style="transition-delay:120ms;">
+              <h3 style="font-weight:900;">2) Budowa</h3>
+              <p class="muted">Bot + panel admina + automatyzacje AI. Testy i dopieszczony UX.</p>
+              <div class="hr"></div>
+              <p class="muted"><strong>Wynik:</strong> wersja MVP + iteracje.</p>
+            </div>
+
+            <div class="card reveal" style="transition-delay:240ms;">
+              <h3 style="font-weight:900;">3) Wdrożenie</h3>
+              <p class="muted">Hosting, monitoring, alerty, zabezpieczenia, dokumentacja, opieka.</p>
+              <div class="hr"></div>
+              <p class="muted"><strong>Wynik:</strong> stabilny release + wsparcie.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq" class="section">
+        <div class="container">
+          <div class="reveal">
+            <h2 class="section-title">FAQ</h2>
+            <p class="section-subtitle">Najczęstsze pytania o boty, panele i AI.</p>
+          </div>
+
+          <div class="faq reveal">
+            <details>
+              <summary>Jak działa panel do zarządzania botem? <span>+</span></summary>
+              <div class="ans">Panel pozwala konfigurować moduły, role, logi, tickets, ustawienia AI i integracje bez grzebania w kodzie.</div>
+            </details>
+            <details>
+              <summary>AI odpowiada na zgłoszenia — jak to wygląda? <span>+</span></summary>
+              <div class="ans">Bot zbiera kontekst (formularz/ticket), proponuje rozwiązanie, pyta doprecyzowująco i eskaluje do staffu, gdy sprawa jest trudna.</div>
+            </details>
+            <details>
+              <summary>Czy dostanę hosting i monitoring? <span>+</span></summary>
+              <div class="ans">Tak. Oferujemy hosting + monitoring + alerty, a w pakietach premium również SLA i szybki czas reakcji.</div>
+            </details>
+            <details>
+              <summary>Ile trwa wdrożenie? <span>+</span></summary>
+              <div class="ans">MVP zwykle 3–14 dni (zależy od modułów, panelu, integracji i zakresu AI).</div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- TEAM -->
+      <section id="team" class="section">
+        <div class="container">
+          <div class="reveal">
+            <h2 class="section-title">Zespół Lite Bots</h2>
+            <p class="section-subtitle">Mały skład — szybkie decyzje i dowożenie na czas.</p>
+          </div>
+
+          <div class="team-grid">
+            <div class="team-card reveal">
+              <img src="https://i.imgur.com/PCctkzH.png" alt="Zdjęcie CEO">
+              <div class="team-overlay">
+                <div>
+                  <h3 style="font-weight: 900; font-size: 1.2rem;">zxq0</h3>
+                  <div class="role">CEO</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="team-card reveal" style="transition-delay: 120ms;">
+              <img src="https://i.imgur.com/VhduoxM.png" alt="Zdjęcie Managera">
+              <div class="team-overlay">
+                <div>
+                  <h3 style="font-weight: 900; font-size: 1.2rem;">KacpeR</h3>
+                  <div class="role manager">Manager</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="team-card reveal" style="transition-delay: 240ms;">
+              <img src="https://i.imgur.com/vKU1INs.jpeg" alt="Zdjęcie Inżyniera">
+              <div class="team-overlay">
+                <div>
+                  <h3 style="font-weight: 900; font-size: 1.2rem;">kubus</h3>
+                  <div class="role engineer">Engineer</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section id="contact" class="section">
+        <div class="container">
+          <div class="reveal">
+            <h2 class="section-title">Zróbmy Twojego bota</h2>
+            <p class="section-subtitle">
+              Napisz krótko, co ma robić bot + czy ma być panel + czy chcesz AI do tickets. Albo przejdź do kreatora.
+            </p>
+          </div>
+
+          <div class="grid-3 reveal" style="margin-top: 26px;">
+            <div class="card">
+              <h3 style="font-weight:900;">Najszybciej</h3>
+              <p class="muted">Wejdź na Discord i załóż ticket — odpowiemy najszybciej.</p>
+              <div class="hr"></div>
+              <a class="btn" style="width:100%;" href="https://discord.gg/litebots" target="_blank" rel="noopener">
+                <img src="https://i.imgur.com/UOb8xvv.png" alt="">
+                Discord / Ticket
+              </a>
+            </div>
+            <div class="card">
+              <h3 style="font-weight:900;">Kreator bota</h3>
+              <p class="muted">Wypełnij “Zaprojektuj swojego bota” — masz gotowy brief.</p>
+              <div class="hr"></div>
+              <a class="btn primary" style="width:100%;" href="workspace.html">Zaprojektuj swojego bota</a>
+            </div>
+            <div class="card">
+              <h3 style="font-weight:900;">Szybka konsultacja</h3>
+              <p class="muted">Powiedz: moduły, panel, integracje, AI i deadline — a damy plan + wycenę.</p>
+              <div class="hr"></div>
+              <button class="btn" style="width:100%;" @click="toggleChat">Otwórz wsparcie</button>
+            </div>
+          </div>
+
+          <!-- Optional: brief form -->
+          <form class="form reveal" @submit.prevent="submitLead">
+            <div class="field">
+              <label for="name">Imię / Nick</label>
+              <input id="name" v-model.trim="lead.name" type="text" placeholder="np. zxq0" required>
+            </div>
+            <div class="field">
+              <label for="contactField">Kontakt (Discord / e-mail)</label>
+              <input id="contactField" v-model.trim="lead.contact" type="text" placeholder="np. zxq#0001 / mail@..." required>
+            </div>
+            <div class="field">
+              <label for="type">Czego potrzebujesz?</label>
+              <select id="type" v-model="lead.type" required>
+                <option value="discord-bot">Discord Bot</option>
+                <option value="panel">Panel do zarządzania botem</option>
+                <option value="security">Zabezpieczenia</option>
+                <option value="ai">Rozwiązania AI</option>
+                <option value="ai-automation">Automatyzacje AI (tickets/obsługa)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="budget">Budżet (opcjonalnie)</label>
+              <input id="budget" v-model.trim="lead.budget" type="text" placeholder="np. 500–1000 zł">
+            </div>
+            <div class="field full">
+              <label for="details">Opis projektu</label>
+              <textarea id="details" v-model.trim="lead.details" placeholder="Jakie moduły? Czy ma być panel? Jak ma działać AI? Integracje? Terminy?" required></textarea>
+            </div>
+
+            <div class="field full" style="display:flex; flex-direction:row; align-items:center; justify-content:space-between; gap: 12px;">
+              <div class="muted" style="font-weight:900;">
+                {{ leadStatus }}
+              </div>
+              <div style="display:flex; gap: 10px; flex-wrap:wrap;">
+                <button class="btn" type="button" @click="copyLead()">Skopiuj opis</button>
+                <button class="btn primary" type="submit">Wyślij (demo)</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
     </main>
 
     <footer>
-        <div class="container">
-            <p>&copy; 2025 Lite Bots. Engineering the Future.</p>
+      <div class="container">
+        <div style="font-weight:900; letter-spacing:-.02em;">© 2025 Lite Bots</div>
+        <div class="muted" style="margin-top:6px;">Discord Boty • Panele • AI • Zabezpieczenia</div>
+        <div class="footer-links">
+          <a href="#hero" @click.prevent="scrollTo('#hero')">Start</a>
+          <a href="#services" @click.prevent="scrollTo('#services')">Usługi</a>
+          <a href="workspace.html">Zaprojektuj bota</a>
+          <a href="https://discord.gg/litebots" target="_blank" rel="noopener">Discord</a>
         </div>
+      </div>
     </footer>
 
-    <div id="chat-widget" :class="{ 'is-open': isChatOpen }">
-        <div class="chat-header">
-            <h3>Lite Bot's - Centrum Wsparcia</h3>
-            <button class="chat-close-btn" @click="toggleChat">&times;</button>
-        </div>
-        <div class="chat-messages" ref="chatMessages">
-            <div v-for="message in messages" :key="message.id" class="message" :class="message.sender">
-                <img v-if="message.sender === 'bot'" class="message-avatar" src="https://i.imgur.com/U0XKhNz.png" alt="Bot Avatar">
-                <div class="message-content" v-html="message.text"></div>
-            </div>
-             <div v-if="isBotThinking" class="message bot">
-                <img class="message-avatar" src="https://i.imgur.com/U0XKhNz.png" alt="Bot Avatar">
-                <div class="message-content typing-indicator">
-                    <span></span><span></span><span></span>
-                </div>
-            </div>
-        </div>
-        <div class="chat-options">
-            <button v-for="option in currentOptions" :key="option.text" class="option-btn" @click="handleOptionClick(option)">
-                {{ option.text }}
-            </button>
-        </div>
-    </div>
-    <div id="chat-toggle" @click="toggleChat">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.413 15.187L10.93 14.14C11.121 13.766 11.519 13.5 11.96 13.5H12.04C12.482 13.5 12.879 13.766 13.07 14.14L13.587 15.187C14.052 16.117 13.334 17.125 12.333 17.125H11.667C10.666 17.125 9.948 16.117 10.413 15.187zM21 4H3C1.897 4 1 4.897 1 6V16C1 17.103 1.897 18 3 18H8.813C8.901 18.411 9.034 18.809 9.208 19.187L9.687 20.14C10.152 21.07 11.053 21.625 12 21.625C12.947 21.625 13.848 21.07 14.313 20.14L14.792 19.187C14.966 18.809 15.099 18.411 15.187 18H21C22.103 18 23 17.103 23 16V6C23 4.897 22.103 4 21 4zM8 11C7.448 11 7 10.552 7 10S7.448 9 8 9S9 9.448 9 10S8.552 11 8 11zm8 0c-0.552 0-1-0.448-1-1s0.448-1 1-1s1 0.448 1 1S16.552 11 16 11z"></path></svg>
-    </div>
-</div>
+    <!-- CHAT -->
+    <div id="chat-widget" :class="{ 'is-open': isChatOpen }" role="dialog" aria-label="Czat wsparcia">
+      <div class="chat-header">
+        <h3>
+          <img src="https://i.imgur.com/U0XKhNz.png" alt="">
+          Lite Bots — Centrum Wsparcia
+        </h3>
+        <button class="chat-close-btn" @click="toggleChat" aria-label="Zamknij czat">×</button>
+      </div>
 
-<script>
+      <div class="chat-messages" ref="chatMessages" aria-live="polite">
+        <div v-for="message in messages" :key="message.id" class="message" :class="message.sender">
+          <img v-if="message.sender === 'bot'" class="message-avatar" src="https://i.imgur.com/U0XKhNz.png" alt="Bot Avatar">
+          <div class="message-content" v-html="message.text"></div>
+        </div>
+
+        <div v-if="isBotThinking" class="message bot">
+          <img class="message-avatar" src="https://i.imgur.com/U0XKhNz.png" alt="Bot Avatar">
+          <div class="message-content typing-indicator" aria-label="Bot pisze">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-options">
+        <button v-for="option in currentOptions" :key="option.text" class="option-btn" @click="handleOptionClick(option)">
+          {{ option.text }}
+        </button>
+      </div>
+    </div>
+
+    <div id="chat-toggle" @click="toggleChat" aria-label="Otwórz czat">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M21 4H3C1.897 4 1 4.897 1 6V16C1 17.103 1.897 18 3 18H8.813C8.901 18.411 9.034 18.809 9.208 19.187L9.687 20.14C10.152 21.07 11.053 21.625 12 21.625C12.947 21.625 13.848 21.07 14.313 20.14L14.792 19.187C14.966 18.809 15.099 18.411 15.187 18H21C22.103 18 23 17.103 23 16V6C23 4.897 22.103 4 21 4zM8 11C7.448 11 7 10.552 7 10S7.448 9 8 9S9 9.448 9 10S8.552 11 8 11zm8 0c-0.552 0-1-0.448-1-1s0.448-1 1-1s1 0.448 1 1S16.552 11 16 11z"></path>
+      </svg>
+    </div>
+  </div>
+
+  <script>
     const { createApp, onMounted, ref, nextTick } = Vue;
 
     createApp({
-        setup() {
-            onMounted(() => {
-                const preloader = document.getElementById('preloader');
-                document.body.classList.add('loading');
-                
-                setTimeout(() => {
-                    preloader.classList.add('hidden');
-                    document.body.classList.remove('loading');
-                }, 3000);
-                
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('is-visible');
-                        }
-                    });
-                }, { threshold: 0.2, rootMargin: '0px 0px -50px 0px' });
-                document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
-            });
+      setup() {
+        const activeSection = ref('hero');
 
-            const scrollTo = (selector) => {
-                const element = document.querySelector(selector);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
+        const isChatOpen = ref(false);
+        const isBotThinking = ref(false);
+        const chatMessages = ref(null);
+
+        const messages = ref([
+          { id: Date.now(), sender: 'bot', text: 'Witaj! Wybierz temat albo napisz krótko, czego potrzebujesz 👇' }
+        ]);
+
+        const mainOptions = [
+          { text: 'Discord Bot', action: 'showBotOptions' },
+          { text: 'Panele do bota', action: 'showPanelOptions' },
+          { text: 'Zabezpieczenia', action: 'showSecurityOptions' },
+          { text: 'AI / Automatyzacje AI', action: 'showAIOptions' },
+          { text: 'Zaprojektuj bota', action: 'goWorkspace' }
+        ];
+        const currentOptions = ref(mainOptions);
+
+        const optionMap = {
+          showBotOptions: [
+            { text: 'Bot nie działa', action: 'showResponse', response: 'Sprawdź status Discord API + logi bota. Najszybciej pomożemy na Discordzie: podaj ID serwera, czas zdarzenia i opis.' },
+            { text: 'Nowa funkcja / moduł', action: 'showResponse', response: 'Opisz moduł + priorytet + deadline. Przygotujemy plan i wycenę.' },
+            { text: 'Tickets / support', action: 'showResponse', response: 'Możemy zrobić system zgłoszeń z logami, eskalacją i integracjami (np. webhooki).' },
+            { text: 'Zacznij od nowa', action: 'reset' }
+          ],
+          showPanelOptions: [
+            { text: 'Chcę panel do konfiguracji', action: 'showResponse', response: 'Panel może mieć: ustawienia modułów, role, logi, tickets, statystyki, integracje i uprawnienia — dopasujemy pod Twój serwer.' },
+            { text: 'Panel + dashboard statystyk', action: 'showResponse', response: 'Zrobimy dashboard: aktywność, top komendy, ekonomia, tickets, logi zdarzeń oraz eksport danych.' },
+            { text: 'Zacznij od nowa', action: 'reset' }
+          ],
+          showSecurityOptions: [
+            { text: 'Antyspam / antyraid', action: 'showResponse', response: 'Wdrożymy: rate-limit, filtry, wykrywanie anomalii, automatyczne akcje i alerty. Opisz co dokładnie atakuje serwer.' },
+            { text: 'Audyt uprawnień', action: 'showResponse', response: 'Zrobimy przegląd ról, uprawnień, logów i punktów ryzyka + rekomendacje.' },
+            { text: 'Zacznij od nowa', action: 'reset' }
+          ],
+          showAIOptions: [
+            { text: 'AI odpowiada na zgłoszenia', action: 'showResponse', response: 'Bot zbiera kontekst, odpowiada, dopytuje i eskaluje do staffu. Możemy dodać bazę wiedzy i system priorytetów.' },
+            { text: 'Automatyzacje workflow', action: 'showResponse', response: 'Automaty typu: “jeśli X → zrób Y”, auto-raporty, powiadomienia, synchronizacja danych, webhooki.' },
+            { text: 'Moderacja wsparta AI', action: 'showResponse', response: 'Klasyfikacja treści, wykrywanie toksyczności/spamu, sugestie akcji dla staffu — z logami i progami.' },
+            { text: 'Zacznij od nowa', action: 'reset' }
+          ]
+        };
+
+        const scrollTo = (selector) => {
+          const el = document.querySelector(selector);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+
+        const scrollToBottom = () => {
+          nextTick(() => {
+            if (chatMessages.value) chatMessages.value.scrollTop = chatMessages.value.scrollHeight;
+          });
+        };
+
+        const toggleChat = () => {
+          isChatOpen.value = !isChatOpen.value;
+          if (isChatOpen.value) scrollToBottom();
+        };
+
+        const resetChat = () => {
+          messages.value = [{ id: Date.now(), sender: 'bot', text: 'Witaj! Wybierz temat albo napisz krótko, czego potrzebujesz 👇' }];
+          currentOptions.value = mainOptions;
+          scrollToBottom();
+        };
+
+        const handleOptionClick = (option) => {
+          if (option.action === 'goWorkspace') {
+            window.location.href = 'workspace.html';
+            return;
+          }
+
+          messages.value.push({ id: Date.now() + Math.random(), sender: 'user', text: option.text });
+          currentOptions.value = [];
+          isBotThinking.value = true;
+          scrollToBottom();
+
+          setTimeout(() => {
+            isBotThinking.value = false;
+
+            if (option.action === 'showResponse') {
+              messages.value.push({ id: Date.now() + Math.random(), sender: 'bot', text: option.response });
+              currentOptions.value = [{ text: 'Zacznij od nowa', action: 'reset' }];
+            } else if (option.action === 'reset') {
+              resetChat();
+            } else {
+              currentOptions.value = optionMap[option.action] || [{ text: 'Zacznij od nowa', action: 'reset' }];
+            }
+            scrollToBottom();
+          }, 900);
+        };
+
+        // Lead form (demo)
+        const lead = ref({ name:'', contact:'', type:'discord-bot', budget:'', details:'' });
+        const leadStatus = ref('Wypełnij formularz — skopiujesz to jako gotową wiadomość na Discord.');
+
+        const copyLead = async () => {
+          const text =
+`Lite Bots — zapytanie:
+- Imię/Nick: ${lead.value.name}
+- Kontakt: ${lead.value.contact}
+- Typ: ${lead.value.type}
+- Budżet: ${lead.value.budget || '(brak)'}
+- Opis: ${lead.value.details}`;
+          try{
+            await navigator.clipboard.writeText(text);
+            leadStatus.value = 'Skopiowano! Wklej to na Discordzie w ticket.';
+          }catch{
+            leadStatus.value = 'Nie udało się skopiować (uprawnienia przeglądarki). Skopiuj ręcznie.';
+          }
+        };
+
+        const submitLead = () => {
+          leadStatus.value = 'Wersja demo — skopiuj opis i wklej na Discordzie. Jeśli chcesz: podepnę webhook/form endpoint.';
+          copyLead();
+        };
+
+        // Stats counter
+        const statsTarget = { projects: 120, uptime: 99.9, response: 2, delivery: 7 };
+        const animatedStats = ref({ projects: 0, uptime: 0, response: 0, delivery: 0 });
+
+        const animateNumber = (key, to, duration=900) => {
+          const start = performance.now();
+          const from = 0;
+          const tick = (now) => {
+            const p = Math.min(1, (now - start) / duration);
+            const eased = 1 - Math.pow(1 - p, 3);
+            const val = from + (to - from) * eased;
+            animatedStats.value[key] = (key === 'uptime') ? Math.round(val * 10) / 10 : Math.round(val);
+            if (p < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        };
+
+        onMounted(() => {
+          // Preloader
+          const preloader = document.getElementById('preloader');
+          document.body.classList.add('loading');
+          setTimeout(() => {
+            preloader.classList.add('hidden');
+            document.body.classList.remove('loading');
+          }, 1200);
+
+          // Reveal observer
+          const obs = new IntersectionObserver((entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-visible');
+                if (e.target.id === 'hero') {
+                  animateNumber('projects', statsTarget.projects, 900);
+                  animateNumber('uptime', statsTarget.uptime, 900);
+                  animateNumber('response', statsTarget.response, 900);
+                  animateNumber('delivery', statsTarget.delivery, 900);
                 }
-            };
+              }
+            }
+          }, { threshold: 0.18, rootMargin: '0px 0px -60px 0px' });
 
-            const isChatOpen = ref(false);
-            const isBotThinking = ref(false);
-            const chatMessages = ref(null);
-            
-            const initialMessage = { id: Date.now(), sender: 'bot', text: 'Witaj! W czym mogę pomóc?' };
-            const messages = ref([initialMessage]);
-            
-            const mainOptions = [
-                { text: 'Discord Bot', action: 'showDiscordOptions' },
-                { text: 'Strony Internetowe', action: 'showWebOptions' },
-                { text: 'Inne', action: 'showOther' }
-            ];
-            const currentOptions = ref(mainOptions);
+          document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-            const optionMap = {
-                showDiscordOptions: [
-                    { text: 'Discord Bot Nie Działa', action: 'showResponse', response: 'Rozumiem problem. Standardowa procedura w takim przypadku to sprawdzenie logów bota oraz statusu API Discorda. Prosimy o kontakt na naszym kanale wsparcia na Discordzie, podając ID serwera oraz przybliżony czas wystąpienia problemu.' },
-                    { text: 'Chcę Wprowadzić Zmianę W Bocie', action: 'showResponse', response: 'Oczywiście. Wszelkie modyfikacje i nowe funkcjonalności wyceniamy indywidualnie. Opisz proszę szczegółowo swoje potrzeby w ticket na Discordzie, a nasz zespół przygotuje dla Ciebie ofertę.' }
-                ],
-                showWebOptions: [
-                    { text: 'Strona Internetowa Nie Działa', action: 'showResponse', response: 'Przykro nam z powodu problemów. Prosimy o sprawdzenie, czy domena została poprawnie opłacona. Jeśli tak, skontaktuj się z nami na Discordzie, a nasi technicy niezwłocznie zdiagnozują i rozwiążą problem.' },
-                    { text: 'Chcę Wprowadzić Zmianę Na Stronie', action: 'showResponse', response: 'Świetnie! Skontaktuj się z nami na Discordzie, opisując zakres potrzebnych zmian. Chętnie pomożemy w rozwoju Twojego projektu.' }
-                ],
-                showOther: [
-                    { text: 'Zacznij od nowa', action: 'reset' }
-                ]
-            };
-            
-            const responseMap = {
-                showOther: 'Jeśli masz jakiś problem lub chcesz podjąć się współpracy, wejdź na naszego Discorda: <a href="https://discord.gg/litebots" target="_blank" style="color: var(--primary-color);">https://discord.gg/litebots</a>'
-            };
+          // Active section tracking
+          const sections = ['hero','about','services','ai','process','team','contact'];
+          const secObs = new IntersectionObserver((entries) => {
+            const visible = entries.filter(x => x.isIntersecting).sort((a,b)=> b.intersectionRatio - a.intersectionRatio)[0];
+            if (visible) activeSection.value = visible.target.id;
+          }, { threshold: 0.35 });
+          sections.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) secObs.observe(el);
+          });
 
-            const scrollToBottom = () => {
-                nextTick(() => {
-                    if (chatMessages.value) {
-                        chatMessages.value.scrollTop = chatMessages.value.scrollHeight;
-                    }
-                });
-            };
+          // Scroll progress
+          const prog = document.getElementById('scrollProgress');
+          const onScroll = () => {
+            const doc = document.documentElement;
+            const max = doc.scrollHeight - doc.clientHeight;
+            const val = max > 0 ? (doc.scrollTop / max) * 100 : 0;
+            prog.style.width = val.toFixed(2) + '%';
+          };
+          window.addEventListener('scroll', onScroll, { passive: true });
+          onScroll();
+        });
 
-            const toggleChat = () => {
-                isChatOpen.value = !isChatOpen.value;
-                if (isChatOpen.value && messages.value.length <= 1) {
-                    resetChat();
-                } else if (isChatOpen.value) {
-                    scrollToBottom();
-                }
-            };
-            
-            const resetChat = () => {
-                messages.value = [JSON.parse(JSON.stringify(initialMessage))];
-                currentOptions.value = mainOptions;
-                scrollToBottom();
-            };
-
-            const handleOptionClick = (option) => {
-                messages.value.push({ id: Date.now(), sender: 'user', text: option.text });
-                currentOptions.value = [];
-                isBotThinking.value = true;
-                scrollToBottom();
-
-                setTimeout(() => {
-                    isBotThinking.value = false;
-                    
-                    if (option.action === 'showResponse') {
-                        messages.value.push({ id: Date.now() + 1, sender: 'bot', text: option.response });
-                        currentOptions.value = [{ text: 'Zacznij od nowa', action: 'reset' }];
-                    } else if (option.action === 'reset') {
-                        resetChat();
-                    } else {
-                        if (responseMap[option.action]) {
-                             messages.value.push({ id: Date.now() + 1, sender: 'bot', text: responseMap[option.action] });
-                        }
-                        currentOptions.value = optionMap[option.action] || [];
-                    }
-                    scrollToBottom();
-                }, 1500);
-            };
-
-            return { 
-                scrollTo,
-                isChatOpen, 
-                messages, 
-                currentOptions, 
-                isBotThinking, 
-                chatMessages, 
-                toggleChat, 
-                handleOptionClick 
-            };
-        }
+        return {
+          scrollTo,
+          toggleChat,
+          isChatOpen,
+          isBotThinking,
+          messages,
+          currentOptions,
+          chatMessages,
+          handleOptionClick,
+          activeSection,
+          lead,
+          leadStatus,
+          copyLead,
+          submitLead,
+          animatedStats
+        };
+      }
     }).mount('#app');
-</script>
-
+  </script>
 </body>
 </html>
