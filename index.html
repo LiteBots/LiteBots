@@ -20,8 +20,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="icon" href="/images/favicon.png" type="image/png" />
 
-  <!-- Vue (CDN) -->
-  <script defer src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <!-- React 18 UMD + Babel (JSX) -->
+  <script defer crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script defer crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script defer crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
     :root{
@@ -139,7 +141,7 @@
     }
     @keyframes load{ 0%{ transform: translateX(-60%);} 100%{ transform: translateX(220%);} }
 
-    /* ===== Emergency banner (gdy Vue/JS nie wystartuje) ===== */
+    /* ===== Emergency banner (gdy React/JS nie wystartuje) ===== */
     #boot-error{
       position: fixed;
       left: 18px; right: 18px; bottom: 18px;
@@ -642,9 +644,8 @@
     }
   </style>
 
-  <!-- Boot helpers: preloader never stuck -->
+  <!-- Boot helpers: nigdy nie zostawiaj użytkownika na wiecznym loaderze -->
   <script>
-    // Global flag (ustawiany, gdy Vue app wstanie)
     window.__APP_BOOTED__ = false;
 
     function hidePreloader() {
@@ -652,7 +653,6 @@
       if (pre) pre.classList.add('hidden');
       document.body.classList.remove('loading');
     }
-
     function showBootError(msg) {
       const box = document.getElementById('boot-error');
       const text = document.getElementById('boot-error-text');
@@ -660,20 +660,17 @@
       if (box) box.style.display = 'block';
     }
 
-    // Fallback: gdyby JS/Vue nie wstało → po chwili zdejmujemy loader i pokazujemy info
+    // Watchdog: jeśli React/JS nie wstanie → zdejmij loader
     setTimeout(() => {
       if (!window.__APP_BOOTED__) {
         hidePreloader();
-        showBootError('Wygląda na to, że Vue/JS nie załadował się (często CSP blokuje skrypty z CDN). Otwórz DevTools → Console/Network.');
+        showBootError('React/JS nie wystartował (często CSP blokuje skrypty z CDN). Otwórz DevTools → Console/Network.');
       }
-    }, 3500);
+    }, 3800);
 
-    // Jak strona się załaduje, zdejmij loader (niezależnie od Vue)
+    // Fallback: po load też zdejmij loader
     window.addEventListener('load', () => {
-      // Jeśli app jeszcze nie wstała, i tak nie trzymaj usera na loaderze
-      if (!window.__APP_BOOTED__) {
-        hidePreloader();
-      }
+      if (!window.__APP_BOOTED__) hidePreloader();
     });
   </script>
 </head>
@@ -697,704 +694,745 @@
     </div>
   </div>
 
-  <!-- Jeśli Vue/JS nie ruszy, użytkownik dostaje info zamiast wiecznego loadera -->
+  <!-- Jeśli React/JS nie ruszy, użytkownik dostaje info zamiast wiecznego loadera -->
   <div id="boot-error" role="status" aria-live="polite">
     <strong>Nie udało się uruchomić aplikacji</strong>
     <div class="muted" id="boot-error-text">Sprawdź Console/Network.</div>
     <a href="https://discord.gg/litebots" target="_blank" rel="noopener">Wejdź na Discord</a>
   </div>
 
-  <div id="app">
-    <!-- HEADER -->
-    <header id="app-header">
-      <div class="container">
-        <nav class="header-nav" aria-label="Główna nawigacja">
-          <a class="logo" href="#hero" @click.prevent="scrollTo('#hero')" aria-label="Przejdź do sekcji start">
-            <img src="https://i.imgur.com/U0XKhNz.png" alt="Lite Bots Logo">
-            <span class="logo-text">Lite Bots</span>
-          </a>
+  <!-- React mount -->
+  <div id="root"></div>
 
-          <ul class="nav-links" role="list">
-            <li><a :class="{active: activeSection==='about'}" href="#about" @click.prevent="scrollTo('#about')">O nas</a></li>
-            <li><a :class="{active: activeSection==='services'}" href="#services" @click.prevent="scrollTo('#services')">Usługi</a></li>
-            <li><a :class="{active: activeSection==='ai'}" href="#ai" @click.prevent="scrollTo('#ai')">AI</a></li>
-            <li><a :class="{active: activeSection==='process'}" href="#process" @click.prevent="scrollTo('#process')">Proces</a></li>
-            <li><a :class="{active: activeSection==='team'}" href="#team" @click.prevent="scrollTo('#team')">Zespół</a></li>
-            <li><a :class="{active: activeSection==='contact'}" href="#contact" @click.prevent="scrollTo('#contact')">Kontakt</a></li>
-          </ul>
+  <script type="text/babel">
+    const { useEffect, useMemo, useRef, useState } = React;
 
-          <div class="header-actions">
-            <a class="pill" href="workspace.html" aria-label="Przejdź do kreatora bota">
-              <span>Zaprojektuj swojego bota</span>
-            </a>
-            <a class="pill" href="https://discord.gg/litebots" target="_blank" rel="noopener">
-              <img src="https://i.imgur.com/UOb8xvv.png" alt="Discord">
-              <span>Dołącz</span>
-            </a>
-          </div>
-        </nav>
-      </div>
-    </header>
+    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
 
-    <!-- MAIN -->
-    <main>
-      <!-- HERO -->
-      <section id="hero" class="section">
-        <div class="container">
-          <div class="hero-grid">
-            <div class="reveal">
-              <div class="kicker"><span class="dot"></span> Boty • Panele • AI • Zabezpieczenia</div>
-              <h1 class="hero-title">
-                Budujemy <span class="highlight">Discord boty</span><br>
-                z panelami, AI i pełnym zabezpieczeniem.
-              </h1>
-              <p class="hero-subtitle">
-                Lite Bots tworzy systemy, które działają jak produkt: stabilne moduły, panel do zarządzania botem,
-                automatyzacje AI (np. bot sam odpowiada na zgłoszenia) i bezpieczeństwo na poziomie premium.
-              </p>
+    function App(){
+      const [activeSection, setActiveSection] = useState('hero');
 
-              <div class="hero-cta">
-                <a class="btn primary" href="workspace.html">
-                  <span>Zaprojektuj swojego bota</span>
-                </a>
-                <a class="btn" href="https://discord.gg/litebots" target="_blank" rel="noopener">
-                  <img src="https://i.imgur.com/UOb8xvv.png" alt="">
-                  <span>Wejdź na Discord</span>
-                </a>
-                <button class="btn" @click="scrollTo('#services')">
-                  Poznaj usługi
-                </button>
-              </div>
+      // Chat
+      const [isChatOpen, setIsChatOpen] = useState(false);
+      const [isBotThinking, setIsBotThinking] = useState(false);
+      const chatMessagesRef = useRef(null);
 
-              <div class="stats" aria-label="Najważniejsze liczby">
-                <div class="stat">
-                  <div class="num">{{ animatedStats.projects }}</div>
-                  <div class="lbl">wdrożeń</div>
-                </div>
-                <div class="stat">
-                  <div class="num">{{ animatedStats.uptime }}%</div>
-                  <div class="lbl">uptime (SLA)</div>
-                </div>
-                <div class="stat">
-                  <div class="num">{{ animatedStats.response }}h</div>
-                  <div class="lbl">czas reakcji</div>
-                </div>
-                <div class="stat">
-                  <div class="num">{{ animatedStats.delivery }}d</div>
-                  <div class="lbl">MVP średnio</div>
-                </div>
-              </div>
-            </div>
+      const [messages, setMessages] = useState([
+        { id: Date.now(), sender: 'bot', text: 'Witaj! Wybierz temat albo napisz krótko, czego potrzebujesz 👇' }
+      ]);
 
-            <!-- USUNIĘTO: RIGHT TABLET + CTA -->
-          </div>
-        </div>
-      </section>
+      const mainOptions = useMemo(() => ([
+        { text: 'Discord Bot', action: 'showBotOptions' },
+        { text: 'Panele do bota', action: 'showPanelOptions' },
+        { text: 'Zabezpieczenia', action: 'showSecurityOptions' },
+        { text: 'AI / Automatyzacje AI', action: 'showAIOptions' },
+        { text: 'Zaprojektuj bota', action: 'goWorkspace' }
+      ]), []);
 
-      <!-- ABOUT -->
-      <section id="about" class="section">
-        <div class="container">
-          <div class="reveal">
-            <h2 class="section-title">Misja: <span class="highlight">produkt</span>, nie “skrypt”</h2>
-            <p class="section-subtitle">
-              Nie robimy botów “na chwilę”. Budujemy rozwiązania, które da się rozwijać: moduły, panel, monitoring, AI i zabezpieczenia.
-            </p>
-          </div>
+      const optionMap = useMemo(() => ({
+        showBotOptions: [
+          { text: 'Bot nie działa', action: 'showResponse', response: 'Sprawdź status Discord API + logi bota. Najszybciej pomożemy na Discordzie: podaj ID serwera, czas zdarzenia i opis.' },
+          { text: 'Nowa funkcja / moduł', action: 'showResponse', response: 'Opisz moduł + priorytet + deadline. Przygotujemy plan i wycenę.' },
+          { text: 'Tickets / support', action: 'showResponse', response: 'Możemy zrobić system zgłoszeń z logami, eskalacją i integracjami (np. webhooki).' },
+          { text: 'Zacznij od nowa', action: 'reset' }
+        ],
+        showPanelOptions: [
+          { text: 'Chcę panel do konfiguracji', action: 'showResponse', response: 'Panel może mieć: ustawienia modułów, role, logi, tickets, statystyki, integracje i uprawnienia — dopasujemy pod Twój serwer.' },
+          { text: 'Panel + dashboard statystyk', action: 'showResponse', response: 'Zrobimy dashboard: aktywność, top komendy, ekonomia, tickets, logi zdarzeń oraz eksport danych.' },
+          { text: 'Zacznij od nowa', action: 'reset' }
+        ],
+        showSecurityOptions: [
+          { text: 'Antyspam / antyraid', action: 'showResponse', response: 'Wdrożymy: rate-limit, filtry, wykrywanie anomalii, automatyczne akcje i alerty. Opisz co dokładnie atakuje serwer.' },
+          { text: 'Audyt uprawnień', action: 'showResponse', response: 'Zrobimy przegląd ról, uprawnień, logów i punktów ryzyka + rekomendacje.' },
+          { text: 'Zacznij od nowa', action: 'reset' }
+        ],
+        showAIOptions: [
+          { text: 'AI odpowiada na zgłoszenia', action: 'showResponse', response: 'Bot zbiera kontekst, odpowiada, dopytuje i eskaluje do staffu. Możemy dodać bazę wiedzy i system priorytetów.' },
+          { text: 'Automatyzacje workflow', action: 'showResponse', response: 'Automaty typu: “jeśli X → zrób Y”, auto-raporty, powiadomienia, synchronizacja danych, webhooki.' },
+          { text: 'Moderacja wsparta AI', action: 'showResponse', response: 'Klasyfikacja treści, wykrywanie toksyczności/spamu, sugestie akcji dla staffu — z logami i progami.' },
+          { text: 'Zacznij od nowa', action: 'reset' }
+        ]
+      }), []);
 
-          <div class="grid-3">
-            <div class="card reveal">
-              <div class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v10H6l-2 2V6zm3 3h10v2H7V9zm0 4h7v2H7v-2z"/></svg>
-              </div>
-              <h3 style="font-weight:900;">Jasna architektura</h3>
-              <p class="muted">Moduły, logika uprawnień, logi i monitoring — gotowe na rozwój.</p>
-            </div>
-            <div class="card reveal" style="transition-delay:120ms;">
-              <div class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"/></svg>
-              </div>
-              <h3 style="font-weight:900;">UX premium</h3>
-              <p class="muted">Panel i komendy tak zaprojektowane, żeby były szybkie i intuicyjne.</p>
-            </div>
-            <div class="card reveal" style="transition-delay:240ms;">
-              <div class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l9 4v6c0 5-3.8 9.4-9 12-5.2-2.6-9-7-9-12V5l9-4zm0 6a3 3 0 100 6 3 3 0 000-6z"/></svg>
-              </div>
-              <h3 style="font-weight:900;">Bezpieczeństwo</h3>
-              <p class="muted">Rate-limit, antyspam, audyty i kontrola dostępu — mniej incydentów.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      const [currentOptions, setCurrentOptions] = useState(mainOptions);
 
-      <!-- SERVICES -->
-      <section id="services" class="section">
-        <div class="container">
-          <div class="reveal">
-            <h2 class="section-title">Usługi Lite Bots</h2>
-            <p class="section-subtitle">
-              Tylko to, co robimy najlepiej: Discord Boty, panele do zarządzania botem, zabezpieczenia, AI i automatyzacje AI.
-            </p>
-          </div>
+      // Lead form
+      const [lead, setLead] = useState({ name:'', contact:'', type:'discord-bot', budget:'', details:'' });
+      const [leadStatus, setLeadStatus] = useState('Wypełnij formularz — skopiujesz to jako gotową wiadomość na Discord.');
 
-          <div class="grid-3">
-            <div class="card reveal">
-              <div class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v2h4a2 2 0 012 2v10a2 2 0 01-2 2h-5l-3 3-3-3H6a2 2 0 01-2-2V6a2 2 0 012-2h4V2zm-3 7h10v2H7V9zm0 4h7v2H7v-2z"/></svg>
-              </div>
-              <h3 style="font-weight:900;">Discord Bot</h3>
-              <p class="muted">
-                Systemy: moderacja, ekonomia, rankingi, role, logi, tickets, automaty, integracje.
-              </p>
-              <div class="hr"></div>
-              <p class="muted"><strong>Opcjonalnie:</strong> hosting, monitoring, SLA, aktualizacje.</p>
-            </div>
+      // Stats
+      const statsTarget = useMemo(() => ({ projects: 120, uptime: 99.9, response: 2, delivery: 7 }), []);
+      const [animatedStats, setAnimatedStats] = useState({ projects: 0, uptime: 0, response: 0, delivery: 0 });
 
-            <div class="card reveal" style="transition-delay:120ms;">
-              <div class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16v14H4V5zm2 2v2h12V7H6zm0 4v6h12v-6H6z"/></svg>
-              </div>
-              <h3 style="font-weight:900;">Panele webowe do zarządzania botem</h3>
-              <p class="muted">
-                Panel admina: konfiguracja modułów, role, logi, tickets, integracje, statystyki i uprawnienia.
-              </p>
-              <div class="hr"></div>
-              <p class="muted"><strong>Efekt:</strong> mniej ręcznej roboty, pełna kontrola.</p>
-            </div>
+      const scrollTo = (selector) => {
+        const el = document.querySelector(selector);
+        if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+      };
 
-            <div class="card reveal" style="transition-delay:240ms;">
-              <div class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l9 4v6c0 5-3.8 9.4-9 12-5.2-2.6-9-7-9-12V5l9-4z"/></svg>
-              </div>
-              <h3 style="font-weight:900;">Zabezpieczenia</h3>
-              <p class="muted">
-                Antyspam, antyraid, rate-limit, wykrywanie anomalii, logi, alerty, audyt uprawnień.
-              </p>
-              <div class="hr"></div>
-              <p class="muted"><strong>Cel:</strong> stabilność i spokój.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      const scrollToBottom = () => {
+        requestAnimationFrame(() => {
+          const el = chatMessagesRef.current;
+          if (el) el.scrollTop = el.scrollHeight;
+        });
+      };
 
-      <!-- AI -->
-      <section id="ai" class="section">
-        <div class="container">
-          <div class="reveal">
-            <h2 class="section-title">AI i Automatyzacje AI</h2>
-            <p class="section-subtitle">
-              Wprowadzamy AI tam, gdzie realnie oszczędza czas i zwiększa jakość obsługi użytkowników.
-            </p>
-          </div>
+      const toggleChat = () => {
+        setIsChatOpen(v => !v);
+        setTimeout(scrollToBottom, 0);
+      };
 
-          <div class="grid-3">
-            <div class="card reveal">
-              <div class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 2h6v2h2a2 2 0 012 2v2h-2V6H5v2H3V6a2 2 0 012-2h2V2zm-6 8h18v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10zm4 3h6v2H7v-2z"/></svg>
-              </div>
-              <h3 style="font-weight:900;">Rozwiązania AI</h3>
-              <p class="muted">
-                Inteligentne klasyfikowanie, rekomendacje, analiza treści, automatyczne akcje na bazie reguł + AI.
-              </p>
-            </div>
+      const resetChat = () => {
+        setMessages([{ id: Date.now(), sender:'bot', text:'Witaj! Wybierz temat albo napisz krótko, czego potrzebujesz 👇' }]);
+        setCurrentOptions(mainOptions);
+        setIsBotThinking(false);
+        setTimeout(scrollToBottom, 0);
+      };
 
-            <div class="card reveal" style="transition-delay:120ms;">
-              <div class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 019 9v3a3 3 0 01-3 3h-2v-2h2a1 1 0 001-1v-3a7 7 0 10-14 0v3a1 1 0 001 1h2v2H6a3 3 0 01-3-3v-3a9 9 0 019-9zm-1 6h2v6h-2V9zm0 8h2v2h-2v-2z"/></svg>
-              </div>
-              <h3 style="font-weight:900;">Bot odpowiada na zgłoszenia</h3>
-              <p class="muted">
-                Automatyzacja tickets: bot zbiera dane, odpowiada, proponuje rozwiązanie i eskaluje do staffu, gdy trzeba.
-              </p>
-            </div>
-
-            <div class="card reveal" style="transition-delay:240ms;">
-              <div class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10v2H7V2zm-2 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zm2 4v2h10v-2H7zm0 4v2h7v-2H7z"/></svg>
-              </div>
-              <h3 style="font-weight:900;">Automatyzacje workflow</h3>
-              <p class="muted">
-                Akcje typu: “jeśli X → zrób Y”, auto-raporty, auto-notyfikacje, synchronizacja danych, webhooki.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- PROCESS -->
-      <section id="process" class="section">
-        <div class="container">
-          <div class="reveal">
-            <h2 class="section-title">Proces współpracy</h2>
-            <p class="section-subtitle">
-              Prosto i szybko: ustalamy cel, projektujemy moduły + panel, wdrażamy i dowozimy opiekę.
-            </p>
-          </div>
-
-          <div class="grid-3">
-            <div class="card reveal">
-              <h3 style="font-weight:900;">1) Analiza</h3>
-              <p class="muted">Zakres, priorytety, role, tickets, integracje, wymagania AI i bezpieczeństwa.</p>
-              <div class="hr"></div>
-              <p class="muted"><strong>Wynik:</strong> plan + wycena + harmonogram.</p>
-            </div>
-
-            <div class="card reveal" style="transition-delay:120ms;">
-              <h3 style="font-weight:900;">2) Budowa</h3>
-              <p class="muted">Bot + panel admina + automatyzacje AI. Testy i dopieszczony UX.</p>
-              <div class="hr"></div>
-              <p class="muted"><strong>Wynik:</strong> wersja MVP + iteracje.</p>
-            </div>
-
-            <div class="card reveal" style="transition-delay:240ms;">
-              <h3 style="font-weight:900;">3) Wdrożenie</h3>
-              <p class="muted">Hosting, monitoring, alerty, zabezpieczenia, dokumentacja, opieka.</p>
-              <div class="hr"></div>
-              <p class="muted"><strong>Wynik:</strong> stabilny release + wsparcie.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- FAQ -->
-      <section id="faq" class="section">
-        <div class="container">
-          <div class="reveal">
-            <h2 class="section-title">FAQ</h2>
-            <p class="section-subtitle">Najczęstsze pytania o boty, panele i AI.</p>
-          </div>
-
-          <div class="faq reveal">
-            <details>
-              <summary>Jak działa panel do zarządzania botem? <span>+</span></summary>
-              <div class="ans">Panel pozwala konfigurować moduły, role, logi, tickets, ustawienia AI i integracje bez grzebania w kodzie.</div>
-            </details>
-            <details>
-              <summary>AI odpowiada na zgłoszenia — jak to wygląda? <span>+</span></summary>
-              <div class="ans">Bot zbiera kontekst (formularz/ticket), proponuje rozwiązanie, pyta doprecyzowująco i eskaluje do staffu, gdy sprawa jest trudna.</div>
-            </details>
-            <details>
-              <summary>Czy dostanę hosting i monitoring? <span>+</span></summary>
-              <div class="ans">Tak. Oferujemy hosting + monitoring + alerty, a w pakietach premium również SLA i szybki czas reakcji.</div>
-            </details>
-            <details>
-              <summary>Ile trwa wdrożenie? <span>+</span></summary>
-              <div class="ans">MVP zwykle 3–14 dni (zależy od modułów, panelu, integracji i zakresu AI).</div>
-            </details>
-          </div>
-        </div>
-      </section>
-
-      <!-- TEAM -->
-      <section id="team" class="section">
-        <div class="container">
-          <div class="reveal">
-            <h2 class="section-title">Zespół Lite Bots</h2>
-            <p class="section-subtitle">Mały skład — szybkie decyzje i dowożenie na czas.</p>
-          </div>
-
-          <div class="team-grid">
-            <div class="team-card reveal">
-              <img src="https://i.imgur.com/PCctkzH.png" alt="Zdjęcie CEO">
-              <div class="team-overlay">
-                <div>
-                  <h3 style="font-weight: 900; font-size: 1.2rem;">zxq0</h3>
-                  <div class="role">CEO</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="team-card reveal" style="transition-delay: 120ms;">
-              <img src="https://i.imgur.com/VhduoxM.png" alt="Zdjęcie Managera">
-              <div class="team-overlay">
-                <div>
-                  <h3 style="font-weight: 900; font-size: 1.2rem;">KacpeR</h3>
-                  <div class="role manager">Manager</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="team-card reveal" style="transition-delay: 240ms;">
-              <img src="https://i.imgur.com/vKU1INs.jpeg" alt="Zdjęcie Inżyniera">
-              <div class="team-overlay">
-                <div>
-                  <h3 style="font-weight: 900; font-size: 1.2rem;">kubus</h3>
-                  <div class="role engineer">Engineer</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- CONTACT -->
-      <section id="contact" class="section">
-        <div class="container">
-          <div class="reveal">
-            <h2 class="section-title">Zróbmy Twojego bota</h2>
-            <p class="section-subtitle">
-              Napisz krótko, co ma robić bot + czy ma być panel + czy chcesz AI do tickets. Albo przejdź do kreatora.
-            </p>
-          </div>
-
-          <div class="grid-3 reveal" style="margin-top: 26px;">
-            <div class="card">
-              <h3 style="font-weight:900;">Najszybciej</h3>
-              <p class="muted">Wejdź na Discord i załóż ticket — odpowiemy najszybciej.</p>
-              <div class="hr"></div>
-              <a class="btn" style="width:100%;" href="https://discord.gg/litebots" target="_blank" rel="noopener">
-                <img src="https://i.imgur.com/UOb8xvv.png" alt="">
-                Discord / Ticket
-              </a>
-            </div>
-            <div class="card">
-              <h3 style="font-weight:900;">Kreator bota</h3>
-              <p class="muted">Wypełnij “Zaprojektuj swojego bota” — masz gotowy brief.</p>
-              <div class="hr"></div>
-              <a class="btn primary" style="width:100%;" href="workspace.html">Zaprojektuj swojego bota</a>
-            </div>
-            <div class="card">
-              <h3 style="font-weight:900;">Szybka konsultacja</h3>
-              <p class="muted">Powiedz: moduły, panel, integracje, AI i deadline — a damy plan + wycenę.</p>
-              <div class="hr"></div>
-              <button class="btn" style="width:100%;" @click="toggleChat">Otwórz wsparcie</button>
-            </div>
-          </div>
-
-          <!-- Optional: brief form -->
-          <form class="form reveal" @submit.prevent="submitLead">
-            <div class="field">
-              <label for="name">Imię / Nick</label>
-              <input id="name" v-model.trim="lead.name" type="text" placeholder="np. zxq0" required>
-            </div>
-            <div class="field">
-              <label for="contactField">Kontakt (Discord / e-mail)</label>
-              <input id="contactField" v-model.trim="lead.contact" type="text" placeholder="np. zxq#0001 / mail@..." required>
-            </div>
-            <div class="field">
-              <label for="type">Czego potrzebujesz?</label>
-              <select id="type" v-model="lead.type" required>
-                <option value="discord-bot">Discord Bot</option>
-                <option value="panel">Panel do zarządzania botem</option>
-                <option value="security">Zabezpieczenia</option>
-                <option value="ai">Rozwiązania AI</option>
-                <option value="ai-automation">Automatyzacje AI (tickets/obsługa)</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="budget">Budżet (opcjonalnie)</label>
-              <input id="budget" v-model.trim="lead.budget" type="text" placeholder="np. 500–1000 zł">
-            </div>
-            <div class="field full">
-              <label for="details">Opis projektu</label>
-              <textarea id="details" v-model.trim="lead.details" placeholder="Jakie moduły? Czy ma być panel? Jak ma działać AI? Integracje? Terminy?" required></textarea>
-            </div>
-
-            <div class="field full" style="display:flex; flex-direction:row; align-items:center; justify-content:space-between; gap: 12px;">
-              <div class="muted" style="font-weight:900;">
-                {{ leadStatus }}
-              </div>
-              <div style="display:flex; gap: 10px; flex-wrap:wrap;">
-                <button class="btn" type="button" @click="copyLead()">Skopiuj opis</button>
-                <button class="btn primary" type="submit">Wyślij (demo)</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <div class="container">
-        <div style="font-weight:900; letter-spacing:-.02em;">© 2025 Lite Bots</div>
-        <div class="muted" style="margin-top:6px;">Discord Boty • Panele • AI • Zabezpieczenia</div>
-        <div class="footer-links">
-          <a href="#hero" @click.prevent="scrollTo('#hero')">Start</a>
-          <a href="#services" @click.prevent="scrollTo('#services')">Usługi</a>
-          <a href="workspace.html">Zaprojektuj bota</a>
-          <a href="https://discord.gg/litebots" target="_blank" rel="noopener">Discord</a>
-        </div>
-      </div>
-    </footer>
-
-    <!-- CHAT -->
-    <div id="chat-widget" :class="{ 'is-open': isChatOpen }" role="dialog" aria-label="Czat wsparcia">
-      <div class="chat-header">
-        <h3>
-          <img src="https://i.imgur.com/U0XKhNz.png" alt="">
-          Lite Bots — Centrum Wsparcia
-        </h3>
-        <button class="chat-close-btn" @click="toggleChat" aria-label="Zamknij czat">×</button>
-      </div>
-
-      <div class="chat-messages" ref="chatMessages" aria-live="polite">
-        <div v-for="message in messages" :key="message.id" class="message" :class="message.sender">
-          <img v-if="message.sender === 'bot'" class="message-avatar" src="https://i.imgur.com/U0XKhNz.png" alt="Bot Avatar">
-          <div class="message-content" v-html="message.text"></div>
-        </div>
-
-        <div v-if="isBotThinking" class="message bot">
-          <img class="message-avatar" src="https://i.imgur.com/U0XKhNz.png" alt="Bot Avatar">
-          <div class="message-content typing-indicator" aria-label="Bot pisze">
-            <span></span><span></span><span></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="chat-options">
-        <button v-for="option in currentOptions" :key="option.text" class="option-btn" @click="handleOptionClick(option)">
-          {{ option.text }}
-        </button>
-      </div>
-    </div>
-
-    <div id="chat-toggle" @click="toggleChat" aria-label="Otwórz czat">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M21 4H3C1.897 4 1 4.897 1 6V16C1 17.103 1.897 18 3 18H8.813C8.901 18.411 9.034 18.809 9.208 19.187L9.687 20.14C10.152 21.07 11.053 21.625 12 21.625C12.947 21.625 13.848 21.07 14.313 20.14L14.792 19.187C14.966 18.809 15.099 18.411 15.187 18H21C22.103 18 23 17.103 23 16V6C23 4.897 22.103 4 21 4zM8 11C7.448 11 7 10.552 7 10S7.448 9 8 9S9 9.448 9 10S8.552 11 8 11zm8 0c-0.552 0-1-0.448-1-1s0.448-1 1-1s1 0.448 1 1S16.552 11 16 11z"></path>
-      </svg>
-    </div>
-  </div>
-
-  <!-- App (uruchamiaj dopiero, gdy Vue jest dostępne) -->
-  <script>
-    function hidePreloader() {
-      const pre = document.getElementById('preloader');
-      if (pre) pre.classList.add('hidden');
-      document.body.classList.remove('loading');
-    }
-    function showBootError(msg) {
-      const box = document.getElementById('boot-error');
-      const text = document.getElementById('boot-error-text');
-      if (text) text.textContent = msg || 'Aplikacja nie wystartowała poprawnie.';
-      if (box) box.style.display = 'block';
-    }
-
-    (function boot() {
-      // Vue może jeszcze się ładować (defer) – poczekaj krótką chwilę
-      const start = Date.now();
-      const tryBoot = () => {
-        if (!window.Vue) {
-          if (Date.now() - start < 2500) return requestAnimationFrame(tryBoot);
-          // Vue nie wstało
-          hidePreloader();
-          showBootError('Nie udało się załadować Vue z CDN. Jeśli masz CSP na Railway, dodaj unpkg.com do script-src albo hostuj Vue lokalnie.');
+      const handleOptionClick = (option) => {
+        if (option.action === 'goWorkspace') {
+          window.location.href = 'workspace.html';
           return;
         }
 
-        try {
-          const { createApp, onMounted, ref, nextTick } = Vue;
+        setMessages(prev => [...prev, { id: Date.now() + Math.random(), sender:'user', text: option.text }]);
+        setCurrentOptions([]);
+        setIsBotThinking(true);
+        scrollToBottom();
 
-          createApp({
-            setup() {
-              const activeSection = ref('hero');
+        setTimeout(() => {
+          setIsBotThinking(false);
 
-              const isChatOpen = ref(false);
-              const isBotThinking = ref(false);
-              const chatMessages = ref(null);
+          if (option.action === 'showResponse') {
+            setMessages(prev => [...prev, { id: Date.now() + Math.random(), sender:'bot', text: option.response }]);
+            setCurrentOptions([{ text:'Zacznij od nowa', action:'reset' }]);
+          } else if (option.action === 'reset') {
+            resetChat();
+          } else {
+            setCurrentOptions(optionMap[option.action] || [{ text:'Zacznij od nowa', action:'reset' }]);
+          }
+          scrollToBottom();
+        }, 900);
+      };
 
-              const messages = ref([
-                { id: Date.now(), sender: 'bot', text: 'Witaj! Wybierz temat albo napisz krótko, czego potrzebujesz 👇' }
-              ]);
-
-              const mainOptions = [
-                { text: 'Discord Bot', action: 'showBotOptions' },
-                { text: 'Panele do bota', action: 'showPanelOptions' },
-                { text: 'Zabezpieczenia', action: 'showSecurityOptions' },
-                { text: 'AI / Automatyzacje AI', action: 'showAIOptions' },
-                { text: 'Zaprojektuj bota', action: 'goWorkspace' }
-              ];
-              const currentOptions = ref(mainOptions);
-
-              const optionMap = {
-                showBotOptions: [
-                  { text: 'Bot nie działa', action: 'showResponse', response: 'Sprawdź status Discord API + logi bota. Najszybciej pomożemy na Discordzie: podaj ID serwera, czas zdarzenia i opis.' },
-                  { text: 'Nowa funkcja / moduł', action: 'showResponse', response: 'Opisz moduł + priorytet + deadline. Przygotujemy plan i wycenę.' },
-                  { text: 'Tickets / support', action: 'showResponse', response: 'Możemy zrobić system zgłoszeń z logami, eskalacją i integracjami (np. webhooki).' },
-                  { text: 'Zacznij od nowa', action: 'reset' }
-                ],
-                showPanelOptions: [
-                  { text: 'Chcę panel do konfiguracji', action: 'showResponse', response: 'Panel może mieć: ustawienia modułów, role, logi, tickets, statystyki, integracje i uprawnienia — dopasujemy pod Twój serwer.' },
-                  { text: 'Panel + dashboard statystyk', action: 'showResponse', response: 'Zrobimy dashboard: aktywność, top komendy, ekonomia, tickets, logi zdarzeń oraz eksport danych.' },
-                  { text: 'Zacznij od nowa', action: 'reset' }
-                ],
-                showSecurityOptions: [
-                  { text: 'Antyspam / antyraid', action: 'showResponse', response: 'Wdrożymy: rate-limit, filtry, wykrywanie anomalii, automatyczne akcje i alerty. Opisz co dokładnie atakuje serwer.' },
-                  { text: 'Audyt uprawnień', action: 'showResponse', response: 'Zrobimy przegląd ról, uprawnień, logów i punktów ryzyka + rekomendacje.' },
-                  { text: 'Zacznij od nowa', action: 'reset' }
-                ],
-                showAIOptions: [
-                  { text: 'AI odpowiada na zgłoszenia', action: 'showResponse', response: 'Bot zbiera kontekst, odpowiada, dopytuje i eskaluje do staffu. Możemy dodać bazę wiedzy i system priorytetów.' },
-                  { text: 'Automatyzacje workflow', action: 'showResponse', response: 'Automaty typu: “jeśli X → zrób Y”, auto-raporty, powiadomienia, synchronizacja danych, webhooki.' },
-                  { text: 'Moderacja wsparta AI', action: 'showResponse', response: 'Klasyfikacja treści, wykrywanie toksyczności/spamu, sugestie akcji dla staffu — z logami i progami.' },
-                  { text: 'Zacznij od nowa', action: 'reset' }
-                ]
-              };
-
-              const scrollTo = (selector) => {
-                const el = document.querySelector(selector);
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              };
-
-              const scrollToBottom = () => {
-                nextTick(() => {
-                  if (chatMessages.value) chatMessages.value.scrollTop = chatMessages.value.scrollHeight;
-                });
-              };
-
-              const toggleChat = () => {
-                isChatOpen.value = !isChatOpen.value;
-                if (isChatOpen.value) scrollToBottom();
-              };
-
-              const resetChat = () => {
-                messages.value = [{ id: Date.now(), sender: 'bot', text: 'Witaj! Wybierz temat albo napisz krótko, czego potrzebujesz 👇' }];
-                currentOptions.value = mainOptions;
-                scrollToBottom();
-              };
-
-              const handleOptionClick = (option) => {
-                if (option.action === 'goWorkspace') {
-                  window.location.href = 'workspace.html';
-                  return;
-                }
-
-                messages.value.push({ id: Date.now() + Math.random(), sender: 'user', text: option.text });
-                currentOptions.value = [];
-                isBotThinking.value = true;
-                scrollToBottom();
-
-                setTimeout(() => {
-                  isBotThinking.value = false;
-
-                  if (option.action === 'showResponse') {
-                    messages.value.push({ id: Date.now() + Math.random(), sender: 'bot', text: option.response });
-                    currentOptions.value = [{ text: 'Zacznij od nowa', action: 'reset' }];
-                  } else if (option.action === 'reset') {
-                    resetChat();
-                  } else {
-                    currentOptions.value = optionMap[option.action] || [{ text: 'Zacznij od nowa', action: 'reset' }];
-                  }
-                  scrollToBottom();
-                }, 900);
-              };
-
-              // Lead form (demo)
-              const lead = ref({ name:'', contact:'', type:'discord-bot', budget:'', details:'' });
-              const leadStatus = ref('Wypełnij formularz — skopiujesz to jako gotową wiadomość na Discord.');
-
-              const copyLead = async () => {
-                const text =
+      const copyLead = async () => {
+        const text =
 `Lite Bots — zapytanie:
-- Imię/Nick: ${lead.value.name}
-- Kontakt: ${lead.value.contact}
-- Typ: ${lead.value.type}
-- Budżet: ${lead.value.budget || '(brak)'}
-- Opis: ${lead.value.details}`;
-                try{
-                  await navigator.clipboard.writeText(text);
-                  leadStatus.value = 'Skopiowano! Wklej to na Discordzie w ticket.';
-                }catch{
-                  leadStatus.value = 'Nie udało się skopiować (uprawnienia przeglądarki). Skopiuj ręcznie.';
-                }
-              };
-
-              const submitLead = () => {
-                leadStatus.value = 'Wersja demo — skopiuj opis i wklej na Discordzie. Jeśli chcesz: podepnę webhook/form endpoint.';
-                copyLead();
-              };
-
-              // Stats counter
-              const statsTarget = { projects: 120, uptime: 99.9, response: 2, delivery: 7 };
-              const animatedStats = ref({ projects: 0, uptime: 0, response: 0, delivery: 0 });
-
-              const animateNumber = (key, to, duration=900) => {
-                const start = performance.now();
-                const from = 0;
-                const tick = (now) => {
-                  const p = Math.min(1, (now - start) / duration);
-                  const eased = 1 - Math.pow(1 - p, 3);
-                  const val = from + (to - from) * eased;
-                  animatedStats.value[key] = (key === 'uptime') ? Math.round(val * 10) / 10 : Math.round(val);
-                  if (p < 1) requestAnimationFrame(tick);
-                };
-                requestAnimationFrame(tick);
-              };
-
-              onMounted(() => {
-                // App is booted
-                window.__APP_BOOTED__ = true;
-
-                // Preloader (bezpiecznie, zawsze zdejmujemy)
-                setTimeout(() => {
-                  hidePreloader();
-                }, 900);
-
-                // Reveal observer
-                const obs = new IntersectionObserver((entries) => {
-                  for (const e of entries) {
-                    if (e.isIntersecting) {
-                      e.target.classList.add('is-visible');
-                    }
-                  }
-                }, { threshold: 0.18, rootMargin: '0px 0px -60px 0px' });
-
-                document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-                // Stats animation (na starcie, bo hero ma .reveal)
-                animateNumber('projects', statsTarget.projects, 900);
-                animateNumber('uptime', statsTarget.uptime, 900);
-                animateNumber('response', statsTarget.response, 900);
-                animateNumber('delivery', statsTarget.delivery, 900);
-
-                // Active section tracking
-                const sections = ['hero','about','services','ai','process','team','contact'];
-                const secObs = new IntersectionObserver((entries) => {
-                  const visible = entries.filter(x => x.isIntersecting).sort((a,b)=> b.intersectionRatio - a.intersectionRatio)[0];
-                  if (visible) activeSection.value = visible.target.id;
-                }, { threshold: 0.35 });
-                sections.forEach(id => {
-                  const el = document.getElementById(id);
-                  if (el) secObs.observe(el);
-                });
-
-                // Scroll progress
-                const prog = document.getElementById('scrollProgress');
-                const onScroll = () => {
-                  const doc = document.documentElement;
-                  const max = doc.scrollHeight - doc.clientHeight;
-                  const val = max > 0 ? (doc.scrollTop / max) * 100 : 0;
-                  prog.style.width = val.toFixed(2) + '%';
-                };
-                window.addEventListener('scroll', onScroll, { passive: true });
-                onScroll();
-              });
-
-              return {
-                scrollTo,
-                toggleChat,
-                isChatOpen,
-                isBotThinking,
-                messages,
-                currentOptions,
-                chatMessages,
-                handleOptionClick,
-                activeSection,
-                lead,
-                leadStatus,
-                copyLead,
-                submitLead,
-                animatedStats
-              };
-            }
-          }).mount('#app');
-
-        } catch (err) {
-          console.error(err);
-          hidePreloader();
-          showBootError('Błąd JS podczas uruchamiania aplikacji. Otwórz Console, skopiuj pierwszy błąd i podeślij.');
+- Imię/Nick: ${lead.name}
+- Kontakt: ${lead.contact}
+- Typ: ${lead.type}
+- Budżet: ${lead.budget || '(brak)'}
+- Opis: ${lead.details}`;
+        try{
+          await navigator.clipboard.writeText(text);
+          setLeadStatus('Skopiowano! Wklej to na Discordzie w ticket.');
+        }catch{
+          setLeadStatus('Nie udało się skopiować (uprawnienia przeglądarki). Skopiuj ręcznie.');
         }
       };
 
+      const submitLead = (e) => {
+        e.preventDefault();
+        setLeadStatus('Wersja demo — skopiuj opis i wklej na Discordzie. Jeśli chcesz: podepnę webhook/form endpoint.');
+        copyLead();
+      };
+
+      // Boot + preloader + observers + scroll progress + stats animation
+      useEffect(() => {
+        window.__APP_BOOTED__ = true;
+
+        // Preloader - zawsze schowaj
+        const preloaderHideTimer = setTimeout(() => {
+          window.hidePreloader?.();
+        }, 1200);
+
+        // Reveal
+        const revealObserver = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) e.target.classList.add('is-visible');
+          }
+        }, { threshold: 0.18, rootMargin: '0px 0px -60px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // Active section
+        const sections = ['hero','about','services','ai','process','team','contact'];
+        const secObs = new IntersectionObserver((entries) => {
+          const visible = entries
+            .filter(x => x.isIntersecting)
+            .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
+          if (visible) setActiveSection(visible.target.id);
+        }, { threshold: 0.35 });
+
+        sections.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) secObs.observe(el);
+        });
+
+        // Scroll progress
+        const prog = document.getElementById('scrollProgress');
+        const onScroll = () => {
+          const doc = document.documentElement;
+          const max = doc.scrollHeight - doc.clientHeight;
+          const val = max > 0 ? (doc.scrollTop / max) * 100 : 0;
+          if (prog) prog.style.width = val.toFixed(2) + '%';
+        };
+        window.addEventListener('scroll', onScroll, { passive:true });
+        onScroll();
+
+        // Stats animation
+        const animateNumber = (key, to, duration=900) => {
+          const start = performance.now();
+          const from = 0;
+          const tick = (now) => {
+            const p = clamp((now - start) / duration, 0, 1);
+            const eased = 1 - Math.pow(1 - p, 3);
+            const val = from + (to - from) * eased;
+
+            setAnimatedStats(prev => ({
+              ...prev,
+              [key]: (key === 'uptime') ? Math.round(val * 10) / 10 : Math.round(val)
+            }));
+
+            if (p < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        };
+
+        animateNumber('projects', statsTarget.projects, 900);
+        animateNumber('uptime', statsTarget.uptime, 900);
+        animateNumber('response', statsTarget.response, 900);
+        animateNumber('delivery', statsTarget.delivery, 900);
+
+        return () => {
+          clearTimeout(preloaderHideTimer);
+          revealObserver.disconnect();
+          secObs.disconnect();
+          window.removeEventListener('scroll', onScroll);
+        };
+      }, [mainOptions, statsTarget]);
+
+      // Autoscroll chat
+      useEffect(() => {
+        if (isChatOpen) scrollToBottom();
+      }, [isChatOpen, messages, isBotThinking]);
+
+      return (
+        <div id="app">
+          {/* HEADER */}
+          <header id="app-header">
+            <div className="container">
+              <nav className="header-nav" aria-label="Główna nawigacja">
+                <a className="logo" href="#hero" onClick={(e)=>{e.preventDefault(); scrollTo('#hero');}} aria-label="Przejdź do sekcji start">
+                  <img src="https://i.imgur.com/U0XKhNz.png" alt="Lite Bots Logo" />
+                  <span className="logo-text">Lite Bots</span>
+                </a>
+
+                <ul className="nav-links" role="list">
+                  <li><a className={activeSection==='about' ? 'active' : ''} href="#about" onClick={(e)=>{e.preventDefault(); scrollTo('#about');}}>O nas</a></li>
+                  <li><a className={activeSection==='services' ? 'active' : ''} href="#services" onClick={(e)=>{e.preventDefault(); scrollTo('#services');}}>Usługi</a></li>
+                  <li><a className={activeSection==='ai' ? 'active' : ''} href="#ai" onClick={(e)=>{e.preventDefault(); scrollTo('#ai');}}>AI</a></li>
+                  <li><a className={activeSection==='process' ? 'active' : ''} href="#process" onClick={(e)=>{e.preventDefault(); scrollTo('#process');}}>Proces</a></li>
+                  <li><a className={activeSection==='team' ? 'active' : ''} href="#team" onClick={(e)=>{e.preventDefault(); scrollTo('#team');}}>Zespół</a></li>
+                  <li><a className={activeSection==='contact' ? 'active' : ''} href="#contact" onClick={(e)=>{e.preventDefault(); scrollTo('#contact');}}>Kontakt</a></li>
+                </ul>
+
+                <div className="header-actions">
+                  <a className="pill" href="workspace.html" aria-label="Przejdź do kreatora bota">
+                    <span>Zaprojektuj swojego bota</span>
+                  </a>
+                  <a className="pill" href="https://discord.gg/litebots" target="_blank" rel="noopener">
+                    <img src="https://i.imgur.com/UOb8xvv.png" alt="Discord" />
+                    <span>Dołącz</span>
+                  </a>
+                </div>
+              </nav>
+            </div>
+          </header>
+
+          {/* MAIN */}
+          <main>
+            {/* HERO */}
+            <section id="hero" className="section">
+              <div className="container">
+                <div className="hero-grid">
+                  <div className="reveal">
+                    <div className="kicker"><span className="dot"></span> Boty • Panele • AI • Zabezpieczenia</div>
+                    <h1 className="hero-title">
+                      Budujemy <span className="highlight">Discord boty</span><br/>
+                      z panelami, AI i pełnym zabezpieczeniem.
+                    </h1>
+                    <p className="hero-subtitle">
+                      Lite Bots tworzy systemy, które działają jak produkt: stabilne moduły, panel do zarządzania botem,
+                      automatyzacje AI (np. bot sam odpowiada na zgłoszenia) i bezpieczeństwo na poziomie premium.
+                    </p>
+
+                    <div className="hero-cta">
+                      <a className="btn primary" href="workspace.html">
+                        <span>Zaprojektuj swojego bota</span>
+                      </a>
+                      <a className="btn" href="https://discord.gg/litebots" target="_blank" rel="noopener">
+                        <img src="https://i.imgur.com/UOb8xvv.png" alt=""/>
+                        <span>Wejdź na Discord</span>
+                      </a>
+                      <button className="btn" onClick={()=>scrollTo('#services')}>
+                        Poznaj usługi
+                      </button>
+                    </div>
+
+                    <div className="stats" aria-label="Najważniejsze liczby">
+                      <div className="stat">
+                        <div className="num">{animatedStats.projects}</div>
+                        <div className="lbl">wdrożeń</div>
+                      </div>
+                      <div className="stat">
+                        <div className="num">{animatedStats.uptime}%</div>
+                        <div className="lbl">uptime (SLA)</div>
+                      </div>
+                      <div className="stat">
+                        <div className="num">{animatedStats.response}h</div>
+                        <div className="lbl">czas reakcji</div>
+                      </div>
+                      <div className="stat">
+                        <div className="num">{animatedStats.delivery}d</div>
+                        <div className="lbl">MVP średnio</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* USUNIĘTO: RIGHT TABLET + CTA */}
+                </div>
+              </div>
+            </section>
+
+            {/* ABOUT */}
+            <section id="about" className="section">
+              <div className="container">
+                <div className="reveal">
+                  <h2 className="section-title">Misja: <span className="highlight">produkt</span>, nie “skrypt”</h2>
+                  <p className="section-subtitle">
+                    Nie robimy botów “na chwilę”. Budujemy rozwiązania, które da się rozwijać: moduły, panel, monitoring, AI i zabezpieczenia.
+                  </p>
+                </div>
+
+                <div className="grid-3">
+                  <div className="card reveal">
+                    <div className="icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v10H6l-2 2V6zm3 3h10v2H7V9zm0 4h7v2H7v-2z"/></svg>
+                    </div>
+                    <h3 style={{fontWeight:900}}>Jasna architektura</h3>
+                    <p className="muted">Moduły, logika uprawnień, logi i monitoring — gotowe na rozwój.</p>
+                  </div>
+                  <div className="card reveal" style={{transitionDelay:'120ms'}}>
+                    <div className="icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"/></svg>
+                    </div>
+                    <h3 style={{fontWeight:900}}>UX premium</h3>
+                    <p className="muted">Panel i komendy tak zaprojektowane, żeby były szybkie i intuicyjne.</p>
+                  </div>
+                  <div className="card reveal" style={{transitionDelay:'240ms'}}>
+                    <div className="icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l9 4v6c0 5-3.8 9.4-9 12-5.2-2.6-9-7-9-12V5l9-4zm0 6a3 3 0 100 6 3 3 0 000-6z"/></svg>
+                    </div>
+                    <h3 style={{fontWeight:900}}>Bezpieczeństwo</h3>
+                    <p className="muted">Rate-limit, antyspam, audyty i kontrola dostępu — mniej incydentów.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* SERVICES */}
+            <section id="services" className="section">
+              <div className="container">
+                <div className="reveal">
+                  <h2 className="section-title">Usługi Lite Bots</h2>
+                  <p className="section-subtitle">
+                    Tylko to, co robimy najlepiej: Discord Boty, panele do zarządzania botem, zabezpieczenia, AI i automatyzacje AI.
+                  </p>
+                </div>
+
+                <div className="grid-3">
+                  <div className="card reveal">
+                    <div className="icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v2h4a2 2 0 012 2v10a2 2 0 01-2 2h-5l-3 3-3-3H6a2 2 0 01-2-2V6a2 2 0 012-2h4V2zm-3 7h10v2H7V9zm0 4h7v2H7v-2z"/></svg>
+                    </div>
+                    <h3 style={{fontWeight:900}}>Discord Bot</h3>
+                    <p className="muted">
+                      Systemy: moderacja, ekonomia, rankingi, role, logi, tickets, automaty, integracje.
+                    </p>
+                    <div className="hr"></div>
+                    <p className="muted"><strong>Opcjonalnie:</strong> hosting, monitoring, SLA, aktualizacje.</p>
+                  </div>
+
+                  <div className="card reveal" style={{transitionDelay:'120ms'}}>
+                    <div className="icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16v14H4V5zm2 2v2h12V7H6zm0 4v6h12v-6H6z"/></svg>
+                    </div>
+                    <h3 style={{fontWeight:900}}>Panele webowe do zarządzania botem</h3>
+                    <p className="muted">
+                      Panel admina: konfiguracja modułów, role, logi, tickets, integracje, statystyki i uprawnienia.
+                    </p>
+                    <div className="hr"></div>
+                    <p className="muted"><strong>Efekt:</strong> mniej ręcznej roboty, pełna kontrola.</p>
+                  </div>
+
+                  <div className="card reveal" style={{transitionDelay:'240ms'}}>
+                    <div className="icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l9 4v6c0 5-3.8 9.4-9 12-5.2-2.6-9-7-9-12V5l9-4z"/></svg>
+                    </div>
+                    <h3 style={{fontWeight:900}}>Zabezpieczenia</h3>
+                    <p className="muted">
+                      Antyspam, antyraid, rate-limit, wykrywanie anomalii, logi, alerty, audyt uprawnień.
+                    </p>
+                    <div className="hr"></div>
+                    <p className="muted"><strong>Cel:</strong> stabilność i spokój.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* AI */}
+            <section id="ai" className="section">
+              <div className="container">
+                <div className="reveal">
+                  <h2 className="section-title">AI i Automatyzacje AI</h2>
+                  <p className="section-subtitle">
+                    Wprowadzamy AI tam, gdzie realnie oszczędza czas i zwiększa jakość obsługi użytkowników.
+                  </p>
+                </div>
+
+                <div className="grid-3">
+                  <div className="card reveal">
+                    <div className="icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 2h6v2h2a2 2 0 012 2v2h-2V6H5v2H3V6a2 2 0 012-2h2V2zm-6 8h18v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10zm4 3h6v2H7v-2z"/></svg>
+                    </div>
+                    <h3 style={{fontWeight:900}}>Rozwiązania AI</h3>
+                    <p className="muted">
+                      Inteligentne klasyfikowanie, rekomendacje, analiza treści, automatyczne akcje na bazie reguł + AI.
+                    </p>
+                  </div>
+
+                  <div className="card reveal" style={{transitionDelay:'120ms'}}>
+                    <div className="icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 019 9v3a3 3 0 01-3 3h-2v-2h2a1 1 0 001-1v-3a7 7 0 10-14 0v3a1 1 0 001 1h2v2H6a3 3 0 01-3-3v-3a9 9 0 019-9zm-1 6h2v6h-2V9zm0 8h2v2h-2v-2z"/></svg>
+                    </div>
+                    <h3 style={{fontWeight:900}}>Bot odpowiada na zgłoszenia</h3>
+                    <p className="muted">
+                      Automatyzacja tickets: bot zbiera dane, odpowiada, proponuje rozwiązanie i eskaluje do staffu, gdy trzeba.
+                    </p>
+                  </div>
+
+                  <div className="card reveal" style={{transitionDelay:'240ms'}}>
+                    <div className="icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10v2H7V2zm-2 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zm2 4v2h10v-2H7zm0 4v2h7v-2H7z"/></svg>
+                    </div>
+                    <h3 style={{fontWeight:900}}>Automatyzacje workflow</h3>
+                    <p className="muted">
+                      Akcje typu: “jeśli X → zrób Y”, auto-raporty, auto-notyfikacje, synchronizacja danych, webhooki.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* PROCESS */}
+            <section id="process" className="section">
+              <div className="container">
+                <div className="reveal">
+                  <h2 className="section-title">Proces współpracy</h2>
+                  <p className="section-subtitle">
+                    Prosto i szybko: ustalamy cel, projektujemy moduły + panel, wdrażamy i dowozimy opiekę.
+                  </p>
+                </div>
+
+                <div className="grid-3">
+                  <div className="card reveal">
+                    <h3 style={{fontWeight:900}}>1) Analiza</h3>
+                    <p className="muted">Zakres, priorytety, role, tickets, integracje, wymagania AI i bezpieczeństwa.</p>
+                    <div className="hr"></div>
+                    <p className="muted"><strong>Wynik:</strong> plan + wycena + harmonogram.</p>
+                  </div>
+
+                  <div className="card reveal" style={{transitionDelay:'120ms'}}>
+                    <h3 style={{fontWeight:900}}>2) Budowa</h3>
+                    <p className="muted">Bot + panel admina + automatyzacje AI. Testy i dopieszczony UX.</p>
+                    <div className="hr"></div>
+                    <p className="muted"><strong>Wynik:</strong> wersja MVP + iteracje.</p>
+                  </div>
+
+                  <div className="card reveal" style={{transitionDelay:'240ms'}}>
+                    <h3 style={{fontWeight:900}}>3) Wdrożenie</h3>
+                    <p className="muted">Hosting, monitoring, alerty, zabezpieczenia, dokumentacja, opieka.</p>
+                    <div className="hr"></div>
+                    <p className="muted"><strong>Wynik:</strong> stabilny release + wsparcie.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* FAQ */}
+            <section id="faq" className="section">
+              <div className="container">
+                <div className="reveal">
+                  <h2 className="section-title">FAQ</h2>
+                  <p className="section-subtitle">Najczęstsze pytania o boty, panele i AI.</p>
+                </div>
+
+                <div className="faq reveal">
+                  <details>
+                    <summary>Jak działa panel do zarządzania botem? <span>+</span></summary>
+                    <div className="ans">Panel pozwala konfigurować moduły, role, logi, tickets, ustawienia AI i integracje bez grzebania w kodzie.</div>
+                  </details>
+                  <details>
+                    <summary>AI odpowiada na zgłoszenia — jak to wygląda? <span>+</span></summary>
+                    <div className="ans">Bot zbiera kontekst (formularz/ticket), proponuje rozwiązanie, pyta doprecyzowująco i eskaluje do staffu, gdy sprawa jest trudna.</div>
+                  </details>
+                  <details>
+                    <summary>Czy dostanę hosting i monitoring? <span>+</span></summary>
+                    <div className="ans">Tak. Oferujemy hosting + monitoring + alerty, a w pakietach premium również SLA i szybki czas reakcji.</div>
+                  </details>
+                  <details>
+                    <summary>Ile trwa wdrożenie? <span>+</span></summary>
+                    <div className="ans">MVP zwykle 3–14 dni (zależy od modułów, panelu, integracji i zakresu AI).</div>
+                  </details>
+                </div>
+              </div>
+            </section>
+
+            {/* TEAM */}
+            <section id="team" className="section">
+              <div className="container">
+                <div className="reveal">
+                  <h2 className="section-title">Zespół Lite Bots</h2>
+                  <p className="section-subtitle">Mały skład — szybkie decyzje i dowożenie na czas.</p>
+                </div>
+
+                <div className="team-grid">
+                  <div className="team-card reveal">
+                    <img src="https://i.imgur.com/PCctkzH.png" alt="Zdjęcie CEO" />
+                    <div className="team-overlay">
+                      <div>
+                        <h3 style={{fontWeight:900, fontSize:'1.2rem'}}>zxq0</h3>
+                        <div className="role">CEO</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="team-card reveal" style={{transitionDelay:'120ms'}}>
+                    <img src="https://i.imgur.com/VhduoxM.png" alt="Zdjęcie Managera" />
+                    <div className="team-overlay">
+                      <div>
+                        <h3 style={{fontWeight:900, fontSize:'1.2rem'}}>KacpeR</h3>
+                        <div className="role manager">Manager</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="team-card reveal" style={{transitionDelay:'240ms'}}>
+                    <img src="https://i.imgur.com/vKU1INs.jpeg" alt="Zdjęcie Inżyniera" />
+                    <div className="team-overlay">
+                      <div>
+                        <h3 style={{fontWeight:900, fontSize:'1.2rem'}}>kubus</h3>
+                        <div className="role engineer">Engineer</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* CONTACT */}
+            <section id="contact" className="section">
+              <div className="container">
+                <div className="reveal">
+                  <h2 className="section-title">Zróbmy Twojego bota</h2>
+                  <p className="section-subtitle">
+                    Napisz krótko, co ma robić bot + czy ma być panel + czy chcesz AI do tickets. Albo przejdź do kreatora.
+                  </p>
+                </div>
+
+                <div className="grid-3 reveal" style={{marginTop:26}}>
+                  <div className="card">
+                    <h3 style={{fontWeight:900}}>Najszybciej</h3>
+                    <p className="muted">Wejdź na Discord i załóż ticket — odpowiemy najszybciej.</p>
+                    <div className="hr"></div>
+                    <a className="btn" style={{width:'100%'}} href="https://discord.gg/litebots" target="_blank" rel="noopener">
+                      <img src="https://i.imgur.com/UOb8xvv.png" alt="" />
+                      Discord / Ticket
+                    </a>
+                  </div>
+                  <div className="card">
+                    <h3 style={{fontWeight:900}}>Kreator bota</h3>
+                    <p className="muted">Wypełnij “Zaprojektuj swojego bota” — masz gotowy brief.</p>
+                    <div className="hr"></div>
+                    <a className="btn primary" style={{width:'100%'}} href="workspace.html">Zaprojektuj swojego bota</a>
+                  </div>
+                  <div className="card">
+                    <h3 style={{fontWeight:900}}>Szybka konsultacja</h3>
+                    <p className="muted">Powiedz: moduły, panel, integracje, AI i deadline — a damy plan + wycenę.</p>
+                    <div className="hr"></div>
+                    <button className="btn" style={{width:'100%'}} onClick={toggleChat}>Otwórz wsparcie</button>
+                  </div>
+                </div>
+
+                {/* Lead form (demo) */}
+                <form className="form reveal" onSubmit={submitLead}>
+                  <div className="field">
+                    <label htmlFor="name">Imię / Nick</label>
+                    <input
+                      id="name"
+                      value={lead.name}
+                      onChange={(e)=>setLead(v=>({...v, name: e.target.value.trimStart()}))}
+                      type="text"
+                      placeholder="np. zxq0"
+                      required
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="contactField">Kontakt (Discord / e-mail)</label>
+                    <input
+                      id="contactField"
+                      value={lead.contact}
+                      onChange={(e)=>setLead(v=>({...v, contact: e.target.value.trimStart()}))}
+                      type="text"
+                      placeholder="np. zxq#0001 / mail@..."
+                      required
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="type">Czego potrzebujesz?</label>
+                    <select
+                      id="type"
+                      value={lead.type}
+                      onChange={(e)=>setLead(v=>({...v, type: e.target.value}))}
+                      required
+                    >
+                      <option value="discord-bot">Discord Bot</option>
+                      <option value="panel">Panel do zarządzania botem</option>
+                      <option value="security">Zabezpieczenia</option>
+                      <option value="ai">Rozwiązania AI</option>
+                      <option value="ai-automation">Automatyzacje AI (tickets/obsługa)</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label htmlFor="budget">Budżet (opcjonalnie)</label>
+                    <input
+                      id="budget"
+                      value={lead.budget}
+                      onChange={(e)=>setLead(v=>({...v, budget: e.target.value}))}
+                      type="text"
+                      placeholder="np. 500–1000 zł"
+                    />
+                  </div>
+                  <div className="field full">
+                    <label htmlFor="details">Opis projektu</label>
+                    <textarea
+                      id="details"
+                      value={lead.details}
+                      onChange={(e)=>setLead(v=>({...v, details: e.target.value}))}
+                      placeholder="Jakie moduły? Czy ma być panel? Jak ma działać AI? Integracje? Terminy?"
+                      required
+                    />
+                  </div>
+
+                  <div className="field full" style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', gap:12}}>
+                    <div className="muted" style={{fontWeight:900}}>
+                      {leadStatus}
+                    </div>
+                    <div style={{display:'flex', gap:10, flexWrap:'wrap'}}>
+                      <button className="btn" type="button" onClick={copyLead}>Skopiuj opis</button>
+                      <button className="btn primary" type="submit">Wyślij (demo)</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </section>
+          </main>
+
+          <footer>
+            <div className="container">
+              <div style={{fontWeight:900, letterSpacing:'-.02em'}}>© 2025 Lite Bots</div>
+              <div className="muted" style={{marginTop:6}}>Discord Boty • Panele • AI • Zabezpieczenia</div>
+              <div className="footer-links">
+                <a href="#hero" onClick={(e)=>{e.preventDefault(); scrollTo('#hero');}}>Start</a>
+                <a href="#services" onClick={(e)=>{e.preventDefault(); scrollTo('#services');}}>Usługi</a>
+                <a href="workspace.html">Zaprojektuj bota</a>
+                <a href="https://discord.gg/litebots" target="_blank" rel="noopener">Discord</a>
+              </div>
+            </div>
+          </footer>
+
+          {/* CHAT */}
+          <div id="chat-widget" className={isChatOpen ? 'is-open' : ''} role="dialog" aria-label="Czat wsparcia">
+            <div className="chat-header">
+              <h3>
+                <img src="https://i.imgur.com/U0XKhNz.png" alt="" />
+                Lite Bots — Centrum Wsparcia
+              </h3>
+              <button className="chat-close-btn" onClick={toggleChat} aria-label="Zamknij czat">×</button>
+            </div>
+
+            <div className="chat-messages" ref={chatMessagesRef} aria-live="polite">
+              {messages.map((m) => (
+                <div key={m.id} className={'message ' + m.sender}>
+                  {m.sender === 'bot' ? (
+                    <img className="message-avatar" src="https://i.imgur.com/U0XKhNz.png" alt="Bot Avatar" />
+                  ) : null}
+                  <div className="message-content" dangerouslySetInnerHTML={{__html: m.text}} />
+                </div>
+              ))}
+
+              {isBotThinking ? (
+                <div className="message bot">
+                  <img className="message-avatar" src="https://i.imgur.com/U0XKhNz.png" alt="Bot Avatar" />
+                  <div className="message-content typing-indicator" aria-label="Bot pisze">
+                    <span></span><span></span><span></span>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="chat-options">
+              {currentOptions.map((opt) => (
+                <button
+                  key={opt.text}
+                  className="option-btn"
+                  onClick={() => opt.action === 'reset' ? resetChat() : handleOptionClick(opt)}
+                >
+                  {opt.text}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div id="chat-toggle" onClick={toggleChat} aria-label="Otwórz czat">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21 4H3C1.897 4 1 4.897 1 6V16C1 17.103 1.897 18 3 18H8.813C8.901 18.411 9.034 18.809 9.208 19.187L9.687 20.14C10.152 21.07 11.053 21.625 12 21.625C12.947 21.625 13.848 21.07 14.313 20.14L14.792 19.187C14.966 18.809 15.099 18.411 15.187 18H21C22.103 18 23 17.103 23 16V6C23 4.897 22.103 4 21 4zM8 11C7.448 11 7 10.552 7 10S7.448 9 8 9S9 9.448 9 10S8.552 11 8 11zm8 0c-0.552 0-1-0.448-1-1s0.448-1 1-1s1 0.448 1 1S16.552 11 16 11z"></path>
+            </svg>
+          </div>
+        </div>
+      );
+    }
+
+    // Boot: poczekaj aż React + Babel będą dostępne (na Railway czasem CDN ładuje się wolniej)
+    (function boot(){
+      const start = Date.now();
+      const tryBoot = () => {
+        if (!window.React || !window.ReactDOM) {
+          if (Date.now() - start < 2500) return requestAnimationFrame(tryBoot);
+          window.hidePreloader?.();
+          window.showBootError?.('Nie udało się załadować React z CDN. Jeśli masz CSP na Railway, dodaj unpkg.com do script-src albo hostuj biblioteki lokalnie.');
+          return;
+        }
+
+        try{
+          const root = ReactDOM.createRoot(document.getElementById('root'));
+          root.render(<App />);
+        }catch(err){
+          console.error(err);
+          window.hidePreloader?.();
+          window.showBootError?.('Błąd JS podczas uruchamiania aplikacji. Otwórz Console, skopiuj pierwszy błąd i podeślij.');
+        }
+      };
       tryBoot();
     })();
   </script>
