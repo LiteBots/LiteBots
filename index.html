@@ -699,7 +699,7 @@
   <div id="boot-error" role="status" aria-live="polite">
     <strong>Nie udało się uruchomić aplikacji</strong>
     <div class="muted" id="boot-error-text">Sprawdź Console/Network.</div>
-    <a href="https://discord.gg/litebots" target="_blank" rel="noopener">Wejdź na Discord</a>
+    <!-- usunięto przycisk do Discord -->
   </div>
 
   <!-- React mount -->
@@ -732,7 +732,7 @@
 
       const optionMap = useMemo(() => ({
         showBotOptions: [
-          { text: 'Bot nie działa', action: 'showResponse', response: 'Sprawdź status Discord API + logi bota. Najszybciej pomożemy na Discordzie: podaj ID serwera, czas zdarzenia i opis.' },
+          { text: 'Bot nie działa', action: 'showResponse', response: 'Sprawdź status Discord API + logi bota. Podaj ID serwera, czas zdarzenia i opis.' },
           { text: 'Nowa funkcja / moduł', action: 'showResponse', response: 'Opisz moduł + priorytet + deadline. Przygotujemy plan i wycenę.' },
           { text: 'Tickets / support', action: 'showResponse', response: 'Możemy zrobić system zgłoszeń z logami, eskalacją i integracjami (np. webhooki).' },
           { text: 'Zacznij od nowa', action: 'reset' }
@@ -759,7 +759,7 @@
 
       // Lead form
       const [lead, setLead] = useState({ name:'', contact:'', type:'discord-bot', budget:'', details:'' });
-      const [leadStatus, setLeadStatus] = useState('Wypełnij formularz — skopiujesz to jako gotową wiadomość na Discord.');
+      const [leadStatus, setLeadStatus] = useState('Wypełnij formularz — skopiujesz to jako gotową wiadomość.');
 
       // Stats
       const statsTarget = useMemo(() => ({ projects: 120, uptime: 99.9, response: 2, delivery: 7 }), []);
@@ -825,7 +825,7 @@
 - Opis: ${lead.details}`;
         try{
           await navigator.clipboard.writeText(text);
-          setLeadStatus('Skopiowano! Wklej to na Discordzie w ticket.');
+          setLeadStatus('Skopiowano! Możesz wkleić to w wiadomości.');
         }catch{
           setLeadStatus('Nie udało się skopiować (uprawnienia przeglądarki). Skopiuj ręcznie.');
         }
@@ -833,7 +833,7 @@
 
       const submitLead = (e) => {
         e.preventDefault();
-        setLeadStatus('Wersja demo — skopiuj opis i wklej na Discordzie. Jeśli chcesz: podepnę webhook/form endpoint.');
+        setLeadStatus('Wersja demo — skopiuj opis. Jeśli chcesz: podepnę webhook/form endpoint.');
         copyLead();
       };
 
@@ -942,7 +942,7 @@
                     <span>Zaprojektuj swojego bota</span>
                   </a>
 
-                  <!-- NEW: Panel Klienta (Discord usunięty z prawego górnego rogu) -->
+                  {/* Panel Klienta */}
                   <a className="pill" href="panel.html" aria-label="Przejdź do panelu klienta">
                     <span>Panel Klienta</span>
                   </a>
@@ -971,10 +971,6 @@
                     <div className="hero-cta">
                       <a className="btn primary" href="workspace.html">
                         <span>Zaprojektuj swojego bota</span>
-                      </a>
-                      <a className="btn" href="https://discord.gg/litebots" target="_blank" rel="noopener">
-                        <img src="https://i.imgur.com/UOb8xvv.png" alt=""/>
-                        <span>Wejdź na Discord</span>
                       </a>
                       <button className="btn" onClick={()=>scrollTo('#services')}>
                         Poznaj usługi
@@ -1254,12 +1250,11 @@
 
                 <div className="grid-3 reveal" style={{marginTop:26}}>
                   <div className="card">
-                    <h3 style={{fontWeight:900}}>Najszybciej</h3>
-                    <p className="muted">Wejdź na Discord i załóż ticket — odpowiemy najszybciej.</p>
+                    <h3 style={{fontWeight:900}}>Panel Klienta</h3>
+                    <p className="muted">Wejdź do panelu i sprawdź status, informacje i szczegóły.</p>
                     <div className="hr"></div>
-                    <a className="btn" style={{width:'100%'}} href="https://discord.gg/litebots" target="_blank" rel="noopener">
-                      <img src="https://i.imgur.com/UOb8xvv.png" alt="" />
-                      Discord / Ticket
+                    <a className="btn primary" style={{width:'100%'}} href="panel.html">
+                      Panel Klienta
                     </a>
                   </div>
                   <div className="card">
@@ -1290,13 +1285,13 @@
                     />
                   </div>
                   <div className="field">
-                    <label htmlFor="contactField">Kontakt (Discord / e-mail)</label>
+                    <label htmlFor="contactField">Kontakt (e-mail / telefon)</label>
                     <input
                       id="contactField"
                       value={lead.contact}
                       onChange={(e)=>setLead(v=>({...v, contact: e.target.value.trimStart()}))}
                       type="text"
-                      placeholder="np. zxq#0001 / mail@..."
+                      placeholder="np. mail@... / +48..."
                       required
                     />
                   </div>
@@ -1308,11 +1303,11 @@
                       onChange={(e)=>setLead(v=>({...v, type: e.target.value}))}
                       required
                     >
-                      <option value="discord-bot">Discord Bot</option>
-                      <option value="panel">Panel do zarządzania botem</option>
+                      <option value="discord-bot">Bot</option>
+                      <option value="panel">Panel</option>
                       <option value="security">Zabezpieczenia</option>
                       <option value="ai">Rozwiązania AI</option>
-                      <option value="ai-automation">Automatyzacje AI (tickets/obsługa)</option>
+                      <option value="ai-automation">Automatyzacje AI</option>
                     </select>
                   </div>
                   <div className="field">
@@ -1353,13 +1348,12 @@
           <footer>
             <div className="container">
               <div style={{fontWeight:900, letterSpacing:'-.02em'}}>© 2025 Lite Solutions</div>
-              <div className="muted" style={{marginTop:6}}>Discord Boty • Panele • AI • Zabezpieczenia</div>
+              <div className="muted" style={{marginTop:6}}>Boty • Panele • AI • Zabezpieczenia</div>
               <div className="footer-links">
                 <a href="#hero" onClick={(e)=>{e.preventDefault(); scrollTo('#hero');}}>Start</a>
                 <a href="#services" onClick={(e)=>{e.preventDefault(); scrollTo('#services');}}>Usługi</a>
                 <a href="workspace.html">Zaprojektuj bota</a>
                 <a href="panel.html">Panel Klienta</a>
-                <a href="https://discord.gg/litebots" target="_blank" rel="noopener">Discord</a>
               </div>
             </div>
           </footer>
@@ -1416,14 +1410,14 @@
       );
     }
 
-    // Boot: poczekaj aż React + Babel będą dostępne (na Railway czasem CDN ładuje się wolniej)
+    // Boot: poczekaj aż React + Babel będą dostępne
     (function boot(){
       const start = Date.now();
       const tryBoot = () => {
         if (!window.React || !window.ReactDOM) {
           if (Date.now() - start < 2500) return requestAnimationFrame(tryBoot);
           window.hidePreloader?.();
-          window.showBootError?.('Nie udało się załadować React z CDN. Jeśli masz CSP na Railway, dodaj unpkg.com do script-src albo hostuj biblioteki lokalnie.');
+          window.showBootError?.('Nie udało się załadować React z CDN. Jeśli masz CSP, dodaj unpkg.com do script-src albo hostuj biblioteki lokalnie.');
           return;
         }
 
