@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Lite Bots — Discord Boty, Panele, AI i Zabezpieczenia</title>
-  <meta name="description" content="Lite Bots: Discord Boty, panele webowe do zarządzania botem, zabezpieczenia, rozwiązania AI i automatyzacje AI (bot odpowiada na zgłoszenia użytkowników)." />
-  <meta name="keywords" content="discord bot, panel do bota, automatyzacje ai, ai, zabezpieczenia, tickets, support bot, premium" />
+  <title>Lite Solutions — Boty, Panele, AI i Zabezpieczenia</title>
+  <meta name="description" content="Lite Solutions: Discord Boty, panele webowe do zarządzania botem, zabezpieczenia, rozwiązania AI i automatyzacje AI (bot odpowiada na zgłoszenia użytkowników)." />
+  <meta name="keywords" content="discord bot, panel do bota, automatyzacje ai, ai, zabezpieczenia, tickets, support bot, premium, lite solutions" />
   <meta name="theme-color" content="#0b0b0f" />
 
   <!-- OpenGraph -->
-  <meta property="og:title" content="Lite Bots — Boty, Panele, AI i Zabezpieczenia" />
+  <meta property="og:title" content="Lite Solutions — Boty, Panele, AI i Zabezpieczenia" />
   <meta property="og:description" content="Discord Boty, panele do zarządzania botem, zabezpieczenia oraz automatyzacje AI." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://i.imgur.com/U0XKhNz.png" />
@@ -27,17 +27,18 @@
 
   <style>
     :root{
-      --bg: #06060a;
-      --bg2:#0b0b10;
+      --bg: #050815;
+      --bg2:#070c1a;
       --surface: rgba(18,18,24,.66);
       --text: #f4f4f7;
       --muted: rgba(244,244,247,.72);
       --border: rgba(255,255,255,.10);
 
-      --p1: #d300ff;
-      --p2: #6d5bff;
-      --p3: #00d9ff;
-      --pGlow: rgba(211,0,255,.45);
+      /* MORE BLUE */
+      --p1: #1e6bff;          /* deep blue */
+      --p2: #2fb8ff;          /* sky blue */
+      --p3: #00e0ff;          /* cyan */
+      --pGlow: rgba(46,150,255,.45);
 
       --radius: 18px;
       --radius2: 26px;
@@ -56,9 +57,9 @@
     html{ scroll-behavior:smooth; }
     body{
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
-      background: radial-gradient(1200px 800px at 20% 10%, rgba(109,91,255,.18), transparent 65%),
-                  radial-gradient(1000px 700px at 90% 30%, rgba(211,0,255,.16), transparent 60%),
-                  radial-gradient(900px 700px at 60% 90%, rgba(0,217,255,.10), transparent 55%),
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(47,184,255,.18), transparent 65%),
+                  radial-gradient(1000px 700px at 90% 30%, rgba(30,107,255,.16), transparent 60%),
+                  radial-gradient(900px 700px at 60% 90%, rgba(0,224,255,.10), transparent 55%),
                   linear-gradient(180deg, var(--bg), var(--bg2));
       color: var(--text);
       line-height:1.65;
@@ -99,9 +100,9 @@
     }
     .blob{
       position:absolute; width:540px; height:540px; border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, rgba(211,0,255,.55), transparent 60%),
-                  radial-gradient(circle at 70% 70%, rgba(109,91,255,.50), transparent 58%),
-                  radial-gradient(circle at 40% 80%, rgba(0,217,255,.35), transparent 62%);
+      background: radial-gradient(circle at 30% 30%, rgba(30,107,255,.55), transparent 60%),
+                  radial-gradient(circle at 70% 70%, rgba(47,184,255,.50), transparent 58%),
+                  radial-gradient(circle at 40% 80%, rgba(0,224,255,.35), transparent 62%);
       animation: float 18s var(--ease) infinite alternate;
     }
     .blob.b1{ top:-180px; left:-160px; animation-duration: 22s; }
@@ -181,7 +182,7 @@
       box-shadow: var(--shadow2);
     }
     .logo{ display:flex; align-items:center; gap:12px; padding: 6px 10px; border-radius:999px; }
-    .logo img{ height: 34px; transition: transform var(--speed) var(--ease); filter: drop-shadow(0 0 14px rgba(211,0,255,.25)); }
+    .logo img{ height: 34px; transition: transform var(--speed) var(--ease); filter: drop-shadow(0 0 14px rgba(46,150,255,.25)); }
     .logo:hover img{ transform: rotate(-12deg) scale(1.08); }
     .logo-text{ font-weight:800; letter-spacing:-.02em; }
 
@@ -201,7 +202,7 @@
     }
     .nav-links a.active{
       color: var(--text);
-      background: linear-gradient(90deg, rgba(211,0,255,.20), rgba(109,91,255,.16), rgba(0,217,255,.12));
+      background: linear-gradient(90deg, rgba(30,107,255,.22), rgba(47,184,255,.16), rgba(0,224,255,.12));
       border: 1px solid rgba(255,255,255,.12);
     }
     @media (max-width: 980px){
@@ -222,8 +223,8 @@
     }
     .pill:hover{
       transform: translateY(-1px) scale(1.02);
-      border-color: rgba(211,0,255,.45);
-      box-shadow: 0 0 24px rgba(211,0,255,.18);
+      border-color: rgba(47,184,255,.55);
+      box-shadow: 0 0 24px rgba(46,150,255,.18);
     }
     .pill img{ width: 22px; height: 22px; }
 
@@ -232,7 +233,7 @@
       position:fixed; top:0; left:0; height:3px; width: 0%;
       background: linear-gradient(90deg, var(--p2), var(--p1), var(--p3));
       z-index:3000;
-      box-shadow: 0 0 14px rgba(211,0,255,.25);
+      box-shadow: 0 0 14px rgba(46,150,255,.25);
     }
 
     /* ===== Hero ===== */
@@ -291,17 +292,17 @@
     }
     .btn:hover{
       transform: translateY(-1px) scale(1.02);
-      border-color: rgba(211,0,255,.45);
-      box-shadow: 0 0 26px rgba(211,0,255,.22);
+      border-color: rgba(47,184,255,.55);
+      box-shadow: 0 0 26px rgba(46,150,255,.22);
       background: rgba(255,255,255,.07);
     }
     .btn.primary{
-      border: 1px solid rgba(211,0,255,.35);
-      background: linear-gradient(90deg, rgba(109,91,255,.35), rgba(211,0,255,.28), rgba(0,217,255,.20));
-      box-shadow: 0 18px 60px rgba(211,0,255,.12);
+      border: 1px solid rgba(47,184,255,.45);
+      background: linear-gradient(90deg, rgba(47,184,255,.30), rgba(30,107,255,.26), rgba(0,224,255,.18));
+      box-shadow: 0 18px 60px rgba(46,150,255,.12);
     }
     .btn.primary:hover{
-      box-shadow: 0 20px 70px rgba(211,0,255,.18), 0 0 30px rgba(0,217,255,.10);
+      box-shadow: 0 20px 70px rgba(46,150,255,.18), 0 0 30px rgba(0,224,255,.12);
     }
     .btn img{ width: 26px; height: 26px; }
 
@@ -319,7 +320,7 @@
     .highlight{
       background: linear-gradient(90deg, var(--p2), var(--p1), var(--p3));
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-      filter: drop-shadow(0 0 18px rgba(211,0,255,.15));
+      filter: drop-shadow(0 0 18px rgba(46,150,255,.15));
     }
     .section-subtitle{
       text-align:center;
@@ -346,24 +347,24 @@
     }
     .card::before{
       content:""; position:absolute; inset:-2px; opacity:0;
-      background: radial-gradient(420px 180px at 20% 0%, rgba(211,0,255,.22), transparent 60%),
-                  radial-gradient(420px 180px at 80% 30%, rgba(0,217,255,.12), transparent 62%);
+      background: radial-gradient(420px 180px at 20% 0%, rgba(30,107,255,.22), transparent 60%),
+                  radial-gradient(420px 180px at 80% 30%, rgba(0,224,255,.12), transparent 62%);
       transition: opacity var(--speed) var(--ease);
       pointer-events:none;
     }
     .card:hover{
       transform: translateY(-4px);
-      border-color: rgba(211,0,255,.35);
+      border-color: rgba(47,184,255,.45);
       box-shadow: 0 18px 60px rgba(0,0,0,.45);
     }
     .card:hover::before{ opacity: 1; }
 
     .icon{
       width: 44px; height: 44px; border-radius: 14px;
-      background: linear-gradient(180deg, rgba(109,91,255,.30), rgba(211,0,255,.22));
+      background: linear-gradient(180deg, rgba(47,184,255,.28), rgba(30,107,255,.22));
       border: 1px solid rgba(255,255,255,.12);
       display:grid; place-items:center;
-      box-shadow: 0 0 22px rgba(211,0,255,.12);
+      box-shadow: 0 0 22px rgba(46,150,255,.12);
       margin-bottom: 14px;
     }
     .icon svg{ width: 22px; height: 22px; color: rgba(255,255,255,.92); }
@@ -448,12 +449,12 @@
     .team-card:hover .team-overlay{ transform: translateY(0); }
     .role{
       font-weight: 900;
-      background: linear-gradient(90deg, #ffb000, #ff3d00);
+      background: linear-gradient(90deg, var(--p2), var(--p1));
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
       letter-spacing:.02em;
     }
-    .role.manager{ background-image: linear-gradient(90deg, #aa00ff, #590db6); }
-    .role.engineer{ background-image: linear-gradient(90deg, #00d9ff, #6d5bff); }
+    .role.manager{ background-image: linear-gradient(90deg, var(--p1), var(--p2)); }
+    .role.engineer{ background-image: linear-gradient(90deg, var(--p3), var(--p2)); }
 
     /* Lead form */
     .form{
@@ -501,7 +502,7 @@
       border: 1px solid rgba(255,255,255,.08);
       transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease);
     }
-    .footer-links a:hover{ transform: translateY(-1px); border-color: rgba(211,0,255,.35); }
+    .footer-links a:hover{ transform: translateY(-1px); border-color: rgba(47,184,255,.45); }
 
     /* ===== Reveal animations ===== */
     .reveal{
@@ -520,8 +521,8 @@
       position:fixed; right: 22px; bottom: 22px;
       width: 62px; height: 62px;
       border-radius: 999px;
-      background: linear-gradient(180deg, rgba(109,91,255,1), rgba(211,0,255,1));
-      box-shadow: 0 10px 30px rgba(211,0,255,.25), 0 0 24px rgba(0,217,255,.10);
+      background: linear-gradient(180deg, var(--p2), var(--p1));
+      box-shadow: 0 10px 30px rgba(46,150,255,.25), 0 0 24px rgba(0,224,255,.10);
       border: 1px solid rgba(255,255,255,.18);
       display:grid; place-items:center;
       cursor:pointer;
@@ -555,7 +556,7 @@
     .chat-header{
       padding: 14px 16px;
       border-bottom: 1px solid rgba(255,255,255,.10);
-      background: linear-gradient(90deg, rgba(109,91,255,.18), rgba(211,0,255,.14));
+      background: linear-gradient(90deg, rgba(47,184,255,.18), rgba(30,107,255,.14));
       display:flex; justify-content:space-between; align-items:center;
       gap: 10px;
     }
@@ -596,7 +597,7 @@
       color: rgba(244,244,247,.78);
     }
     .message.user .message-content{
-      background: linear-gradient(180deg, rgba(211,0,255,.95), rgba(109,91,255,.92));
+      background: linear-gradient(180deg, rgba(30,107,255,.95), rgba(47,184,255,.92));
       border-color: rgba(255,255,255,.18);
       color: white;
     }
@@ -627,11 +628,11 @@
       font-weight: 900;
       transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), background var(--speed) var(--ease);
     }
-    .option-btn:hover{ transform: translateY(-1px); border-color: rgba(211,0,255,.35); background: rgba(255,255,255,.06); }
+    .option-btn:hover{ transform: translateY(-1px); border-color: rgba(47,184,255,.45); background: rgba(255,255,255,.06); }
 
     /* Focus visibility */
     :focus-visible{
-      outline: 2px solid rgba(0,217,255,.55);
+      outline: 2px solid rgba(0,224,255,.55);
       outline-offset: 3px;
       border-radius: 12px;
     }
@@ -688,7 +689,7 @@
   <!-- PRELOADER -->
   <div id="preloader" aria-label="Ładowanie strony">
     <div style="display:flex; flex-direction:column; align-items:center;">
-      <img src="https://i.imgur.com/U0XKhNz.png" alt="Lite Bots" style="width:76px; filter: drop-shadow(0 0 24px rgba(211,0,255,.25));" />
+      <img src="https://i.imgur.com/U0XKhNz.png" alt="Lite Solutions" style="width:76px; filter: drop-shadow(0 0 24px rgba(46,150,255,.25));" />
       <div class="loading-hint">Ładuję doświadczenie premium…</div>
       <div class="loading-bar" aria-hidden="true"><div></div></div>
     </div>
@@ -816,7 +817,7 @@
 
       const copyLead = async () => {
         const text =
-`Lite Bots — zapytanie:
+`Lite Solutions — zapytanie:
 - Imię/Nick: ${lead.name}
 - Kontakt: ${lead.contact}
 - Typ: ${lead.type}
@@ -923,8 +924,8 @@
             <div className="container">
               <nav className="header-nav" aria-label="Główna nawigacja">
                 <a className="logo" href="#hero" onClick={(e)=>{e.preventDefault(); scrollTo('#hero');}} aria-label="Przejdź do sekcji start">
-                  <img src="https://i.imgur.com/U0XKhNz.png" alt="Lite Bots Logo" />
-                  <span className="logo-text">Lite Bots</span>
+                  <img src="https://i.imgur.com/U0XKhNz.png" alt="Lite Solutions Logo" />
+                  <span className="logo-text">Lite Solutions</span>
                 </a>
 
                 <ul className="nav-links" role="list">
@@ -940,9 +941,10 @@
                   <a className="pill" href="workspace.html" aria-label="Przejdź do kreatora bota">
                     <span>Zaprojektuj swojego bota</span>
                   </a>
-                  <a className="pill" href="https://discord.gg/litebots" target="_blank" rel="noopener">
-                    <img src="https://i.imgur.com/UOb8xvv.png" alt="Discord" />
-                    <span>Dołącz</span>
+
+                  <!-- NEW: Panel Klienta (Discord usunięty z prawego górnego rogu) -->
+                  <a className="pill" href="panel.html" aria-label="Przejdź do panelu klienta">
+                    <span>Panel Klienta</span>
                   </a>
                 </div>
               </nav>
@@ -962,7 +964,7 @@
                       z panelami, AI i pełnym zabezpieczeniem.
                     </h1>
                     <p className="hero-subtitle">
-                      Lite Bots tworzy systemy, które działają jak produkt: stabilne moduły, panel do zarządzania botem,
+                      Lite Solutions tworzy systemy, które działają jak produkt: stabilne moduły, panel do zarządzania botem,
                       automatyzacje AI (np. bot sam odpowiada na zgłoszenia) i bezpieczeństwo na poziomie premium.
                     </p>
 
@@ -1044,7 +1046,7 @@
             <section id="services" className="section">
               <div className="container">
                 <div className="reveal">
-                  <h2 className="section-title">Usługi Lite Bots</h2>
+                  <h2 className="section-title">Usługi Lite Solutions</h2>
                   <p className="section-subtitle">
                     Tylko to, co robimy najlepiej: Discord Boty, panele do zarządzania botem, zabezpieczenia, AI i automatyzacje AI.
                   </p>
@@ -1202,7 +1204,7 @@
             <section id="team" className="section">
               <div className="container">
                 <div className="reveal">
-                  <h2 className="section-title">Zespół Lite Bots</h2>
+                  <h2 className="section-title">Zespół Lite Solutions</h2>
                   <p className="section-subtitle">Mały skład — szybkie decyzje i dowożenie na czas.</p>
                 </div>
 
@@ -1350,12 +1352,13 @@
 
           <footer>
             <div className="container">
-              <div style={{fontWeight:900, letterSpacing:'-.02em'}}>© 2025 Lite Bots</div>
+              <div style={{fontWeight:900, letterSpacing:'-.02em'}}>© 2025 Lite Solutions</div>
               <div className="muted" style={{marginTop:6}}>Discord Boty • Panele • AI • Zabezpieczenia</div>
               <div className="footer-links">
                 <a href="#hero" onClick={(e)=>{e.preventDefault(); scrollTo('#hero');}}>Start</a>
                 <a href="#services" onClick={(e)=>{e.preventDefault(); scrollTo('#services');}}>Usługi</a>
                 <a href="workspace.html">Zaprojektuj bota</a>
+                <a href="panel.html">Panel Klienta</a>
                 <a href="https://discord.gg/litebots" target="_blank" rel="noopener">Discord</a>
               </div>
             </div>
@@ -1366,7 +1369,7 @@
             <div className="chat-header">
               <h3>
                 <img src="https://i.imgur.com/U0XKhNz.png" alt="" />
-                Lite Bots — Centrum Wsparcia
+                Lite Solutions — Centrum Wsparcia
               </h3>
               <button className="chat-close-btn" onClick={toggleChat} aria-label="Zamknij czat">×</button>
             </div>
