@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lite Solutions — Admin</title>
+  <meta name="theme-color" content="#0b0b10" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    :root{
+      --bg0:#06060a; --bg1:#0b0b10;
+      --card: rgba(18,18,24,.54);
+      --text:#f4f4f7;
+      --muted: rgba(244,244,247,.66);
+      --muted2: rgba(244,244,247,.52);
+      --border: rgba(255,255,255,.10);
+      --border2: rgba(255,255,255,.08);
+
+      --p1:#1e4dff; --p2:#00a3ff; --p3:#33e6ff;
+      --focus: rgba(51,230,255,.55);
+
+      --radius: 18px; --radius2: 22px;
+      --shadow2: 0 14px 34px rgba(0,0,0,.38);
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      --speed: .22s;
+
+      --grid: rgba(255,255,255,.05);
+      --danger: rgba(255,120,120,.95);
+      --ok: rgba(120,255,180,.92);
+      --warn: rgba(255,200,120,.92);
+    }
+
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    html{ scroll-behavior:smooth; }
+    body{
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 800px at 18% 10%, rgba(0,163,255,.12), transparent 65%),
+        radial-gradient(1000px 700px at 92% 22%, rgba(30,77,255,.10), transparent 60%),
+        radial-gradient(900px 700px at 60% 92%, rgba(51,230,255,.07), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      min-height:100vh;
+      overflow-x:hidden;
+      line-height: 1.55;
+      padding: 18px;
+    }
+
+    .bg-grid{
+      position: fixed; inset:0; z-index:-3; pointer-events:none;
+      background-image:
+        linear-gradient(to right, var(--grid) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+      background-size: 54px 54px;
+      opacity: .45;
+      mask-image: radial-gradient(1000px 700px at 40% 0%, rgba(0,0,0,.95), transparent 70%);
+    }
+    .bg-noise{
+      position: fixed; inset:0; z-index:-2; pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity:.25;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    button, input{ font-family: inherit; }
+    ::selection{ background: rgba(0,163,255,.25); }
+
+    /* Shared UI */
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      gap: 10px; padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.02);
+      color: rgba(244,244,247,.92);
+      font-weight: 900;
+      cursor:pointer;
+      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), background var(--speed) var(--ease);
+      user-select:none;
+      white-space: nowrap;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(0,163,255,.28);
+      background: rgba(255,255,255,.04);
+    }
+    .btn.primary{
+      border-color: rgba(0,163,255,.36);
+      background: linear-gradient(90deg, rgba(0,163,255,.24), rgba(30,77,255,.16), rgba(51,230,255,.10));
+      box-shadow: 0 0 26px rgba(0,163,255,.10);
+    }
+    .btn.danger{
+      border-color: rgba(255,120,120,.32);
+      background: rgba(255,120,120,.10);
+    }
+
+    .error{
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,120,120,.30);
+      background: rgba(255,120,120,.08);
+      color: rgba(255,160,160,.95);
+      font-weight: 900;
+      font-size: 13px;
+    }
+    .notice{
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(0,163,255,.26);
+      background: rgba(0,163,255,.08);
+      color: rgba(244,244,247,.86);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    :focus-visible{
+      outline: 2px solid var(--focus);
+      outline-offset: 3px;
+      border-radius: 12px;
+    }
+
+    /* Login */
+    .loginWrap{
+      min-height: calc(100vh - 36px);
+      display:grid;
+      place-items:center;
+    }
+    .loginCard{
+      width: 100%;
+      max-width: 520px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: rgba(18,18,24,.46);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: var(--shadow2);
+      padding: 18px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      padding: 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      margin-bottom: 14px;
+    }
+    .brand img{
+      width: 38px; height: 38px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      filter: drop-shadow(0 0 18px rgba(0,163,255,.22));
+    }
+    .brand h1{
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: -.02em;
+      line-height: 1.05;
+    }
+    .brand p{
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+    }
+    .field{
+      margin-top: 12px;
+      display:flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field label{
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(244,244,247,.78);
+    }
+    .field input{
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(10,10,14,.35);
+      color: rgba(244,244,247,.92);
+      font-weight: 800;
+      outline:none;
+    }
+    .row{
+      margin-top: 14px;
+      display:flex;
+      justify-content:flex-end;
+      gap: 10px;
+    }
+
+    /* Admin layout */
+    .shell{ display:grid; grid-template-columns: 300px 1fr; min-height: calc(100vh - 36px); }
+    @media (max-width: 1020px){ .shell{ grid-template-columns: 1fr; } }
+
+    .sidebar{
+      position: sticky; top: 18px; height: calc(100vh - 36px);
+      padding: 20px;
+      border-right: 1px solid var(--border2);
+      background: rgba(6,6,10,.35);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display:flex; flex-direction: column; gap: 16px;
+      border-radius: 22px;
+    }
+    @media (max-width: 1020px){
+      .sidebar{ position: relative; top: 0; height:auto; border-right:none; border-bottom:1px solid var(--border2); }
+    }
+
+    .nav{ display:flex; flex-direction: column; gap: 8px; }
+    .navItem{
+      display:flex; align-items:center; justify-content:space-between;
+      gap: 10px; padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.02);
+      cursor: pointer;
+      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), background var(--speed) var(--ease);
+      text-align:left;
+    }
+    .navItem:hover{
+      transform: translateY(-1px);
+      border-color: rgba(0,163,255,.28);
+      background: rgba(255,255,255,.04);
+    }
+    .navItem.active{
+      border-color: rgba(0,163,255,.42);
+      background: linear-gradient(90deg, rgba(0,163,255,.16), rgba(30,77,255,.10), rgba(51,230,255,.06));
+      box-shadow: 0 0 0 1px rgba(0,163,255,.06) inset;
+    }
+    .navItem .left{ display:flex; flex-direction: column; gap: 2px; }
+    .navItem .title{ font-weight: 900; color: rgba(244,244,247,.92); letter-spacing: -.01em; }
+    .navItem .hint{ font-size: 12px; color: var(--muted2); font-weight: 800; }
+    .badge{
+      font-size: 12px;
+      font-weight: 900;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      color: rgba(244,244,247,.80);
+    }
+
+    .sidebarFooter{
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      display:flex; flex-direction: column; gap: 10px;
+    }
+    .copyright{ font-size: 12px; color: rgba(244,244,247,.55); font-weight: 800; }
+
+    .main{ padding: 0 0 0 18px; }
+    @media (max-width: 1020px){ .main{ padding: 18px 0 0 0; } }
+
+    .topbar{
+      display:flex; align-items:center; justify-content: space-between;
+      gap: 14px; padding: 14px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(18,18,24,.48);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: var(--shadow2);
+    }
+    .pageTitle{ display:flex; flex-direction: column; gap: 2px; }
+    .pageTitle h2{ font-size: 16px; font-weight: 900; letter-spacing: -.02em; line-height: 1.05; }
+    .pageTitle p{ font-size: 12px; color: var(--muted); font-weight: 800; }
+
+    .panel{
+      margin-top: 16px;
+      border-radius: var(--radius2);
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(18,18,24,.42);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 14px 40px rgba(0,0,0,.34);
+      overflow:hidden;
+    }
+    .panelHead{
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display:flex; align-items:flex-start; justify-content:space-between; gap: 12px;
+    }
+    .panelHead h3{ font-size: 14px; font-weight: 900; letter-spacing: -.01em; }
+    .panelHead .desc{ margin-top:4px; font-size: 12px; color: var(--muted); font-weight: 800; max-width: 78ch; }
+    .panelBody{ padding: 16px; }
+
+    .toolbar{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .search{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(10,10,14,.35);
+      min-width: 280px;
+      flex: 1;
+      max-width: 520px;
+    }
+    .search input{
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: rgba(244,244,247,.92);
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .table{
+      width: 100%;
+      border-collapse: collapse;
+      overflow:hidden;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(10,10,14,.32);
+    }
+    .table th, .table td{
+      padding: 12px 12px;
+      text-align:left;
+      font-size: 12px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .table th{
+      color: rgba(244,244,247,.72);
+      font-weight: 900;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      font-size: 11px;
+      background: rgba(0,0,0,.12);
+    }
+    .table td{
+      color: rgba(244,244,247,.85);
+      font-weight: 700;
+    }
+    .table tr:hover td{ background: rgba(255,255,255,.02); }
+
+    .pill{
+      display:inline-flex; align-items:center; gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.02);
+      font-weight: 900;
+      font-size: 12px;
+      color: rgba(244,244,247,.82);
+    }
+    .pill.ok{ border-color: rgba(120,255,180,.22); background: rgba(120,255,180,.08); color: var(--ok); }
+    .pill.warn{ border-color: rgba(255,200,120,.22); background: rgba(255,200,120,.08); color: var(--warn); }
+
+    .split{ display:grid; grid-template-columns: 1.1fr .9fr; gap: 12px; align-items: start; }
+    @media (max-width: 1020px){ .split{ grid-template-columns: 1fr; } }
+
+    .card{
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(10,10,14,.32);
+      padding: 14px;
+    }
+    .card h4{ font-size: 13px; font-weight: 900; margin-bottom: 8px; letter-spacing: -.01em; }
+    .muted{ color: var(--muted); font-weight: 800; font-size: 12px; }
+
+    .chatBox{ height: 420px; display:flex; flex-direction: column; }
+    .chatLog{
+      flex: 1; overflow:auto; padding: 12px;
+      border-radius: 14px; border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.14);
+    }
+    .msg{ display:flex; flex-direction: column; gap: 3px; margin-bottom: 10px; max-width: 95%; }
+    .msg .meta{ display:flex; gap: 10px; align-items:center; font-size: 11px; color: rgba(244,244,247,.55); font-weight: 900; }
+    .bubble{
+      padding: 10px 12px; border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      color: rgba(244,244,247,.88);
+      font-weight: 700;
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+    .bubble.bot{ border-color: rgba(0,163,255,.22); background: rgba(0,163,255,.08); }
+    .composer{ margin-top: 10px; display:flex; gap: 10px; }
+    .composer input{
+      flex:1; padding: 10px 12px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(10,10,14,.35);
+      color: rgba(244,244,247,.92);
+      font-weight: 800;
+      outline:none;
+    }
+
+    @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+  </style>
+</head>
+
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-noise"></div>
+  <div id="app"></div>
+
+  <script type="text/babel">
+    const { useEffect, useMemo, useRef, useState } = React;
+
+    function AdminPage(){
+      const tabs = useMemo(() => ([
+        { id:"users", label:"Użytkownicy", hint:"Baza użytkowników", badge:"DB" },
+        { id:"licenses", label:"Licencje", hint:"Baza licencji", badge:"DB" },
+        { id:"tickets", label:"Zgłoszenia", hint:"Discord tickets", badge:"LIVE" },
+      ]), []);
+
+      const [isAuthed, setIsAuthed] = useState(null); // null=checking
+      const [loginErr, setLoginErr] = useState("");
+
+      // login form
+      const [pass1, setPass1] = useState("");
+      const [pass2, setPass2] = useState("");
+
+      // app state
+      const [active, setActive] = useState("users");
+      const [query, setQuery] = useState("");
+      const [err, setErr] = useState("");
+      const [notice, setNotice] = useState("");
+
+      // mock data until DB
+      const mockUsers = useMemo(() => ([
+        { id:"123", name:"zxq0", discordId:"111111111111111111", createdAt:"—" },
+        { id:"124", name:"kubus", discordId:"222222222222222222", createdAt:"—" },
+      ]), []);
+      const mockLicenses = useMemo(() => ([
+        { key:"LS-XXXX-XXXX", owner:"zxq0", status:"active", expires:"—" },
+        { key:"LS-YYYY-YYYY", owner:"kubus", status:"inactive", expires:"—" },
+      ]), []);
+
+      // tickets
+      const [tickets, setTickets] = useState([]);
+      const [ticketsLoading, setTicketsLoading] = useState(false);
+
+      const [selectedTicket, setSelectedTicket] = useState(null);
+      const [ticketMsgs, setTicketMsgs] = useState([]);
+      const [ticketLoading, setTicketLoading] = useState(false);
+
+      const [draft, setDraft] = useState("");
+      const chatEndRef = useRef(null);
+
+      const scrollChatBottom = () => {
+        requestAnimationFrame(() => {
+          chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+        });
+      };
+
+      const checkAuth = async () => {
+        try{
+          const res = await fetch("/api/admin/me", { credentials:"include" });
+          setIsAuthed(res.ok);
+        }catch(e){
+          setIsAuthed(false);
+        }
+      };
+
+      useEffect(() => { checkAuth(); }, []);
+
+      const doLogin = async (e) => {
+        e.preventDefault();
+        setLoginErr("");
+        try{
+          const res = await fetch("/admin/auth/login", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type":"application/json" },
+            body: JSON.stringify({ pass1, pass2 })
+          });
+          if (!res.ok){
+            setLoginErr("Błędne hasła.");
+            return;
+          }
+          setPass1(""); setPass2("");
+          await checkAuth();
+        }catch(e){
+          setLoginErr("Błąd połączenia.");
+        }
+      };
+
+      const logout = async () => {
+        try{
+          await fetch("/admin/auth/logout", { method:"POST", credentials:"include" });
+        }catch(e){}
+        setIsAuthed(false);
+      };
+
+      const loadTickets = async () => {
+        setErr(""); setNotice("");
+        setTicketsLoading(true);
+        try{
+          const res = await fetch("/api/admin/tickets", { credentials:"include" });
+          if (res.status === 401) { setIsAuthed(false); return; }
+          const data = await res.json();
+          setTickets(Array.isArray(data.tickets) ? data.tickets : []);
+        }catch(e){
+          setErr("Nie udało się pobrać zgłoszeń z Discord. Sprawdź token bota i konfigurację.");
+        }finally{
+          setTicketsLoading(false);
+        }
+      };
+
+      const openTicket = async (t) => {
+        setErr(""); setNotice("");
+        setSelectedTicket(t);
+        setTicketMsgs([]);
+        setTicketLoading(true);
+        try{
+          const res = await fetch(`/api/admin/tickets/${encodeURIComponent(t.id)}`, { credentials:"include" });
+          if (res.status === 401) { setIsAuthed(false); return; }
+          const data = await res.json();
+          setTicketMsgs(Array.isArray(data.messages) ? data.messages : []);
+          scrollChatBottom();
+        }catch(e){
+          setErr("Nie udało się wczytać wiadomości z ticketu.");
+        }finally{
+          setTicketLoading(false);
+        }
+      };
+
+      const sendToTicket = async () => {
+        if (!selectedTicket) return;
+        const text = draft.trim();
+        if (!text) return;
+
+        setDraft("");
+        setNotice("");
+        setErr("");
+
+        const optimistic = {
+          id: "local-" + Date.now(),
+          author: "Bot",
+          authorType: "bot",
+          content: text,
+          timestamp: new Date().toISOString(),
+        };
+        setTicketMsgs(prev => [...prev, optimistic]);
+        scrollChatBottom();
+
+        try{
+          const res = await fetch(`/api/admin/tickets/${encodeURIComponent(selectedTicket.id)}/send`, {
+            method:"POST",
+            credentials:"include",
+            headers:{ "Content-Type":"application/json" },
+            body: JSON.stringify({ content: text })
+          });
+          if (res.status === 401) { setIsAuthed(false); return; }
+          if (!res.ok) {
+            setErr("Wysyłka nie powiodła się. Sprawdź uprawnienia bota w kanale ticketu.");
+            return;
+          }
+          setNotice("Wysłano wiadomość jako bot.");
+        }catch(e){
+          setErr("Błąd połączenia podczas wysyłania.");
+        }
+      };
+
+      useEffect(() => {
+        if (isAuthed && active === "tickets") loadTickets();
+      }, [isAuthed, active]);
+
+      const filteredUsers = useMemo(() => {
+        const q = query.trim().toLowerCase();
+        if (!q) return mockUsers;
+        return mockUsers.filter(u =>
+          (u.name || "").toLowerCase().includes(q) ||
+          (u.discordId || "").toLowerCase().includes(q)
+        );
+      }, [mockUsers, query]);
+
+      const filteredLicenses = useMemo(() => {
+        const q = query.trim().toLowerCase();
+        if (!q) return mockLicenses;
+        return mockLicenses.filter(l =>
+          (l.key || "").toLowerCase().includes(q) ||
+          (l.owner || "").toLowerCase().includes(q) ||
+          (l.status || "").toLowerCase().includes(q)
+        );
+      }, [mockLicenses, query]);
+
+      const filteredTickets = useMemo(() => {
+        const q = query.trim().toLowerCase();
+        if (!q) return tickets;
+        return tickets.filter(t =>
+          (t.name || "").toLowerCase().includes(q) ||
+          (t.id || "").toLowerCase().includes(q)
+        );
+      }, [tickets, query]);
+
+      const header = useMemo(() => {
+        if (active === "users") return { title:"Użytkownicy", desc:"Baza użytkowników (do podpięcia pod DB)." };
+        if (active === "licenses") return { title:"Licencje", desc:"Baza licencji (do podpięcia pod DB)." };
+        return { title:"Zgłoszenia", desc:"Tickety z Discord (kanały) + możliwość pisania jako bot." };
+      }, [active]);
+
+      // --- RENDER: loading auth check ---
+      if (isAuthed === null){
+        return (
+          <div className="loginWrap">
+            <div className="loginCard">
+              <div className="brand">
+                <img src="https://i.imgur.com/6Lsxvnw.png" alt="Lite Solutions" />
+                <div>
+                  <h1>Lite Solutions — Admin</h1>
+                  <p>Sprawdzam dostęp…</p>
+                </div>
+              </div>
+              <div className="notice">Ładowanie…</div>
+            </div>
+          </div>
+        );
+      }
+
+      // --- LOGIN VIEW ---
+      if (!isAuthed){
+        return (
+          <div className="loginWrap">
+            <div className="loginCard">
+              <div className="brand">
+                <img src="https://i.imgur.com/6Lsxvnw.png" alt="Lite Solutions" />
+                <div>
+                  <h1>Lite Solutions — Admin</h1>
+                  <p>Logowanie administracyjne (2 hasła z Variables).</p>
+                </div>
+              </div>
+
+              <form onSubmit={doLogin}>
+                <div className="field">
+                  <label>Hasło 1</label>
+                  <input value={pass1} onChange={(e)=>setPass1(e.target.value)} type="password" required />
+                </div>
+
+                <div className="field">
+                  <label>Hasło 2</label>
+                  <input value={pass2} onChange={(e)=>setPass2(e.target.value)} type="password" required />
+                </div>
+
+                <div className="row">
+                  <button className="btn primary" type="submit">Zaloguj</button>
+                </div>
+
+                {loginErr && <div className="error">{loginErr}</div>}
+
+                <div className="notice" style={{marginTop:12}}>
+                  Tip: ustaw ADMIN_PASS_1 i ADMIN_PASS_2 w Railway Variables.
+                </div>
+              </form>
+            </div>
+          </div>
+        );
+      }
+
+      // --- ADMIN VIEW ---
+      return (
+        <div className="shell">
+          <aside className="sidebar">
+            <div className="brand" style={{marginBottom:0}}>
+              <img src="https://i.imgur.com/6Lsxvnw.png" alt="Lite Solutions" />
+              <div style={{minWidth:0}}>
+                <h1 style={{fontSize:16, margin:0}}>Lite Solutions</h1>
+                <p style={{marginTop:4}}>Panel Administratora</p>
+              </div>
+            </div>
+
+            <nav className="nav" aria-label="Nawigacja admin">
+              {tabs.map(t => (
+                <button
+                  key={t.id}
+                  className={"navItem " + (active === t.id ? "active" : "")}
+                  onClick={() => { setActive(t.id); setQuery(""); setSelectedTicket(null); setTicketMsgs([]); setErr(""); setNotice(""); }}
+                  type="button"
+                >
+                  <div className="left">
+                    <div className="title">{t.label}</div>
+                    <div className="hint">{t.hint}</div>
+                  </div>
+                  <div className="badge">{t.badge}</div>
+                </button>
+              ))}
+            </nav>
+
+            <div className="sidebarFooter">
+              <a className="btn" href="/" style={{width:"100%", justifyContent:"center"}}>Strona główna</a>
+              <button className="btn danger" onClick={logout} type="button" style={{width:"100%", justifyContent:"center"}}>
+                Wyloguj admin
+              </button>
+              <div className="copyright">© 2025 Lite Solutions</div>
+            </div>
+          </aside>
+
+          <main className="main">
+            <div className="topbar">
+              <div className="pageTitle">
+                <h2>{header.title}</h2>
+                <p>{header.desc}</p>
+              </div>
+
+              <div style={{display:"flex", gap:10, alignItems:"center"}}>
+                {active === "tickets" && (
+                  <button className="btn primary" onClick={loadTickets} type="button">
+                    Odśwież
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {err && <div className="error">{err}</div>}
+            {notice && <div className="notice">{notice}</div>}
+
+            <section className="panel">
+              <div className="panelHead">
+                <div>
+                  <h3>Widok</h3>
+                  <div className="desc">Minimalnie. Konkret. Bez ozdobników.</div>
+                </div>
+              </div>
+
+              <div className="panelBody">
+                <div className="toolbar">
+                  <div className="search">
+                    <input
+                      value={query}
+                      onChange={(e)=>setQuery(e.target.value)}
+                      placeholder={active === "tickets" ? "Szukaj ticketów (nazwa/id)..." : "Szukaj (nick / klucz / status)..."}
+                    />
+                  </div>
+
+                  {active !== "tickets" && (
+                    <button className="btn" type="button" onClick={()=>alert("Wkrótce: CRUD + DB.")}>
+                      Dodaj
+                    </button>
+                  )}
+                </div>
+
+                {active === "users" && (
+                  <table className="table" aria-label="Baza użytkowników">
+                    <thead>
+                      <tr>
+                        <th>Nick</th>
+                        <th>Discord ID</th>
+                        <th>Utworzono</th>
+                        <th>Akcje</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredUsers.map(u => (
+                        <tr key={u.id}>
+                          <td>{u.name}</td>
+                          <td>{u.discordId}</td>
+                          <td>{u.createdAt}</td>
+                          <td>
+                            <button className="btn" type="button" onClick={()=>alert("Wkrótce: szczegóły użytkownika.")}>Szczegóły</button>
+                          </td>
+                        </tr>
+                      ))}
+                      {filteredUsers.length === 0 && (
+                        <tr><td colSpan="4" style={{color:"rgba(244,244,247,.65)", fontWeight:900}}>Brak wyników.</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                )}
+
+                {active === "licenses" && (
+                  <table className="table" aria-label="Baza licencji">
+                    <thead>
+                      <tr>
+                        <th>Klucz</th>
+                        <th>Właściciel</th>
+                        <th>Status</th>
+                        <th>Ważność</th>
+                        <th>Akcje</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredLicenses.map(l => (
+                        <tr key={l.key}>
+                          <td>{l.key}</td>
+                          <td>{l.owner}</td>
+                          <td>
+                            <span className={"pill " + (l.status === "active" ? "ok" : "warn")}>
+                              {l.status === "active" ? "Aktywna" : "Nieaktywna"}
+                            </span>
+                          </td>
+                          <td>{l.expires}</td>
+                          <td>
+                            <button className="btn" type="button" onClick={()=>alert("Wkrótce: edycja licencji.")}>Edytuj</button>
+                          </td>
+                        </tr>
+                      ))}
+                      {filteredLicenses.length === 0 && (
+                        <tr><td colSpan="5" style={{color:"rgba(244,244,247,.65)", fontWeight:900}}>Brak wyników.</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                )}
+
+                {active === "tickets" && (
+                  <div className="split" aria-label="Zgłoszenia Discord">
+                    <div className="card">
+                      <h4>Lista ticketów</h4>
+                      <div className="muted">Tickety = kanały w kategorii. Kliknij ticket, aby otworzyć rozmowę.</div>
+
+                      <div style={{marginTop:12}}>
+                        <table className="table">
+                          <thead>
+                            <tr>
+                              <th>Nazwa</th>
+                              <th>ID kanału</th>
+                              <th>Status</th>
+                              <th>Akcja</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {ticketsLoading ? (
+                              <tr><td colSpan="4" style={{color:"rgba(244,244,247,.65)", fontWeight:900}}>Ładowanie…</td></tr>
+                            ) : filteredTickets.map(t => (
+                              <tr key={t.id}>
+                                <td>{t.name}</td>
+                                <td>{t.id}</td>
+                                <td><span className="pill ok">Open</span></td>
+                                <td>
+                                  <button className="btn" type="button" onClick={()=>openTicket(t)}>Otwórz</button>
+                                </td>
+                              </tr>
+                            ))}
+                            {!ticketsLoading && filteredTickets.length === 0 && (
+                              <tr><td colSpan="4" style={{color:"rgba(244,244,247,.65)", fontWeight:900}}>Brak ticketów / brak DISCORD_TICKETS_CATEGORY_ID.</td></tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <div className="card">
+                      <h4>Podgląd / rozmowa</h4>
+
+                      {!selectedTicket ? (
+                        <div className="muted" style={{marginTop:10}}>Wybierz ticket z listy po lewej.</div>
+                      ) : (
+                        <div className="chatBox">
+                          <div className="muted" style={{marginBottom:10}}>
+                            Ticket: <b>{selectedTicket.name}</b> (kanał: {selectedTicket.id})
+                          </div>
+
+                          <div className="chatLog">
+                            {ticketLoading ? (
+                              <div className="muted">Ładowanie wiadomości…</div>
+                            ) : (
+                              ticketMsgs.map(m => (
+                                <div key={m.id} className="msg">
+                                  <div className="meta">
+                                    <span>{m.author}</span>
+                                    <span>•</span>
+                                    <span>{new Date(m.timestamp).toLocaleString()}</span>
+                                  </div>
+                                  <div className={"bubble " + (m.authorType === "bot" ? "bot" : "")}>{m.content}</div>
+                                </div>
+                              ))
+                            )}
+                            <div ref={chatEndRef}></div>
+                          </div>
+
+                          <div className="composer">
+                            <input
+                              value={draft}
+                              onChange={(e)=>setDraft(e.target.value)}
+                              placeholder="Napisz wiadomość jako bot…"
+                              onKeyDown={(e)=>{ if (e.key === "Enter") sendToTicket(); }}
+                            />
+                            <button className="btn primary" onClick={sendToTicket} type="button">Wyślij</button>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="muted" style={{marginTop:12}}>
+                        Tip: bot musi mieć dostęp do kategorii ticketów (VIEW_CHANNEL + SEND_MESSAGES).
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+          </main>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("app")).render(<AdminPage />);
+  </script>
+</body>
+</html>
