@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Lite Solutions — Panel Klienta</title>
   <meta name="theme-color" content="#0b0b10" />
 
@@ -19,73 +18,80 @@
 
   <style>
     :root{
-      --bg: #06060a;
-      --bg2:#0b0b10;
-      --surface: rgba(18,18,24,.62);
-      --surface2: rgba(12,12,18,.55);
-      --text: #f4f4f7;
-      --muted: rgba(244,244,247,.72);
-      --border: rgba(255,255,255,.10);
+      --bg0:#06060a;
+      --bg1:#0b0b10;
 
-      --p1: #1e4dff;
-      --p2: #00a3ff;
-      --p3: #33e6ff;
-      --pGlow: rgba(0,163,255,.35);
+      --card: rgba(18,18,24,.54);
+      --card2: rgba(12,12,18,.50);
+
+      --text:#f4f4f7;
+      --muted: rgba(244,244,247,.66);
+      --muted2: rgba(244,244,247,.52);
+      --border: rgba(255,255,255,.10);
+      --border2: rgba(255,255,255,.08);
+
+      --p1:#1e4dff;
+      --p2:#00a3ff;
+      --p3:#33e6ff;
+      --pGlow: rgba(0,163,255,.30);
 
       --radius: 18px;
       --radius2: 22px;
 
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
-      --shadow2: 0 12px 28px rgba(0,0,0,.35);
+      --shadow: 0 24px 80px rgba(0,0,0,.50);
+      --shadow2: 0 14px 34px rgba(0,0,0,.38);
 
-      --speed: .25s;
       --ease: cubic-bezier(.16, 1, .3, 1);
+      --speed: .22s;
+
       --grid: rgba(255,255,255,.05);
+      --focus: rgba(51,230,255,.55);
     }
 
     *{ box-sizing:border-box; margin:0; padding:0; }
     html{ scroll-behavior:smooth; }
     body{
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
-      background:
-        radial-gradient(1200px 800px at 20% 10%, rgba(0,163,255,.14), transparent 65%),
-        radial-gradient(1000px 700px at 90% 30%, rgba(30,77,255,.12), transparent 60%),
-        radial-gradient(900px 700px at 60% 90%, rgba(51,230,255,.08), transparent 55%),
-        linear-gradient(180deg, var(--bg), var(--bg2));
       color: var(--text);
-      line-height:1.55;
+      background:
+        radial-gradient(1200px 800px at 18% 10%, rgba(0,163,255,.12), transparent 65%),
+        radial-gradient(1000px 700px at 92% 22%, rgba(30,77,255,.10), transparent 60%),
+        radial-gradient(900px 700px at 60% 92%, rgba(51,230,255,.07), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      min-height:100vh;
       overflow-x:hidden;
+      line-height: 1.55;
     }
 
-    a{ color: inherit; text-decoration:none; }
+    a{ color:inherit; text-decoration:none; }
     button{ font-family: inherit; }
+    ::selection{ background: rgba(0,163,255,.25); }
 
-    /* Subtle grid */
-    #grid{
-      position: fixed; inset:0; z-index:-2; pointer-events:none;
+    /* Subtle grid + noise */
+    .bg-grid{
+      position: fixed; inset:0; z-index:-3; pointer-events:none;
       background-image:
         linear-gradient(to right, var(--grid) 1px, transparent 1px),
         linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
-      background-size: 46px 46px;
-      opacity: .55;
-      mask-image: radial-gradient(900px 600px at 40% 0%, rgba(0,0,0,.9), transparent 70%);
+      background-size: 54px 54px;
+      opacity: .45;
+      mask-image: radial-gradient(1000px 700px at 40% 0%, rgba(0,0,0,.95), transparent 70%);
     }
-    .noise{
-      position:fixed; inset:0; z-index:-1; pointer-events:none;
+    .bg-noise{
+      position: fixed; inset:0; z-index:-2; pointer-events:none;
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
-      opacity:.30;
+      opacity:.25;
     }
 
     /* Layout */
-    .app{
+    .shell{
+      display:grid;
+      grid-template-columns: 300px 1fr;
       min-height: 100vh;
-      display: grid;
-      grid-template-columns: 280px 1fr;
     }
-
-    @media (max-width: 980px){
-      .app{ grid-template-columns: 1fr; }
+    @media (max-width: 1020px){
+      .shell{ grid-template-columns: 1fr; }
     }
 
     /* Sidebar */
@@ -93,167 +99,249 @@
       position: sticky;
       top: 0;
       height: 100vh;
-      padding: 18px;
-      border-right: 1px solid rgba(255,255,255,.08);
+      padding: 20px;
+      border-right: 1px solid var(--border2);
       background: rgba(6,6,10,.35);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display:flex;
+      flex-direction: column;
+      gap: 16px;
     }
-    @media (max-width: 980px){
+    @media (max-width: 1020px){
       .sidebar{
         position: relative;
         height: auto;
         border-right: none;
-        border-bottom: 1px solid rgba(255,255,255,.08);
+        border-bottom: 1px solid var(--border2);
       }
     }
 
     .brand{
-      display:flex; align-items:center; gap:12px;
-      padding: 10px 12px;
+      display:flex; align-items:center; gap: 12px;
+      padding: 12px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
+      border: 1px solid var(--border);
       background: rgba(255,255,255,.03);
       box-shadow: var(--shadow2);
     }
     .brand img{
-      width: 34px; height: 34px; border-radius: 12px;
-      filter: drop-shadow(0 0 14px rgba(0,163,255,.25));
-      border: 1px solid rgba(255,255,255,.10);
-    }
-    .brand .t1{ font-weight: 900; letter-spacing: -.02em; }
-    .brand .t2{ font-size: 12px; color: var(--muted); font-weight: 700; margin-top: 1px; }
-
-    .nav{
-      margin-top: 14px;
-      display:flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .navbtn{
-      width: 100%;
-      display:flex; align-items:center; justify-content:space-between;
-      padding: 12px 14px;
+      width: 38px; height: 38px;
       border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      color: rgba(244,244,247,.86);
-      cursor: pointer;
-      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), background var(--speed) var(--ease);
+      border: 1px solid rgba(255,255,255,.12);
+      filter: drop-shadow(0 0 18px rgba(0,163,255,.22));
+    }
+    .brand .name{
       font-weight: 900;
-      letter-spacing: .01em;
+      letter-spacing: -.02em;
+      line-height: 1.05;
     }
-    .navbtn:hover{
-      transform: translateY(-1px);
-      border-color: rgba(0,163,255,.35);
-      background: rgba(255,255,255,.05);
-    }
-    .navbtn.active{
-      border-color: rgba(0,163,255,.45);
-      background: linear-gradient(90deg, rgba(0,163,255,.18), rgba(30,77,255,.12), rgba(51,230,255,.08));
-      box-shadow: 0 0 0 1px rgba(0,163,255,.08) inset;
-      color: var(--text);
-    }
-    .navhint{
+    .brand .sub{
+      margin-top: 2px;
       font-size: 12px;
-      color: rgba(244,244,247,.60);
+      color: var(--muted);
       font-weight: 800;
     }
 
-    .sidefoot{
+    .nav{
+      display:flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .navItem{
+      display:flex; align-items:center; justify-content:space-between;
+      gap: 10px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.02);
+      cursor: pointer;
+      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), background var(--speed) var(--ease);
+      text-align:left;
+    }
+    .navItem:hover{
+      transform: translateY(-1px);
+      border-color: rgba(0,163,255,.28);
+      background: rgba(255,255,255,.04);
+    }
+    .navItem.active{
+      border-color: rgba(0,163,255,.42);
+      background: linear-gradient(90deg, rgba(0,163,255,.16), rgba(30,77,255,.10), rgba(51,230,255,.06));
+      box-shadow: 0 0 0 1px rgba(0,163,255,.06) inset;
+    }
+    .navItem .left{
+      display:flex; flex-direction: column; gap: 2px;
+    }
+    .navItem .title{
+      font-weight: 900;
+      color: rgba(244,244,247,.92);
+      letter-spacing: -.01em;
+    }
+    .navItem .hint{
+      font-size: 12px;
+      color: var(--muted2);
+      font-weight: 800;
+    }
+    .badge{
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(244,244,247,.80);
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+    }
+
+    .sidebarFooter{
       margin-top: auto;
-      padding-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,.08);
       display:flex;
       flex-direction: column;
       gap: 10px;
     }
-    .sidefoot .small{
-      color: rgba(244,244,247,.55);
-      font-size: 12px;
-      font-weight: 800;
+    .quickLinks{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
-    .linkpill{
-      display:inline-flex; align-items:center; justify-content:center;
+    .linkPill{
       padding: 10px 12px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
+      background: rgba(255,255,255,.02);
       font-weight: 900;
+      color: rgba(244,244,247,.88);
       transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease);
     }
-    .linkpill:hover{ transform: translateY(-1px); border-color: rgba(0,163,255,.35); }
+    .linkPill:hover{
+      transform: translateY(-1px);
+      border-color: rgba(0,163,255,.28);
+    }
+    .copyright{
+      font-size: 12px;
+      color: rgba(244,244,247,.55);
+      font-weight: 800;
+    }
 
     /* Main */
     .main{
-      padding: 18px 22px;
+      padding: 22px;
     }
-
     .topbar{
       display:flex;
       align-items:center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 12px 14px;
+      gap: 14px;
+      padding: 14px 16px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(18,18,24,.45);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      background: rgba(18,18,24,.48);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       box-shadow: var(--shadow2);
     }
-
-    .titlewrap h1{
-      font-size: 1.05rem;
+    .topbar .pageTitle{
+      display:flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .topbar .pageTitle h1{
+      font-size: 16px;
       font-weight: 900;
       letter-spacing: -.02em;
+      line-height: 1.05;
     }
-    .titlewrap p{
-      margin-top: 2px;
+    .topbar .pageTitle p{
       font-size: 12px;
-      color: rgba(244,244,247,.60);
+      color: var(--muted);
       font-weight: 800;
     }
 
-    .userchip{
-      display:flex; align-items:center; gap: 10px;
+    .userArea{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      max-width: 520px;
+    }
+
+    .userChip{
+      display:flex;
+      align-items:center;
+      gap: 10px;
       padding: 8px 10px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
+      background: rgba(255,255,255,.02);
     }
-    .userchip img{
+    .userChip img{
       width: 34px; height: 34px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.20);
     }
-    .userchip .name{ font-weight: 900; font-size: 14px; line-height: 1.1; }
-    .userchip .id{ font-size: 12px; color: rgba(244,244,247,.62); font-weight: 800; margin-top: 2px; }
-    .userchip .btn{
-      margin-left: 8px;
-      padding: 9px 10px;
+    .userMeta{
+      display:flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+    .userMeta .uname{
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: -.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 260px;
+    }
+    .userMeta .uid{
+      font-size: 12px;
+      color: var(--muted2);
+      font-weight: 800;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      padding: 10px 12px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      color: rgba(244,244,247,.9);
+      background: rgba(255,255,255,.02);
+      color: rgba(244,244,247,.92);
       font-weight: 900;
       cursor:pointer;
-      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease);
+      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), background var(--speed) var(--ease);
+      user-select:none;
+      white-space: nowrap;
     }
-    .userchip .btn:hover{ transform: translateY(-1px); border-color: rgba(0,163,255,.35); }
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(0,163,255,.28);
+      background: rgba(255,255,255,.04);
+    }
+    .btn.primary{
+      border-color: rgba(0,163,255,.36);
+      background: linear-gradient(90deg, rgba(0,163,255,.24), rgba(30,77,255,.16), rgba(51,230,255,.10));
+      box-shadow: 0 0 26px rgba(0,163,255,.10);
+    }
 
-    .content{
+    /* Content card */
+    .panel{
       margin-top: 16px;
       border-radius: var(--radius2);
       border: 1px solid rgba(255,255,255,.10);
-      background: rgba(18,18,24,.40);
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(18,18,24,.42);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 14px 40px rgba(0,0,0,.34);
       overflow:hidden;
     }
-
-    .contentHead{
+    .panelHead{
       padding: 16px 16px 12px;
       border-bottom: 1px solid rgba(255,255,255,.08);
       display:flex;
@@ -261,75 +349,80 @@
       justify-content: space-between;
       gap: 12px;
     }
-    .contentHead h2{
-      font-size: 1.0rem;
+    .panelHead .hgroup{
+      display:flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .panelHead h2{
+      font-size: 14px;
       font-weight: 900;
-      letter-spacing: -.02em;
+      letter-spacing: -.01em;
     }
-    .contentHead .muted{
-      margin-top: 4px;
-      color: rgba(244,244,247,.62);
+    .panelHead .desc{
       font-size: 12px;
+      color: var(--muted);
       font-weight: 800;
+      max-width: 78ch;
     }
-
-    .contentBody{
+    .panelBody{
       padding: 16px;
     }
 
-    .grid{
+    .stats{
       display:grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
     }
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
+    @media (max-width: 1020px){
+      .stats{ grid-template-columns: 1fr; }
+      .userMeta .uname{ max-width: 160px; }
     }
 
-    .card{
+    .stat{
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,.10);
-      background: rgba(10,10,14,.42);
+      background: rgba(10,10,14,.40);
       padding: 14px;
     }
-    .card .k{ font-size: 12px; color: rgba(244,244,247,.60); font-weight: 900; }
-    .card .v{ margin-top: 6px; font-size: 14px; font-weight: 900; color: rgba(244,244,247,.92); }
+    .stat .k{
+      font-size: 12px;
+      color: var(--muted2);
+      font-weight: 900;
+    }
+    .stat .v{
+      margin-top: 6px;
+      font-size: 14px;
+      font-weight: 900;
+      color: rgba(244,244,247,.92);
+      letter-spacing: -.01em;
+    }
+
     .empty{
-      padding: 18px;
+      margin-top: 12px;
+      padding: 14px;
       border-radius: 16px;
       border: 1px dashed rgba(255,255,255,.16);
-      background: rgba(10,10,14,.30);
-      color: rgba(244,244,247,.70);
+      background: rgba(10,10,14,.26);
+      color: rgba(244,244,247,.68);
       font-weight: 800;
-      font-size: 13px;
+      font-size: 12px;
     }
 
-    .row{
-      display:flex; gap: 10px; flex-wrap: wrap;
-      margin-top: 10px;
-    }
-    .miniBtn{
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      color: rgba(244,244,247,.90);
-      font-weight: 900;
-      cursor:pointer;
-      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease);
-    }
-    .miniBtn:hover{ transform: translateY(-1px); border-color: rgba(0,163,255,.35); }
-
-    .err{
+    .error{
       margin-top: 12px;
-      color: rgba(255,120,120,.95);
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,120,120,.30);
+      background: rgba(255,120,120,.08);
+      color: rgba(255,160,160,.95);
       font-weight: 900;
       font-size: 13px;
     }
 
-    /* Focus visibility */
+    /* Focus */
     :focus-visible{
-      outline: 2px solid rgba(51,230,255,.55);
+      outline: 2px solid var(--focus);
       outline-offset: 3px;
       border-radius: 12px;
     }
@@ -341,23 +434,22 @@
 </head>
 
 <body>
-  <div id="grid"></div>
-  <div class="noise"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-noise"></div>
   <div id="app"></div>
 
   <script type="text/babel">
     const { useEffect, useMemo, useState } = React;
 
-    function Panel(){
+    function App(){
       const tabs = useMemo(() => ([
-        { id: "services", label: "Moje usługi", hint: "status / szybkie akcje" },
-        { id: "licenses", label: "Moje licencje", hint: "klucze / ważność" },
-        { id: "tickets",  label: "Moje zgłoszenia", hint: "podgląd ticketów" },
+        { id:"services", label:"Moje usługi", hint:"Status i zakres", badge:"—" },
+        { id:"licenses", label:"Moje licencje", hint:"Klucze i ważność", badge:"—" },
+        { id:"tickets",  label:"Moje zgłoszenia", hint:"Obsługa i historia", badge:"—" },
       ]), []);
 
       const [active, setActive] = useState("services");
 
-      // user from Discord login (session)
       const [me, setMe] = useState(null);
       const [meErr, setMeErr] = useState("");
 
@@ -366,7 +458,6 @@
           try {
             const res = await fetch("/api/me", { credentials: "include" });
             if (res.status === 401) {
-              // not logged in => go login
               window.location.href = "/auth/discord";
               return;
             }
@@ -377,7 +468,7 @@
             const data = await res.json();
             setMe(data.user);
           } catch (e) {
-            setMeErr("Błąd połączenia z serwerem. Odśwież stronę.");
+            setMeErr("Błąd połączenia z serwerem. Spróbuj odświeżyć.");
           }
         })();
       }, []);
@@ -397,48 +488,57 @@
         if (active === "services") {
           return {
             title: "Moje usługi",
-            desc: "Najważniejsze informacje o Twoich usługach. Resztę dodamy później (DB / panel admin).",
-            cards: [
+            desc: "Podsumowanie usług i ich statusów. W kolejnych krokach podepniemy bazę danych i listę usług.",
+            stats: [
               { k: "Status", v: "Aktywne (demo)" },
-              { k: "Hosting / SLA", v: "—" },
-              { k: "Ostatnia aktualizacja", v: "—" },
+              { k: "Monitoring / SLA", v: "—" },
+              { k: "Ostatnia zmiana", v: "—" },
             ],
-            empty: "Tu pojawi się lista usług (bot, panel, zabezpieczenia, AI) wraz ze statusem i szybkim kontaktem."
+            cta: { label: "Szczegóły", onClick: () => alert("Wkrótce: lista usług + szczegóły (backend + DB).") },
+            empty: "Tu będzie lista usług (bot, panel, zabezpieczenia, AI) z datami, statusem i szybkim kontaktem."
           };
         }
         if (active === "licenses") {
           return {
             title: "Moje licencje",
-            desc: "Klucze licencyjne i daty ważności (do podpięcia po wdrożeniu backendu/licencji).",
-            cards: [
+            desc: "Klucze licencyjne i daty ważności. Dodamy aktywację licencji po wdrożeniu modułu licencjonowania.",
+            stats: [
               { k: "Aktywne licencje", v: "0 (demo)" },
               { k: "Najbliższe wygaśnięcie", v: "—" },
-              { k: "Klucz", v: "—" },
+              { k: "Ostatni klucz", v: "—" },
             ],
-            empty: "Tu pojawią się Twoje licencje + przyciski: skopiuj klucz, pobierz pliki, historia."
+            cta: { label: "Dodaj licencję", onClick: () => alert("Wkrótce: aktywacja licencji (backend + DB).") },
+            empty: "Tu pojawią się licencje + akcje: kopiuj klucz, pobierz pliki, historia."
           };
         }
         return {
           title: "Moje zgłoszenia",
-          desc: "Zgłoszenia/tickety i ich status (wkrótce integracja z systemem tickets).",
-          cards: [
+          desc: "Zgłoszenia i status obsługi. W następnym etapie podepniemy system ticketów i historię rozmów.",
+          stats: [
             { k: "Otwarte", v: "0 (demo)" },
             { k: "W trakcie", v: "0 (demo)" },
             { k: "Zamknięte", v: "0 (demo)" },
           ],
-          empty: "Tu będzie lista zgłoszeń. Dodamy: tworzenie zgłoszenia, priorytet, załączniki, historia rozmów."
+          cta: { label: "Nowe zgłoszenie", onClick: () => alert("Wkrótce: tworzenie zgłoszeń (backend + DB).") },
+          empty: "Tu będzie lista ticketów + tworzenie zgłoszenia, priorytet, załączniki i historia."
         };
       }, [active]);
 
+      const subtitle = useMemo(() => {
+        if (active === "services") return "Zarządzaj usługami";
+        if (active === "licenses") return "Sprawdź licencje";
+        return "Obsługa zgłoszeń";
+      }, [active]);
+
       return (
-        <div className="app">
+        <div className="shell">
           {/* SIDEBAR */}
           <aside className="sidebar">
-            <div className="brand">
+            <div className="brand" aria-label="Lite Solutions">
               <img src="https://i.imgur.com/6Lsxvnw.png" alt="Lite Solutions" />
-              <div>
-                <div className="t1">Lite Solutions</div>
-                <div className="t2">Panel Klienta</div>
+              <div style={{minWidth:0}}>
+                <div className="name">Lite Solutions</div>
+                <div className="sub">Panel Klienta</div>
               </div>
             </div>
 
@@ -446,91 +546,83 @@
               {tabs.map(t => (
                 <button
                   key={t.id}
-                  className={"navbtn " + (active === t.id ? "active" : "")}
+                  className={"navItem " + (active === t.id ? "active" : "")}
                   onClick={() => setActive(t.id)}
                   type="button"
                 >
-                  <span>{t.label}</span>
-                  <span className="navhint">{t.hint}</span>
+                  <div className="left">
+                    <div className="title">{t.label}</div>
+                    <div className="hint">{t.hint}</div>
+                  </div>
+                  <div className="badge">{t.badge}</div>
                 </button>
               ))}
             </nav>
 
-            <div className="sidefoot">
-              <div className="small">Szybkie linki</div>
-              <a className="linkpill" href="workspace.html">Zaprojektuj bota</a>
-              <a className="linkpill" href="/">Wróć na stronę</a>
-              <div className="small">© 2025 Lite Solutions</div>
+            <div className="sidebarFooter">
+              <div className="quickLinks">
+                <a className="linkPill" href="workspace.html">Kreator bota</a>
+                <a className="linkPill" href="/">Strona główna</a>
+              </div>
+              <div className="copyright">© 2025 Lite Solutions</div>
             </div>
           </aside>
 
           {/* MAIN */}
           <main className="main">
-            <div className="topbar">
-              <div className="titlewrap">
-                <h1>{view.title}</h1>
-                <p>{view.desc}</p>
+            <div className="topbar" aria-label="Górny pasek">
+              <div className="pageTitle">
+                <h1>{subtitle}</h1>
+                <p>Minimalnie. Profesjonalnie. Najważniejsze informacje w jednym miejscu.</p>
               </div>
 
-              <div style={{display:"flex", alignItems:"center", gap:10}}>
+              <div className="userArea">
                 {me ? (
-                  <div className="userchip" title={"Discord ID: " + me.discordId}>
-                    <img src={me.avatarUrl || "https://cdn.discordapp.com/embed/avatars/0.png"} alt="avatar" />
-                    <div>
-                      <div className="name">{me.username || "Użytkownik"}</div>
-                      <div className="id">ID: {me.discordId}</div>
+                  <>
+                    <div className="userChip" title={"Discord ID: " + me.discordId}>
+                      <img src={me.avatarUrl || "https://cdn.discordapp.com/embed/avatars/0.png"} alt="avatar" />
+                      <div className="userMeta">
+                        <div className="uname">{me.username || "Użytkownik"}</div>
+                        <div className="uid">ID: {me.discordId}</div>
+                      </div>
                     </div>
                     <button className="btn" onClick={logout} type="button">Wyloguj</button>
-                  </div>
+                  </>
                 ) : (
-                  <div className="userchip" aria-label="Ładowanie profilu">
-                    <div style={{fontWeight:900, color:"rgba(244,244,247,.75)"}}>Ładowanie…</div>
+                  <div className="userChip" aria-label="Ładowanie profilu">
+                    <div className="userMeta">
+                      <div className="uname" style={{color:"rgba(244,244,247,.75)"}}>Ładowanie…</div>
+                      <div className="uid"> </div>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
 
-            {meErr && <div className="err">{meErr}</div>}
+            {meErr && <div className="error">{meErr}</div>}
 
-            <section className="content" aria-label="Zawartość sekcji">
-              <div className="contentHead">
-                <div>
-                  <h2>Podsumowanie</h2>
-                  <div className="muted">Minimalistycznie: tylko to, co potrzebne.</div>
+            <section className="panel" aria-label="Zawartość">
+              <div className="panelHead">
+                <div className="hgroup">
+                  <h2>{view.title}</h2>
+                  <div className="desc">{view.desc}</div>
                 </div>
-
-                <div className="row">
-                  {active === "tickets" ? (
-                    <button className="miniBtn" type="button" onClick={() => alert("Wkrótce: tworzenie zgłoszenia (backend + DB).")}>
-                      Nowe zgłoszenie
-                    </button>
-                  ) : null}
-
-                  {active === "licenses" ? (
-                    <button className="miniBtn" type="button" onClick={() => alert("Wkrótce: dodawanie/aktywacja licencji (backend + DB).")}>
-                      Dodaj licencję
-                    </button>
-                  ) : null}
-
-                  {active === "services" ? (
-                    <button className="miniBtn" type="button" onClick={() => alert("Wkrótce: szczegóły usług (backend + DB).")}>
-                      Szczegóły
-                    </button>
-                  ) : null}
-                </div>
+                <button className="btn primary" onClick={view.cta.onClick} type="button">
+                  {view.cta.label}
+                </button>
               </div>
 
-              <div className="contentBody">
-                <div className="grid">
-                  {view.cards.map((c, idx) => (
-                    <div key={idx} className="card">
-                      <div className="k">{c.k}</div>
-                      <div className="v">{c.v}</div>
+              <div className="panelBody">
+                <div className="stats">
+                  {view.stats.map((s, idx) => (
+                    <div key={idx} className="stat">
+                      <div className="k">{s.k}</div>
+                      <div className="v">{s.v}</div>
                     </div>
                   ))}
                 </div>
 
-                <div style={{marginTop: 12}} className="empty">
+                <div className="empty">
                   {view.empty}
                 </div>
               </div>
@@ -540,7 +632,7 @@
       );
     }
 
-    ReactDOM.createRoot(document.getElementById("app")).render(<Panel />);
+    ReactDOM.createRoot(document.getElementById("app")).render(<App />);
   </script>
 </body>
 </html>
