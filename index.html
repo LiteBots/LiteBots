@@ -744,30 +744,27 @@
         }, 900);
       };
 
-      // Lead form (demo)
+      // Lead form (pod API)
       const [lead, setLead] = useState({ name:'', contact:'', type:'discord-bot', budget:'', details:'' });
-      const [leadStatus, setLeadStatus] = useState('Wypełnij formularz — skopiujesz to jako gotową wiadomość na Discord.');
+      const [leadStatus, setLeadStatus] = useState('');
 
-      const copyLead = async () => {
-        const text =
-`Lite Solutions — zapytanie:
-- Imię/Nick: ${lead.name}
-- Kontakt: ${lead.contact}
-- Typ: ${lead.type}
-- Budżet: ${lead.budget || '(brak)'}
-- Opis: ${lead.details}`;
-        try{
-          await navigator.clipboard.writeText(text);
-          setLeadStatus('Skopiowano! Wklej to na Discordzie w ticket.');
-        }catch{
-          setLeadStatus('Nie udało się skopiować (uprawnienia przeglądarki). Skopiuj ręcznie.');
-        }
-      };
-
-      const submitLead = (e) => {
+      const submitLead = async (e) => {
         e.preventDefault();
-        setLeadStatus('Wersja demo — skopiuj opis i wklej na Discordzie. Jeśli chcesz: podepnę webhook/form endpoint.');
-        copyLead();
+        setLeadStatus('Wysyłanie...');
+
+        try {
+          // TODO: podłącz API, np.:
+          // await fetch('/api/lead', {
+          //   method: 'POST',
+          //   headers: { 'Content-Type': 'application/json' },
+          //   body: JSON.stringify(lead),
+          // });
+
+          await new Promise(r => setTimeout(r, 500)); // placeholder
+          setLeadStatus('Wysłano! Odezwiemy się wkrótce.');
+        } catch (err) {
+          setLeadStatus('Błąd wysyłki. Spróbuj ponownie.');
+        }
       };
 
       // Stats
@@ -809,7 +806,7 @@
 
         document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-        // Hero stats trigger (observe a sentinel inside hero content)
+        // Hero stats trigger
         const heroStatsEl = document.getElementById('heroStatsSentinel');
         const statsObs = new IntersectionObserver((entries) => {
           const vis = entries.some(x => x.isIntersecting);
@@ -878,11 +875,6 @@
                 </ul>
 
                 <div className="header-actions">
-                  <a className="pill" href="workspace.html" aria-label="Przejdź do kreatora bota">
-                    <span>Zaprojektuj swojego bota</span>
-                  </a>
-
-                  {/* ZAMIANA: Discord -> Panel Klienta */}
                   <a className="pill" href="panel.html" aria-label="Przejdź do Panelu Klienta">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                       <path d="M4 4h16a2 2 0 0 1 2 2v4H2V6a2 2 0 0 1 2-2zm-2 8h20v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6zm5 2v4h6v-4H7zm9 1h4v2h-4v-2z"/>
@@ -901,7 +893,6 @@
               <div className="container">
                 <div className="hero-grid">
                   <div className="reveal">
-                    {/* USUNIĘTO: pasek "Boty • Panele • AI • Zabezpieczenia" */}
                     <h1 className="hero-title">
                       Budujemy <span className="highlight">Discord boty</span><br/>
                       z panelami, AI i pełnym zabezpieczeniem.
@@ -1147,17 +1138,27 @@
 
                 <div className="team-grid">
                   <div className="team-card reveal">
-                    <img src="https://i.imgur.com/PCctkzH.png" alt="Zdjęcie CEO" />
+                    <img src="https://i.imgur.com/PCctkzH.png" alt="Zdjęcie zxq0" />
                     <div className="team-overlay">
                       <div>
                         <h3 style={{fontWeight:900, fontSize:'1.2rem'}}>zxq0</h3>
-                        <div className="role">CEO</div>
+                        <div className="role">Founder</div>
                       </div>
                     </div>
                   </div>
 
                   <div className="team-card reveal" style={{transitionDelay:'120ms'}}>
-                    <img src="https://i.imgur.com/VhduoxM.png" alt="Zdjęcie Managera" />
+                    <img src="https://i.imgur.com/vKU1INs.jpeg" alt="Zdjęcie kubus" />
+                    <div className="team-overlay">
+                      <div>
+                        <h3 style={{fontWeight:900, fontSize:'1.2rem'}}>kubus</h3>
+                        <div className="role engineer">Owner</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="team-card reveal" style={{transitionDelay:'240ms'}}>
+                    <img src="https://i.imgur.com/VhduoxM.png" alt="Zdjęcie KacpeR" />
                     <div className="team-overlay">
                       <div>
                         <h3 style={{fontWeight:900, fontSize:'1.2rem'}}>KacpeR</h3>
@@ -1165,17 +1166,8 @@
                       </div>
                     </div>
                   </div>
-
-                  <div className="team-card reveal" style={{transitionDelay:'240ms'}}>
-                    <img src="https://i.imgur.com/vKU1INs.jpeg" alt="Zdjęcie Inżyniera" />
-                    <div className="team-overlay">
-                      <div>
-                        <h3 style={{fontWeight:900, fontSize:'1.2rem'}}>kubus</h3>
-                        <div className="role engineer">Engineer</div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
+
               </div>
             </section>
 
@@ -1238,14 +1230,16 @@
                     <textarea id="details" value={lead.details} onChange={(e)=>setLead(v=>({...v, details:e.target.value}))} placeholder="Jakie moduły? Czy ma być panel? Jak ma działać AI? Integracje? Terminy?" required />
                   </div>
 
-                  <div className="field full" style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', gap:12}}>
-                    <div className="muted" style={{fontWeight:900}}>{leadStatus}</div>
-                    <div style={{display:'flex', gap:10, flexWrap:'wrap'}}>
-                      <button className="btn" type="button" onClick={copyLead}>Skopiuj opis</button>
-                      <button className="btn primary" type="submit">Wyślij (demo)</button>
-                    </div>
+                  <div className="field full" style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'flex-end', gap:12}}>
+                    <button className="btn primary" type="submit">Wyślij</button>
                   </div>
                 </form>
+
+                {leadStatus && (
+                  <div className="muted" style={{maxWidth:860, margin:'10px auto 0', fontWeight:900}}>
+                    {leadStatus}
+                  </div>
+                )}
               </div>
             </section>
           </main>
