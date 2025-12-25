@@ -13,7 +13,7 @@
   <meta property="og:title" content="Lite Solutions — Boty, Panele, AI i Zabezpieczenia" />
   <meta property="og:description" content="Discord Boty, panele do zarządzania botem, zabezpieczenia oraz automatyzacje AI." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://i.imgur.com/U0XKhNz.png" />
+  <meta property="og:image" content="https://i.imgur.com/6Lsxvnw.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -200,7 +200,7 @@
       border-color: rgba(0,163,255,.45);
       box-shadow: 0 0 24px rgba(0,163,255,.18);
     }
-    .pill img{ width: 22px; height: 22px; }
+    .pill svg{ width: 20px; height: 20px; }
 
     /* Scroll progress */
     .scroll-progress{
@@ -633,8 +633,8 @@
   <!-- PRELOADER -->
   <div id="preloader" aria-label="Ładowanie strony">
     <div style="display:flex; flex-direction:column; align-items:center;">
-      <img src="https://i.imgur.com/U0XKhNz.png" alt="Lite Solutions" style="width:76px; filter: drop-shadow(0 0 24px rgba(0,163,255,.25));" />
-      <div class="loading-hint">Ładuję doświadczenie premium…</div>
+      <img src="https://i.imgur.com/6Lsxvnw.png" alt="Lite Solutions" style="width:76px; filter: drop-shadow(0 0 24px rgba(0,163,255,.25));" />
+      <div class="loading-hint">Ładuje doświadczenie</div>
       <div class="loading-bar" aria-hidden="true"><div></div></div>
     </div>
   </div>
@@ -864,7 +864,7 @@
             <div className="container">
               <nav className="header-nav" aria-label="Główna nawigacja">
                 <a className="logo" href="#hero" onClick={(e)=>{e.preventDefault(); scrollTo('#hero');}} aria-label="Przejdź do sekcji start">
-                  <img src="https://i.imgur.com/U0XKhNz.png" alt="Lite Solutions Logo" />
+                  <img src="https://i.imgur.com/6Lsxvnw.png" alt="Lite Solutions Logo" />
                   <span className="logo-text">Lite Solutions</span>
                 </a>
 
@@ -881,9 +881,13 @@
                   <a className="pill" href="workspace.html" aria-label="Przejdź do kreatora bota">
                     <span>Zaprojektuj swojego bota</span>
                   </a>
-                  <a className="pill" href="https://discord.gg/litebots" target="_blank" rel="noopener">
-                    <img src="https://i.imgur.com/UOb8xvv.png" alt="Discord" />
-                    <span>Dołącz</span>
+
+                  {/* ZAMIANA: Discord -> Panel Klienta */}
+                  <a className="pill" href="panel.html" aria-label="Przejdź do Panelu Klienta">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M4 4h16a2 2 0 0 1 2 2v4H2V6a2 2 0 0 1 2-2zm-2 8h20v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6zm5 2v4h6v-4H7zm9 1h4v2h-4v-2z"/>
+                    </svg>
+                    <span>Panel Klienta</span>
                   </a>
                 </div>
               </nav>
@@ -897,7 +901,7 @@
               <div className="container">
                 <div className="hero-grid">
                   <div className="reveal">
-                    <div className="kicker"><span className="dot"></span> Boty • Panele • AI • Zabezpieczenia</div>
+                    {/* USUNIĘTO: pasek "Boty • Panele • AI • Zabezpieczenia" */}
                     <h1 className="hero-title">
                       Budujemy <span className="highlight">Discord boty</span><br/>
                       z panelami, AI i pełnym zabezpieczeniem.
@@ -910,10 +914,6 @@
                     <div className="hero-cta">
                       <a className="btn primary" href="workspace.html">
                         <span>Zaprojektuj swojego bota</span>
-                      </a>
-                      <a className="btn" href="https://discord.gg/litebots" target="_blank" rel="noopener">
-                        <img src="https://i.imgur.com/UOb8xvv.png" alt="" />
-                        <span>Wejdź na Discord</span>
                       </a>
                       <button className="btn" onClick={()=>scrollTo('#services')}>Poznaj usługi</button>
                     </div>
@@ -1191,19 +1191,16 @@
 
                 <div className="grid-3 reveal" style={{marginTop:26}}>
                   <div className="card">
-                    <h3 style={{fontWeight:900}}>Najszybciej</h3>
-                    <p className="muted">Wejdź na Discord i załóż ticket — odpowiemy najszybciej.</p>
-                    <div className="hr"></div>
-                    <a className="btn" style={{width:'100%'}} href="https://discord.gg/litebots" target="_blank" rel="noopener">
-                      <img src="https://i.imgur.com/UOb8xvv.png" alt="" />
-                      Discord / Ticket
-                    </a>
-                  </div>
-                  <div className="card">
                     <h3 style={{fontWeight:900}}>Kreator bota</h3>
                     <p className="muted">Wypełnij “Zaprojektuj swojego bota” — masz gotowy brief.</p>
                     <div className="hr"></div>
                     <a className="btn primary" style={{width:'100%'}} href="workspace.html">Zaprojektuj swojego bota</a>
+                  </div>
+                  <div className="card">
+                    <h3 style={{fontWeight:900}}>Panel Klienta</h3>
+                    <p className="muted">Zaloguj się do panelu i zarządzaj projektem / usługami.</p>
+                    <div className="hr"></div>
+                    <a className="btn" style={{width:'100%'}} href="panel.html">Przejdź do Panelu</a>
                   </div>
                   <div className="card">
                     <h3 style={{fontWeight:900}}>Szybka konsultacja</h3>
@@ -1256,12 +1253,12 @@
           <footer>
             <div className="container">
               <div style={{fontWeight:900, letterSpacing:'-.02em'}}>© 2025 Lite Solutions</div>
-              <div className="muted" style={{marginTop:6}}>Discord Boty • Panele • AI • Zabezpieczenia</div>
+              <div className="muted" style={{marginTop:6}}>Rozwiązania dla społeczności Discord</div>
               <div className="footer-links">
                 <a href="#hero" onClick={(e)=>{e.preventDefault(); scrollTo('#hero');}}>Start</a>
                 <a href="#services" onClick={(e)=>{e.preventDefault(); scrollTo('#services');}}>Usługi</a>
                 <a href="workspace.html">Zaprojektuj bota</a>
-                <a href="https://discord.gg/litebots" target="_blank" rel="noopener">Discord</a>
+                <a href="panel.html">Panel Klienta</a>
               </div>
             </div>
           </footer>
@@ -1270,7 +1267,7 @@
           <div id="chat-widget" className={isChatOpen ? 'is-open' : ''} role="dialog" aria-label="Czat wsparcia">
             <div className="chat-header">
               <h3>
-                <img src="https://i.imgur.com/U0XKhNz.png" alt="" />
+                <img src="https://i.imgur.com/6Lsxvnw.png" alt="" />
                 Lite Solutions — Centrum Wsparcia
               </h3>
               <button className="chat-close-btn" onClick={toggleChat} aria-label="Zamknij czat">×</button>
@@ -1280,7 +1277,7 @@
               {messages.map((m) => (
                 <div key={m.id} className={'message ' + m.sender}>
                   {m.sender === 'bot' && (
-                    <img className="message-avatar" src="https://i.imgur.com/U0XKhNz.png" alt="Bot Avatar" />
+                    <img className="message-avatar" src="https://i.imgur.com/6Lsxvnw.png" alt="Bot Avatar" />
                   )}
                   <div className="message-content" dangerouslySetInnerHTML={{__html: m.text}} />
                 </div>
@@ -1288,7 +1285,7 @@
 
               {isBotThinking && (
                 <div className="message bot">
-                  <img className="message-avatar" src="https://i.imgur.com/U0XKhNz.png" alt="Bot Avatar" />
+                  <img className="message-avatar" src="https://i.imgur.com/6Lsxvnw.png" alt="Bot Avatar" />
                   <div className="message-content typing-indicator" aria-label="Bot pisze">
                     <span></span><span></span><span></span>
                   </div>
