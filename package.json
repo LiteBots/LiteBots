@@ -9,6 +9,7 @@
   "dependencies": {
     "express": "^4.19.2",
     "express-session": "^1.17.3",
+    "connect-mongo": "^5.1.0",
     "node-fetch": "^2.7.0"
   }
 }
