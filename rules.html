@@ -38,7 +38,7 @@
     *{ box-sizing:border-box; margin:0; padding:0; }
     html{ scroll-behavior:smooth; }
     body{
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
       background:
         radial-gradient(1200px 800px at 20% 10%, rgba(0,163,255,.18), transparent 65%),
         radial-gradient(1000px 700px at 90% 30%, rgba(30,77,255,.16), transparent 60%),
@@ -50,9 +50,17 @@
     }
 
     a{ color: inherit; text-decoration:none; }
+    a.link{
+      color: rgba(51,230,255,.95);
+      text-decoration: underline;
+      text-decoration-color: rgba(51,230,255,.35);
+      text-underline-offset: 3px;
+    }
+    a.link:hover{ text-decoration-color: rgba(51,230,255,.65); }
 
     .container{ max-width: 1050px; margin: 0 auto; padding: 0 20px; }
 
+    /* Background grid + noise + aurora */
     #grid-background{
       position:fixed; inset:0; z-index:-3;
       background-image:
@@ -61,131 +69,233 @@
       background-size: 44px 44px;
       animation: pan-grid 70s linear infinite;
       mask-image: radial-gradient(900px 600px at 50% 10%, rgba(0,0,0,.9), transparent 70%);
+      opacity:.9;
     }
-    @keyframes pan-grid{ to{ background-position:1200px 700px; } }
-
+    @keyframes pan-grid{ 0%{ background-position:0 0; } 100%{ background-position:1200px 700px; } }
     .noise{
-      position:fixed; inset:0; z-index:-2;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      position:fixed; inset:0; z-index:-2; pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
       opacity:.35;
-      pointer-events:none;
     }
-
     .aurora{
-      position:fixed; inset:0; z-index:-4;
+      position:fixed; inset:0; z-index:-4; pointer-events:none;
       filter: blur(80px);
       opacity:.75;
     }
     .blob{
-      position:absolute; width:520px; height:520px; border-radius:50%;
+      position:absolute; width:540px; height:540px; border-radius:50%;
       background:
         radial-gradient(circle at 30% 30%, rgba(30,77,255,.55), transparent 60%),
-        radial-gradient(circle at 70% 70%, rgba(0,163,255,.50), transparent 58%);
-      animation: float 22s ease-in-out infinite alternate;
+        radial-gradient(circle at 70% 70%, rgba(0,163,255,.50), transparent 58%),
+        radial-gradient(circle at 40% 80%, rgba(51,230,255,.35), transparent 62%);
+      animation: float 18s var(--ease) infinite alternate;
     }
-    .blob.b1{ top:-180px; left:-160px; }
-    .blob.b2{ bottom:-220px; right:-200px; opacity:.6; }
-
+    .blob.b1{ top:-180px; left:-160px; animation-duration: 22s; }
+    .blob.b2{ top: 25vh; left: 52vw; width:460px; height:460px; animation-duration: 28s; opacity:.65;}
+    .blob.b3{ bottom:-220px; right:-200px; width:520px; height:520px; animation-duration: 24s; opacity:.55;}
     @keyframes float{
-      to{ transform: translate(80px,-40px) scale(1.08); }
+      from{ transform: translate3d(0,0,0) rotate(0deg) scale(1); }
+      to{ transform: translate3d(80px, -40px, 0) rotate(25deg) scale(1.08); }
     }
 
+    /* Header */
     header{
       position: sticky;
       top: 16px;
       z-index: 20;
-      padding-top:16px;
+      padding: 16px 0 0;
     }
-
     .header-nav{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:12px 16px;
+      display:flex; align-items:center; justify-content:space-between; gap: 12px;
+      padding: 12px 16px;
       background: rgba(18,18,24,.55);
-      border:1px solid var(--border);
-      border-radius:999px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
       backdrop-filter: blur(var(--headerBlur));
+      -webkit-backdrop-filter: blur(var(--headerBlur));
       box-shadow: var(--shadow2);
     }
-
     .logo{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:900;
+      display:flex; align-items:center; gap: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
     }
-    .logo img{
-      width:34px;
-      height:34px;
-      border-radius:10px;
+
+    /* LOGO IMG (dodane) */
+    .logo-img{
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 0 22px rgba(0,163,255,.12);
+      background: linear-gradient(180deg, rgba(0,163,255,.30), rgba(30,77,255,.22));
+      display:block;
     }
+
+    .logo-text{ font-weight: 900; letter-spacing: -.02em; }
 
     .pill{
-      padding:10px 14px;
-      border-radius:999px;
-      border:1px solid var(--border);
+      display:inline-flex; gap: 10px; align-items:center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
       background: rgba(255,255,255,.05);
-      font-weight:900;
+      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), box-shadow var(--speed) var(--ease);
+      cursor:pointer;
+      font-weight: 900;
+      color: rgba(244,244,247,.92);
+      user-select:none;
+      white-space: nowrap;
     }
-
-    .btn{
-      padding:10px 14px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      font-weight:900;
-      transition:.3s;
-    }
-    .btn:hover{
+    .pill:hover{
+      transform: translateY(-1px) scale(1.02);
       border-color: rgba(0,163,255,.45);
-      box-shadow: 0 0 22px rgba(0,163,255,.18);
+      box-shadow: 0 0 24px rgba(0,163,255,.18);
     }
 
-    main{ padding: 40px 0 90px; }
-
+    /* Page */
+    main{ padding: 34px 0 90px; }
+    .hero{
+      padding: 42px 0 18px;
+    }
+    .kicker{
+      display:inline-flex; gap:10px; align-items:center;
+      padding: 8px 12px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color: rgba(244,244,247,.78);
+      width: fit-content;
+    }
+    .dot{
+      width: 10px; height: 10px; border-radius:50%;
+      background: linear-gradient(180deg, var(--p1), var(--p2));
+      box-shadow: 0 0 14px var(--pGlow);
+    }
     h1{
-      font-size: clamp(2.2rem, 4.8vw, 3.4rem);
-      font-weight:900;
-      margin:16px 0 12px;
+      font-size: clamp(2.2rem, 4.8vw, 3.6rem);
+      font-weight: 900;
+      letter-spacing: -.05em;
+      line-height: 1.08;
+      margin-top: 16px;
+      background: linear-gradient(180deg, #fff, rgba(244,244,247,.70));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .subtitle{
+      margin-top: 12px;
+      color: var(--muted);
+      max-width: 80ch;
+      font-size: 1.05rem;
     }
 
     .card{
-      margin-top:18px;
-      padding:22px;
+      margin-top: 22px;
       background: var(--surface);
-      border:1px solid rgba(255,255,255,.11);
+      border: 1px solid rgba(255,255,255,.11);
       border-radius: var(--radius2);
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.22);
       backdrop-filter: blur(12px);
-      box-shadow: var(--shadow2);
+      -webkit-backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
     }
+    .card::before{
+      content:""; position:absolute; inset:-2px; opacity:.85;
+      background:
+        radial-gradient(520px 220px at 15% 0%, rgba(0,163,255,.14), transparent 60%),
+        radial-gradient(520px 220px at 85% 20%, rgba(51,230,255,.08), transparent 62%);
+      pointer-events:none;
+    }
+    .card > *{ position:relative; z-index:1; }
 
     .section-title{
-      font-weight:900;
-      margin-bottom:10px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+      font-size: 1.25rem;
+      margin-bottom: 10px;
     }
 
     ol.rules{
-      padding-left:20px;
+      margin-top: 10px;
       display:flex;
-      flex-direction:column;
-      gap:10px;
+      flex-direction: column;
+      gap: 10px;
+      padding-left: 20px;
+    }
+    ol.rules li{
+      padding: 12px 12px 12px 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(10,10,14,.38);
+    }
+    ol.rules li strong{
+      font-weight: 900;
     }
 
-    ol.rules li{
-      padding:12px;
-      border-radius:16px;
-      background: rgba(10,10,14,.38);
-      border:1px solid rgba(255,255,255,.10);
+    .note{
+      margin-top: 14px;
+      padding: 14px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(10,10,14,.35);
+      color: rgba(244,244,247,.78);
+    }
+    .note b{ color: rgba(244,244,247,.95); }
+
+    .grid{
+      margin-top: 18px;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 16px;
+    }
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .btn{
+      display:inline-flex; gap: 12px; align-items:center; justify-content:center;
+      padding: 12px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      font-weight: 900;
+      letter-spacing:.01em;
+      transition: transform var(--speed) var(--ease), box-shadow var(--speed) var(--ease), border-color var(--speed) var(--ease), background var(--speed) var(--ease);
+      cursor:pointer;
+      user-select:none;
+      width: 100%;
+      white-space: nowrap;
+    }
+    .btn:hover{
+      transform: translateY(-1px) scale(1.01);
+      border-color: rgba(0,163,255,.45);
+      box-shadow: 0 0 26px rgba(0,163,255,.18);
+      background: rgba(255,255,255,.07);
+    }
+    .btn.primary{
+      border: 1px solid rgba(0,163,255,.35);
+      background: linear-gradient(90deg, rgba(0,163,255,.35), rgba(30,77,255,.28), rgba(51,230,255,.20));
+      box-shadow: 0 18px 60px rgba(0,163,255,.10);
     }
 
     footer{
-      padding:34px 0 50px;
-      border-top:1px solid rgba(255,255,255,.08);
-      text-align:center;
+      padding: 34px 0 50px;
+      border-top: 1px solid rgba(255,255,255,.08);
       color: rgba(244,244,247,.65);
+      text-align:center;
+    }
+
+    /* Accessibility */
+    :focus-visible{
+      outline: 2px solid rgba(51,230,255,.55);
+      outline-offset: 3px;
+      border-radius: 12px;
+    }
+    @media (prefers-reduced-motion: reduce){
+      html{ scroll-behavior: auto; }
+      *{ animation: none !important; transition: none !important; }
     }
   </style>
 </head>
@@ -193,69 +303,120 @@
 <body>
   <div id="grid-background"></div>
   <div class="noise"></div>
-  <div class="aurora">
+  <div class="aurora" aria-hidden="true">
     <div class="blob b1"></div>
     <div class="blob b2"></div>
+    <div class="blob b3"></div>
   </div>
 
   <header>
     <div class="container">
-      <div class="header-nav">
-        <a class="logo" href="index.html">
-          <img src="https://i.imgur.com/6Lsxvnw.png" alt="Lite Solutions logo">
-          <span>Lite Solutions</span>
+      <div class="header-nav" aria-label="Nawigacja">
+        <a class="logo" href="index.html" aria-label="Lite Solutions — strona główna">
+          <img class="logo-img" src="https://i.imgur.com/6Lsxvnw.png" alt="Lite Solutions — logo" />
+          <span class="logo-text">Lite Solutions</span>
         </a>
 
-        <div style="display:flex; gap:10px;">
-          <span class="pill">Regulamin • v1.0</span>
-          <a href="index.html" class="btn">Powrót na stronę główną</a>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <a class="pill" href="index.html" aria-label="Powrót na stronę główną" title="Powrót na stronę główną">
+            Powrót na stronę główną
+          </a>
+          <span class="pill" title="Wersja dokumentu" aria-label="Wersja dokumentu">
+            Regulamin • v1.0
+          </span>
         </div>
       </div>
     </div>
   </header>
 
   <main class="container">
-    <h1>Regulamin Lite Solutions</h1>
+    <section class="hero" aria-label="Regulamin Lite Solutions">
+      <div class="kicker"><span class="dot" aria-hidden="true"></span> Dokument informacyjny</div>
+      <h1>Regulamin Lite Solutions</h1>
+      <p class="subtitle">
+        Niniejszy regulamin określa zasady współpracy, zakupu, hostingu oraz wsparcia technicznego dla usług Lite Solutions
+        (boty Discord, panele webowe, zabezpieczenia, AI i automatyzacje).
+      </p>
 
-    <div class="card">
-      <div class="section-title">§1. Zasady ogólne</div>
-      <ol class="rules">
-        <li><strong>Brak zwrotów:</strong> brak możliwości zwrotu po zakupie.</li>
-        <li><strong>Kultura zgłoszeń:</strong> obowiązek zachowania kultury.</li>
-        <li><strong>Brak dostępu do kodu:</strong> podczas hostingu u Lite Solutions.</li>
-        <li><strong>Hosting:</strong> utrzymanie po stronie Lite Solutions.</li>
-      </ol>
-    </div>
+      <div class="grid">
+        <div class="card">
+          <div class="section-title">§1. Zasady ogólne</div>
+          <ol class="rules">
+            <li><strong>Brak zwrotów:</strong> nie ma możliwości zwrotu po zakupie (usługa cyfrowa/wykonanie na zamówienie).</li>
+            <li><strong>Kultura zgłoszeń:</strong> zachowaj kulturę podczas otwierania zgłoszenia i kontaktu z supportem.</li>
+            <li><strong>Bez pośpieszania:</strong> zakazuje się pośpieszania oraz wywierania presji na zespół realizacyjny.</li>
+            <li><strong>Wsparcie techniczne:</strong> każdy klient ma prawo do darmowego wsparcia technicznego w ramach ustalonego zakresu.</li>
+            <li><strong>Brak dostępu do kodu:</strong> klient nie otrzymuje dostępu do kodu bota/strony w trakcie hostowania u Lite Solutions.</li>
+            <li><strong>Obowiązek doprowadzenia do działania:</strong> od momentu zakupu po naszej stronie leży doprowadzenie bota/strony do stanu pełnej funkcjonalności i gotowości do użytkowania (zgodnie z ustalonym zakresem).</li>
+            <li><strong>Hosting:</strong> produkt hostowany jest przez Lite Solutions (infrastruktura i utrzymanie po naszej stronie).</li>
+          </ol>
 
-    <div class="card">
-      <div class="section-title">§3. Rezygnacja z hostingu</div>
-      <ol class="rules">
-        <li>Pliki wydawane po 6 miesiącach od rezygnacji.</li>
-        <li>Bot działa wyłącznie z kluczem licencyjnym.</li>
-      </ol>
-    </div>
+          <div class="note">
+            <b>Uwaga:</b> „Darmowe wsparcie” oznacza pomoc w obsłudze, diagnostyce oraz usuwaniu błędów w zakresie zakupionej usługi.
+            Nowe funkcje, rozbudowy, zmiany zakresu lub integracje mogą wymagać dodatkowej wyceny.
+          </div>
+        </div>
 
-    <div class="card">
-      <div class="section-title">§4. Licencja i odsprzedaż</div>
-      <ol class="rules">
-        <li>Zakaz odsprzedaży poza Lite Solutions.</li>
-        <li>Zgodność z Discord Terms.</li>
-      </ol>
-    </div>
+        <div class="card">
+          <div class="section-title">§2. Szybkie skróty</div>
+          <p style="color: var(--muted); margin-bottom: 12px;">
+            Jeśli chcesz, możesz podmienić linki poniżej na swoje:
+          </p>
 
-    <div class="card">
-      <div class="section-title">§5. Postanowienia końcowe</div>
-      <ol class="rules">
-        <li>Kontakt przez oficjalne kanały Lite Solutions.</li>
-        <li>Regulamin obowiązuje od publikacji.</li>
-      </ol>
-    </div>
+          <div style="display:grid; gap: 10px;">
+            <a class="btn primary" href="workspace.html" rel="nofollow">Zaprojektuj bota (kreator)</a>
+            <a class="btn" href="panel.html" rel="nofollow">Panel Klienta</a>
+            <a class="btn" href="#warunki">Warunki odsprzedaży</a>
+            <a class="btn" href="#discord-terms">Discord Terms</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="section-title">§3. Rezygnacja z hostingu i pliki</div>
+        <ol class="rules">
+          <li><strong>Odstąpienie od współpracy:</strong> w momencie zakończenia hostowania u nas (rezygnacja ze współpracy) klient ma prawo do otrzymania plików strony/bota po <strong>6 miesiącach</strong> od zrezygnowania z hostowania.</li>
+          <li><strong>Klucz licencyjny:</strong> po otrzymaniu plików bota użytkownik otrzymuje klucz licencyjny, bez którego bot nie będzie działał.</li>
+          <li><strong>Bezpieczeństwo i kontrola:</strong> klucz licencyjny i mechanizmy zabezpieczeń służą ochronie produktu i integralności działania.</li>
+        </ol>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="section-title">§4. Licencja i odsprzedaż</div>
+        <ol class="rules" id="warunki">
+          <li><strong>Zakaz odsprzedaży:</strong> zakazuje się odsprzedaży discord bota po jego zakupie poza warunkami opisanymi poniżej.</li>
+          <li><strong>Zgodność z Discord:</strong> nakazuje się przestrzegania postanowień Discord, w tym <a class="link" id="discord-terms" href="https://discord.com/terms" target="_blank" rel="noopener noreferrer">Discord Terms</a>.</li>
+
+          <!-- DODANE PODPUNKTY (extra) -->
+          <li><strong>Zakaz udostępniania:</strong> zakazuje się udostępniania produktu (bota/panelu/strony) osobom trzecim do użytku komercyjnego bez zgody Lite Solutions.</li>
+          <li><strong>Zakaz obchodzenia zabezpieczeń:</strong> zakazuje się prób omijania licencji, zabezpieczeń, limitów, podpisów lub mechanizmów weryfikacji.</li>
+          <li><strong>Odpowiedzialność za konfigurację serwera:</strong> klient odpowiada za uprawnienia na swoim serwerze Discord (role, dostęp do kanałów, uprawnienia staffu) oraz przestrzeganie regulaminów społeczności.</li>
+          <li><strong>Materiały i treści:</strong> klient ponosi odpowiedzialność za treści wprowadzane do bota/strony/panelu (np. nazwy, opisy, grafiki, teksty), w tym za prawa autorskie.</li>
+          <li><strong>Zmiany w zakresie:</strong> dodatkowe funkcje, integracje i rozbudowy realizowane są po uzgodnieniu zakresu i wyceny.</li>
+        </ol>
+
+        <div class="note">
+          <b>Warunki odsprzedaży:</b><br/>
+          Klient ma prawo do odsprzedania swojego discord bota osobie trzeciej <strong>za pośrednictwem Lite Solutions</strong>.
+          Osoba trzecia musi wnieść opłatę za <strong>nowy klucz licencyjny</strong>.
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="section-title">§5. Postanowienia końcowe</div>
+        <ol class="rules">
+          <li><strong>Kontakt:</strong> preferowany kontakt odbywa się przez kanały wskazane przez Lite Solutions (np. Discord / panel / zgłoszenia).</li>
+          <li><strong>Aktualizacje regulaminu:</strong> Lite Solutions może aktualizować regulamin. Najnowsza wersja obowiązuje od momentu publikacji.</li>
+          <li><strong>Akceptacja:</strong> zakup lub rozpoczęcie współpracy oznacza akceptację niniejszego regulaminu.</li>
+        </ol>
+      </div>
+    </section>
   </main>
 
   <footer>
     <div class="container">
-      <div style="font-weight:900;">© 2025 Lite Solutions</div>
-      <div>Regulamin — rules.html</div>
+      <div style="font-weight:900; letter-spacing:-.02em;">© 2025 Lite Solutions</div>
+      <div style="margin-top:6px; color: rgba(244,244,247,.65);">Regulamin — rules.html</div>
     </div>
   </footer>
 </body>
