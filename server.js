@@ -5,6 +5,7 @@
  * - Admin auth (ONE input, accepts 2 passwords in Variables) with session
  * - Sessions stored in MongoDB (connect-mongo) -> no MemoryStore warning
  * - Admin API for tickets read/send via bot token
+ * - Optional: start bot.js in same process (RUN_BOT=true)
  */
 
 const path = require("path");
@@ -12,6 +13,8 @@ const express = require("express");
 const session = require("express-session");
 const crypto = require("crypto");
 const MongoStore = require("connect-mongo");
+
+const fetch = require("node-fetch"); // v2
 
 const app = express();
 app.set("trust proxy", 1);
@@ -37,6 +40,9 @@ const {
   // Discord bot token for admin tickets API (optional)
   DISCORD_BOT_TOKEN,
   DISCORD_TICKETS_CATEGORY_ID, // e.g. 1266064860802973859
+
+  // Start bot from server
+  RUN_BOT,
 } = process.env;
 
 const IS_PROD = NODE_ENV === "production";
@@ -91,12 +97,10 @@ app.use(
 );
 
 // -------------------- STATIC FILES (ROOT) --------------------
-// You said: all files are stored in repository root, no /public.
 app.use(
   express.static(__dirname, {
     extensions: ["html"],
     setHeaders(res, filePath) {
-      // don't cache HTML
       if (filePath.endsWith(".html")) res.setHeader("Cache-Control", "no-store");
     },
   })
@@ -219,7 +223,7 @@ async function discordBotFetch(endpoint, options = {}) {
 async function listTicketsInCategory(guildId, categoryId) {
   const channels = await discordBotFetch(`/guilds/${guildId}/channels`, { method: "GET" });
   return (channels || [])
-    .filter((c) => c.parent_id === categoryId && c.type === 0) // 0 = text
+    .filter((c) => c.parent_id === categoryId && c.type === 0)
     .map((c) => ({ id: c.id, name: c.name }));
 }
 
@@ -237,7 +241,7 @@ async function sendMessageAsBot(channelId, content) {
 
 // -------------------- ROUTES --------------------
 
-// Home always index.html (no auto-login)
+// Home ALWAYS index.html (no auto-login on home)
 app.get("/", (req, res) => {
   noStore(res);
   return res.sendFile(path.join(__dirname, "index.html"));
@@ -338,10 +342,6 @@ app.get("/api/admin/me", (req, res) => {
 });
 
 // ---- Admin tickets API (Discord bot token) ----
-// Call examples:
-// GET /api/admin/tickets?guildId=YOUR_GUILD_ID
-// GET /api/admin/tickets/:channelId
-// POST /api/admin/tickets/:channelId/send {content}
 app.get("/api/admin/tickets", requireAdminAuth, async (req, res) => {
   noStore(res);
 
@@ -410,6 +410,17 @@ app.post("/api/admin/tickets/:channelId/send", requireAdminAuth, async (req, res
 // 404
 app.use((req, res) => res.status(404).send("Not Found"));
 
+// Start server
 app.listen(SERVER_PORT, () => {
   console.log(`✅ server.js running on port ${SERVER_PORT} (${IS_PROD ? "prod" : "dev"})`);
 });
+
+// Optional start bot in same process
+if (RUN_BOT === "true") {
+  try {
+    require("./bot.js");
+    console.log("✅ bot.js started (RUN_BOT=true)");
+  } catch (e) {
+    console.error("❌ bot.js failed to start:", e);
+  }
+}
