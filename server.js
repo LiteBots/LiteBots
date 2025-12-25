@@ -1,335 +1,441 @@
+/**
+ * server.js — Lite Solutions
+ * - Static files from root (index.html, panel.html, admin.html, etc.)
+ * - Discord OAuth2 login for client panel (/panel.html)
+ * - Admin auth (2 passwords in Variables) with session
+ * - Admin API for tickets read/send via bot token
+ *
+ * Works on https://www.litesolutions.pl
+ */
+
+const path = require("path");
 const express = require("express");
 const session = require("express-session");
-const path = require("path");
 const crypto = require("crypto");
-const fetch = require("node-fetch");
 
+// Node 20 has global fetch. If you are on older node, install node-fetch.
 const app = express();
+app.set("trust proxy", 1); // important on Railway / reverse proxies
 
+// -------------------- ENV --------------------
 const {
-  PORT = 3000,
-  NODE_ENV = "development",
+  NODE_ENV,
+  PORT,
 
-  // Sessions
-  SESSION_SECRET,
-
-  // Client panel Discord OAuth
+  // Discord OAuth (client login)
   DISCORD_CLIENT_ID,
   DISCORD_CLIENT_SECRET,
-  DISCORD_REDIRECT_URI, // https://www.litesolutions.pl/auth/discord/callback
-  POST_LOGIN_REDIRECT = "/panel.html",
+  DISCORD_REDIRECT_URI, // e.g. https://www.litesolutions.pl/auth/discord/callback
 
-  // Admin login (two passwords)
+  // Session cookie
+  SESSION_SECRET,
+
+  // Admin
   ADMIN_PASS_1,
   ADMIN_PASS_2,
 
-  // Discord bot for tickets (admin)
+  // Discord bot token for admin tickets API
   DISCORD_BOT_TOKEN,
-  DISCORD_TICKETS_CATEGORY_ID, // ID kategorii, w której są kanały ticketów
+  DISCORD_TICKETS_CATEGORY_ID, // e.g. 1266064860802973859
 } = process.env;
 
-function requireEnv(name) {
+const IS_PROD = NODE_ENV === "production";
+const SERVER_PORT = PORT || 3000;
+
+function must(name) {
   if (!process.env[name]) {
-    console.error(`[ENV] Missing ${name}`);
+    console.error(`❌ Missing ENV: ${name}`);
     process.exit(1);
   }
 }
 
-// Required for base app
-requireEnv("SESSION_SECRET");
+// Required for OAuth + sessions
+must("SESSION_SECRET");
+must("DISCORD_CLIENT_ID");
+must("DISCORD_CLIENT_SECRET");
+must("DISCORD_REDIRECT_URI");
 
-// Required for client OAuth (panel)
-requireEnv("DISCORD_CLIENT_ID");
-requireEnv("DISCORD_CLIENT_SECRET");
-requireEnv("DISCORD_REDIRECT_URI");
+// Admin passwords are required only if you use admin login.
+// If you want to run without admin, comment these two must() lines.
+must("ADMIN_PASS_1");
+must("ADMIN_PASS_2");
 
-// Admin passwords required for admin panel login
-requireEnv("ADMIN_PASS_1");
-requireEnv("ADMIN_PASS_2");
+// Bot token is required only for tickets API.
+// You can leave it empty if you don't use tickets endpoints.
+const HAS_BOT_API = !!DISCORD_BOT_TOKEN;
 
-app.set("trust proxy", 1);
-app.use(express.json());
+// -------------------- MIDDLEWARE --------------------
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true }));
 
-// ---- Sessions ----
 app.use(
   session({
-    name: "ls_sid",
+    name: "ls.sid",
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      sameSite: "lax",
-      secure: NODE_ENV === "production",
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      sameSite: "lax", // OAuth redirect works fine with lax on same-site
+      secure: IS_PROD, // MUST be true on https
+      maxAge: 1000 * 60 * 60 * 24 * 14, // 14 days
     },
   })
 );
 
-// ---- Helpers ----
-function discordAvatarUrl(user) {
-  if (!user?.id) return null;
-  if (!user.avatar) return "https://cdn.discordapp.com/embed/avatars/0.png";
-  const isGif = user.avatar.startsWith("a_");
-  const ext = isGif ? "gif" : "png";
-  return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${ext}?size=128`;
+// No-store for auth sensitive endpoints
+function noStore(res) {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
 }
 
-function requireUser(req, res, next) {
-  if (!req.session?.user) return res.status(401).json({ error: "unauthorized" });
-  next();
+// -------------------- STATIC FILES (ROOT) --------------------
+// IMPORTANT: you said all files are in repo root, no /public
+app.use(
+  express.static(__dirname, {
+    extensions: ["html"],
+    setHeaders(res, filePath) {
+      if (filePath.endsWith(".html")) {
+        res.setHeader("Cache-Control", "no-store");
+      }
+    },
+  })
+);
+
+// -------------------- HELPERS --------------------
+function requireClientAuth(req, res, next) {
+  if (req.session?.user) return next();
+  return res.redirect("/auth/discord");
 }
 
-function requireAdmin(req, res, next) {
-  if (!req.session?.admin) return res.status(401).json({ error: "admin_unauthorized" });
-  next();
+function requireAdminAuth(req, res, next) {
+  if (req.session?.admin) return next();
+  return res.status(401).json({ error: "Unauthorized" });
 }
 
-// ============================================================================
-// CLIENT AUTH: Discord OAuth2 (Panel Klienta)
-// ============================================================================
+function b64url(buf) {
+  return Buffer.from(buf)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
 
-app.get("/auth/discord", (req, res) => {
-  const state = crypto.randomBytes(16).toString("hex");
-  req.session.oauthState = state;
+function sha256base64url(str) {
+  return b64url(crypto.createHash("sha256").update(str).digest());
+}
+
+function buildDiscordAuthUrl(req) {
+  const state = b64url(crypto.randomBytes(16));
+  const codeVerifier = b64url(crypto.randomBytes(32));
+  const codeChallenge = sha256base64url(codeVerifier);
+
+  req.session.oauth = {
+    state,
+    codeVerifier,
+    createdAt: Date.now(),
+  };
 
   const params = new URLSearchParams({
     client_id: DISCORD_CLIENT_ID,
-    redirect_uri: DISCORD_REDIRECT_URI,
     response_type: "code",
+    redirect_uri: DISCORD_REDIRECT_URI,
     scope: "identify",
     state,
+    code_challenge: codeChallenge,
+    code_challenge_method: "S256",
     prompt: "none",
   });
 
-  res.redirect(`https://discord.com/api/oauth2/authorize?${params.toString()}`);
+  return `https://discord.com/oauth2/authorize?${params.toString()}`;
+}
+
+async function discordTokenExchange(code, codeVerifier) {
+  const body = new URLSearchParams({
+    client_id: DISCORD_CLIENT_ID,
+    client_secret: DISCORD_CLIENT_SECRET,
+    grant_type: "authorization_code",
+    code,
+    redirect_uri: DISCORD_REDIRECT_URI,
+    code_verifier: codeVerifier,
+  });
+
+  const resp = await fetch("https://discord.com/api/oauth2/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+  });
+
+  if (!resp.ok) {
+    const text = await resp.text().catch(() => "");
+    throw new Error(`Token exchange failed: ${resp.status} ${text}`);
+  }
+  return resp.json();
+}
+
+async function discordGetUser(accessToken) {
+  const resp = await fetch("https://discord.com/api/users/@me", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!resp.ok) {
+    const text = await resp.text().catch(() => "");
+    throw new Error(`Get user failed: ${resp.status} ${text}`);
+  }
+  return resp.json();
+}
+
+function discordAvatarUrl(user) {
+  // If no avatar, use default
+  if (!user.avatar) {
+    const idx = Number(user.discriminator) % 5 || 0;
+    return `https://cdn.discordapp.com/embed/avatars/${idx}.png`;
+  }
+  const ext = user.avatar.startsWith("a_") ? "gif" : "png";
+  return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${ext}?size=128`;
+}
+
+// ---- Discord bot API helpers for tickets ----
+async function discordBotFetch(endpoint, options = {}) {
+  if (!HAS_BOT_API) throw new Error("DISCORD_BOT_TOKEN is not set");
+
+  const resp = await fetch(`https://discord.com/api/v10${endpoint}`, {
+    ...options,
+    headers: {
+      Authorization: `Bot ${DISCORD_BOT_TOKEN}`,
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+
+  if (!resp.ok) {
+    const text = await resp.text().catch(() => "");
+    throw new Error(`Discord API error ${resp.status}: ${text}`);
+  }
+  // some endpoints return empty body
+  const txt = await resp.text();
+  return txt ? JSON.parse(txt) : null;
+}
+
+async function listTicketsInCategory(guildId, categoryId) {
+  // We need to list channels in guild and filter by parent_id
+  // GET /guilds/{guild.id}/channels requires bot in guild with proper perms.
+  const channels = await discordBotFetch(`/guilds/${guildId}/channels`, { method: "GET" });
+  return (channels || [])
+    .filter((c) => c.parent_id === categoryId && c.type === 0) // 0 = GUILD_TEXT
+    .map((c) => ({ id: c.id, name: c.name }));
+}
+
+async function getLastMessages(channelId, limit = 50) {
+  const msgs = await discordBotFetch(`/channels/${channelId}/messages?limit=${limit}`, { method: "GET" });
+  // Discord returns newest first. We want oldest -> newest for chat view
+  return (msgs || []).reverse();
+}
+
+async function sendMessageAsBot(channelId, content) {
+  return discordBotFetch(`/channels/${channelId}/messages`, {
+    method: "POST",
+    body: JSON.stringify({ content }),
+  });
+}
+
+// -------------------- ROUTES --------------------
+
+// Home - always show index.html (NOT auto login)
+app.get("/", (req, res) => {
+  noStore(res);
+  return res.sendFile(path.join(__dirname, "index.html"));
+});
+
+// Client panel - must be authenticated
+app.get("/panel.html", requireClientAuth, (req, res) => {
+  noStore(res);
+  return res.sendFile(path.join(__dirname, "panel.html"));
+});
+
+// Admin page is just static file (login is inside the file)
+app.get("/admin.html", (req, res) => {
+  noStore(res);
+  return res.sendFile(path.join(__dirname, "admin.html"));
+});
+
+// ---- Discord OAuth ----
+app.get("/auth/discord", (req, res) => {
+  noStore(res);
+  const url = buildDiscordAuthUrl(req);
+  return res.redirect(url);
 });
 
 app.get("/auth/discord/callback", async (req, res) => {
+  noStore(res);
+
   try {
     const { code, state } = req.query;
-    if (!code) return res.status(400).send("Missing code");
-    if (!state || state !== req.session.oauthState) return res.status(400).send("Invalid state");
 
-    const tokenRes = await fetch("https://discord.com/api/oauth2/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        client_id: DISCORD_CLIENT_ID,
-        client_secret: DISCORD_CLIENT_SECRET,
-        grant_type: "authorization_code",
-        code: String(code),
-        redirect_uri: DISCORD_REDIRECT_URI,
-      }),
-    });
+    if (!code || !state) return res.status(400).send("Missing code/state.");
+    if (!req.session.oauth) return res.status(400).send("No oauth session.");
 
-    if (!tokenRes.ok) {
-      const txt = await tokenRes.text();
-      console.error("[Discord token exchange failed]", tokenRes.status, txt);
-      return res.status(500).send("Discord token exchange failed");
+    if (state !== req.session.oauth.state) {
+      return res.status(400).send("Invalid state.");
     }
 
-    const tokenData = await tokenRes.json();
-    const accessToken = tokenData.access_token;
+    const { codeVerifier } = req.session.oauth;
+    // cleanup oauth temp
+    req.session.oauth = null;
 
-    const meRes = await fetch("https://discord.com/api/users/@me", {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+    const token = await discordTokenExchange(code, codeVerifier);
+    const user = await discordGetUser(token.access_token);
 
-    if (!meRes.ok) {
-      const txt = await meRes.text();
-      console.error("[Discord profile fetch failed]", meRes.status, txt);
-      return res.status(500).send("Discord profile fetch failed");
-    }
-
-    const user = await meRes.json();
-
+    // store minimal user data in session
     req.session.user = {
-      discordId: user.id,
-      username: user.global_name || user.username,
-      avatarUrl: discordAvatarUrl(user),
+      id: user.id,
+      username: user.username,
+      global_name: user.global_name || null,
+      discriminator: user.discriminator,
+      avatar: user.avatar || null,
+      avatar_url: discordAvatarUrl(user),
     };
 
-    delete req.session.oauthState;
-    return res.redirect(POST_LOGIN_REDIRECT);
-  } catch (err) {
-    console.error("[/auth/discord/callback] Error:", err);
-    return res.status(500).send("Login error");
+    // redirect to panel
+    return res.redirect("/panel.html");
+  } catch (e) {
+    console.error("OAuth callback error:", e);
+    return res.status(500).send("OAuth error. Check server logs.");
   }
 });
 
 app.post("/auth/logout", (req, res) => {
-  // Wylogowanie klienta (nie admina)
-  delete req.session.user;
-  res.json({ ok: true });
+  noStore(res);
+  req.session.destroy(() => {
+    res.clearCookie("ls.sid");
+    return res.json({ ok: true });
+  });
 });
 
-// Client API
-app.get("/api/me", requireUser, (req, res) => {
-  res.json({ user: req.session.user });
+// Current logged in user for panel
+app.get("/api/me", (req, res) => {
+  noStore(res);
+  if (!req.session.user) return res.status(401).json({ error: "Unauthorized" });
+  return res.json({ user: req.session.user });
 });
 
-// ============================================================================
-// ADMIN AUTH: login with 2 passwords (Variables)
-// ============================================================================
-
+// ---- Admin auth (2 passwords) ----
 app.post("/admin/auth/login", (req, res) => {
+  noStore(res);
   const { pass1, pass2 } = req.body || {};
-  const ok = typeof pass1 === "string" && typeof pass2 === "string" &&
-    pass1 === ADMIN_PASS_1 && pass2 === ADMIN_PASS_2;
 
-  if (!ok) return res.status(401).json({ error: "invalid_admin_passwords" });
+  if (typeof pass1 !== "string" || typeof pass2 !== "string") {
+    return res.status(400).json({ error: "Bad request" });
+  }
 
-  req.session.admin = true;
-  res.json({ ok: true });
+  if (pass1 === ADMIN_PASS_1 && pass2 === ADMIN_PASS_2) {
+    req.session.admin = { ok: true, at: Date.now() };
+    return res.json({ ok: true });
+  }
+
+  return res.status(401).json({ error: "Unauthorized" });
 });
 
 app.post("/admin/auth/logout", (req, res) => {
-  delete req.session.admin;
-  res.json({ ok: true });
-});
-
-app.get("/api/admin/me", requireAdmin, (req, res) => {
-  res.json({ admin: true });
-});
-
-// Protect admin.html + ticket routes
-app.get("/admin.html", (req, res) => {
-  res.setHeader("Cache-Control", "no-store");
-  if (!req.session?.admin) return res.redirect("/admin/login.html");
-  return res.sendFile(path.join(__dirname, "admin.html"));
-});
-
-// ============================================================================
-// DISCORD BOT: tickets list + read messages + send message
-// Tickets assumed: channels in a specific category (DISCORD_TICKETS_CATEGORY_ID)
-// ============================================================================
-
-async function discordBotFetch(url, options = {}) {
-  if (!DISCORD_BOT_TOKEN) {
-    throw new Error("Missing DISCORD_BOT_TOKEN (Railway Variables)");
+  noStore(res);
+  if (req.session) {
+    req.session.admin = null;
   }
-  const headers = {
-    Authorization: `Bot ${DISCORD_BOT_TOKEN}`,
-    "Content-Type": "application/json",
-    ...(options.headers || {}),
-  };
-  const res = await fetch(url, { ...options, headers });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Discord API error ${res.status}: ${text}`);
-  }
-  return res;
-}
+  return res.json({ ok: true });
+});
 
-// List ticket channels in category
-app.get("/api/admin/tickets", requireAdmin, async (req, res) => {
+app.get("/api/admin/me", (req, res) => {
+  noStore(res);
+  if (!req.session?.admin) return res.status(401).json({ ok: false });
+  return res.json({ ok: true });
+});
+
+// ---- Admin Tickets API (Discord bot token) ----
+// IMPORTANT: these endpoints require:
+// - DISCORD_BOT_TOKEN
+// - DISCORD_TICKETS_CATEGORY_ID
+// - and your guildId param in request
+//
+// How to call:
+// GET /api/admin/tickets?guildId=YOUR_GUILD_ID
+// GET /api/admin/tickets/:channelId
+// POST /api/admin/tickets/:channelId/send
+//
+// Your admin.html can store guildId in JS later.
+
+app.get("/api/admin/tickets", requireAdminAuth, async (req, res) => {
+  noStore(res);
+
   try {
-    if (!DISCORD_TICKETS_CATEGORY_ID) {
-      return res.json({ tickets: [] });
+    if (!HAS_BOT_API) return res.status(400).json({ error: "DISCORD_BOT_TOKEN not set" });
+    const guildId = String(req.query.guildId || "");
+    const categoryId = String(DISCORD_TICKETS_CATEGORY_ID || "");
+
+    if (!guildId) return res.status(400).json({ error: "Missing guildId query" });
+    if (!categoryId) return res.status(400).json({ error: "Missing DISCORD_TICKETS_CATEGORY_ID" });
+
+    const tickets = await listTicketsInCategory(guildId, categoryId);
+    return res.json({ tickets });
+  } catch (e) {
+    console.error("Tickets list error:", e);
+    return res.status(500).json({ error: "Tickets list failed" });
+  }
+});
+
+app.get("/api/admin/tickets/:channelId", requireAdminAuth, async (req, res) => {
+  noStore(res);
+
+  try {
+    if (!HAS_BOT_API) return res.status(400).json({ error: "DISCORD_BOT_TOKEN not set" });
+
+    const channelId = req.params.channelId;
+    const msgs = await getLastMessages(channelId, 50);
+
+    const messages = (msgs || []).map((m) => ({
+      id: m.id,
+      author: m.author?.username || "Unknown",
+      authorType: m.author?.bot ? "bot" : "user",
+      content: m.content || "",
+      timestamp: m.timestamp || m.edited_timestamp || new Date().toISOString(),
+    }));
+
+    return res.json({ messages });
+  } catch (e) {
+    console.error("Ticket read error:", e);
+    return res.status(500).json({ error: "Ticket read failed" });
+  }
+});
+
+app.post("/api/admin/tickets/:channelId/send", requireAdminAuth, async (req, res) => {
+  noStore(res);
+
+  try {
+    if (!HAS_BOT_API) return res.status(400).json({ error: "DISCORD_BOT_TOKEN not set" });
+
+    const channelId = req.params.channelId;
+    const { content } = req.body || {};
+    if (!content || typeof content !== "string" || !content.trim()) {
+      return res.status(400).json({ error: "Missing content" });
     }
 
-    // Discord API: list channels in a guild requires guild_id, but category-only list is not directly available.
-    // Minimal approach: require you to provide a list of ticket channel IDs in DB later.
-    //
-    // Practical approach (works): set DISCORD_GUILD_ID and fetch all channels, filter by parent_id (category).
-    const DISCORD_GUILD_ID = process.env.DISCORD_GUILD_ID;
-    if (!DISCORD_GUILD_ID) {
-      return res.status(400).json({ error: "Missing DISCORD_GUILD_ID for tickets listing" });
-    }
-
-    const r = await discordBotFetch(`https://discord.com/api/v10/guilds/${DISCORD_GUILD_ID}/channels`);
-    const channels = await r.json();
-
-    const tickets = (channels || [])
-      .filter(ch => ch && ch.parent_id === DISCORD_TICKETS_CATEGORY_ID && ch.type === 0) // type 0 = text channel
-      .map(ch => ({ id: ch.id, name: ch.name }));
-
-    res.json({ tickets });
+    await sendMessageAsBot(channelId, content.trim().slice(0, 1900));
+    return res.json({ ok: true });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "tickets_fetch_failed" });
+    console.error("Ticket send error:", e);
+    return res.status(500).json({ error: "Ticket send failed" });
   }
 });
 
-// Read last messages from a ticket channel
-app.get("/api/admin/tickets/:channelId", requireAdmin, async (req, res) => {
-  try {
-    const channelId = String(req.params.channelId || "").trim();
-    if (!channelId) return res.status(400).json({ error: "missing_channel_id" });
-
-    const r = await discordBotFetch(`https://discord.com/api/v10/channels/${channelId}/messages?limit=50`);
-    const msgs = await r.json();
-
-    const messages = (msgs || [])
-      .reverse()
-      .map(m => ({
-        id: m.id,
-        author: (m.author?.global_name || m.author?.username || "User"),
-        authorType: m.author?.bot ? "bot" : "user",
-        content: m.content || "",
-        timestamp: m.timestamp,
-      }));
-
-    res.json({ messages });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "ticket_messages_failed" });
-  }
-});
-
-// Send message as bot to ticket channel
-app.post("/api/admin/tickets/:channelId/send", requireAdmin, async (req, res) => {
-  try {
-    const channelId = String(req.params.channelId || "").trim();
-    const content = String(req.body?.content || "").trim();
-    if (!channelId) return res.status(400).json({ error: "missing_channel_id" });
-    if (!content) return res.status(400).json({ error: "missing_content" });
-
-    await discordBotFetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
-      method: "POST",
-      body: JSON.stringify({ content }),
-    });
-
-    res.json({ ok: true });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "ticket_send_failed" });
-  }
-});
-
-// ============================================================================
-// STATIC FILES (ROOT)
-// ============================================================================
-
-app.use(express.static(__dirname));
-
-// Landing: always index.html
-app.get("/", (req, res) => {
-  res.setHeader("Cache-Control", "no-store");
-  return res.sendFile(path.join(__dirname, "index.html"));
-});
-
-// Client panel protected
-app.get("/panel.html", (req, res) => {
-  res.setHeader("Cache-Control", "no-store");
-  if (!req.session?.user) return res.redirect("/auth/discord");
-  return res.sendFile(path.join(__dirname, "panel.html"));
-});
-
-// Admin login page is public
-app.get("/admin/login.html", (req, res) => {
-  res.setHeader("Cache-Control", "no-store");
-  return res.sendFile(path.join(__dirname, "admin/login.html"));
-});
-
-// If you keep login file in root instead, change path above to:
-// return res.sendFile(path.join(__dirname, "admin.login.html"));
-
+// Fallback: if someone hits unknown route, serve index for convenience
 app.use((req, res) => {
-  res.status(404).send("Not Found");
+  // If file exists, express.static would have served it. Here we just show 404.
+  return res.status(404).send("Not Found");
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// -------------------- START --------------------
+app.listen(SERVER_PORT, () => {
+  console.log(`✅ server.js running on port ${SERVER_PORT} (${IS_PROD ? "prod" : "dev"})`);
+  console.log(`- Home: / -> index.html`);
+  console.log(`- Panel: /panel.html (requires Discord login)`);
+  console.log(`- Admin: /admin.html (login inside file)`);
 });
