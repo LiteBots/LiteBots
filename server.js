@@ -1,23 +1,20 @@
 /**
- * server.js — Lite Solutions Panel (Railway)
+ * server.js — Lite Solutions (landing + panel) w ROOT (bez folderu /public)
  *
- * ✅ Discord OAuth2 login
- * ✅ Session cookie (HTTP-only)
- * ✅ /api/me endpoint for the panel (avatar, username, discordId)
- * ✅ Static serving for panel.html (+ assets)
+ * ✅ /              -> index.html (landing)
+ * ✅ /auth/discord  -> start Discord OAuth
+ * ✅ /auth/discord/callback -> callback, zapis sesji
+ * ✅ /panel.html    -> chroniony (bez sesji przekieruje na /auth/discord)
+ * ✅ /api/me        -> dane usera (avatarUrl, username, discordId)
  *
- * Railway ENV (Variables):
- * - PORT                          (Railway sets automatically)
- * - BASE_URL                      e.g. https://twoja-apka.up.railway.app
- * - SESSION_SECRET                random long string
+ * Wymagane Railway Variables:
+ * - SESSION_SECRET
  * - DISCORD_CLIENT_ID
  * - DISCORD_CLIENT_SECRET
- * - DISCORD_REDIRECT_URI          e.g. https://twoja-apka.up.railway.app/auth/discord/callback
- * - POST_LOGIN_REDIRECT           e.g. /panel.html  (optional)
- *
- * Optional:
+ * - DISCORD_REDIRECT_URI   (np. https://www.litesolutions.pl/auth/discord/callback)
  * - NODE_ENV=production
- * - ALLOWED_ORIGIN                e.g. https://twoja-domena.pl (optional CORS)
+ * Opcjonalne:
+ * - POST_LOGIN_REDIRECT=/panel.html
  *
  * Install:
  *   npm i express express-session node-fetch@2
@@ -37,16 +34,14 @@ const app = express();
 const {
   PORT = 3000,
   NODE_ENV = "development",
-  BASE_URL,
   SESSION_SECRET,
   DISCORD_CLIENT_ID,
   DISCORD_CLIENT_SECRET,
   DISCORD_REDIRECT_URI,
   POST_LOGIN_REDIRECT = "/panel.html",
-  ALLOWED_ORIGIN,
 } = process.env;
 
-// --- Basic env validation (fail fast) ---
+// ---- Fail fast on missing envs ----
 function requireEnv(name) {
   if (!process.env[name]) {
     console.error(`[ENV] Missing ${name}`);
@@ -57,26 +52,13 @@ requireEnv("SESSION_SECRET");
 requireEnv("DISCORD_CLIENT_ID");
 requireEnv("DISCORD_CLIENT_SECRET");
 requireEnv("DISCORD_REDIRECT_URI");
-requireEnv("BASE_URL");
 
-// --- Trust proxy for Railway (important for secure cookies behind proxy) ---
+// Railway/proxy friendly
 app.set("trust proxy", 1);
 
 app.use(express.json());
 
-// --- Optional simple CORS (only if you split frontend domain) ---
-if (ALLOWED_ORIGIN) {
-  app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-    if (req.method === "OPTIONS") return res.sendStatus(204);
-    next();
-  });
-}
-
-// --- Sessions ---
+// ---- Sessions ----
 app.use(
   session({
     name: "ls_panel_sid",
@@ -86,27 +68,31 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: "lax",
-      secure: NODE_ENV === "production", // requires https (Railway provides)
+      secure: NODE_ENV === "production", // https required
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     },
   })
 );
 
-// --- Helper: build Discord avatar URL ---
+// ---- Helper: Discord avatar URL ----
 function discordAvatarUrl(user) {
-  // user: { id, avatar }
   if (!user?.id) return null;
-  if (!user.avatar) {
-    // default avatar index based on discriminator is deprecated in newer discord; fallback to embed avatar by user id hash-ish
-    // simplest fallback:
-    return "https://cdn.discordapp.com/embed/avatars/0.png";
-  }
+  if (!user.avatar) return "https://cdn.discordapp.com/embed/avatars/0.png";
   const isGif = user.avatar.startsWith("a_");
   const ext = isGif ? "gif" : "png";
   return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${ext}?size=128`;
 }
 
-// --- OAuth2: start login ---
+// ---- Auth guard ----
+function requireAuth(req, res, next) {
+  if (!req.session?.user) return res.status(401).json({ error: "unauthorized" });
+  next();
+}
+
+// ============================================================================
+// AUTH: Discord OAuth2
+// ============================================================================
+
 app.get("/auth/discord", (req, res) => {
   const state = crypto.randomBytes(16).toString("hex");
   req.session.oauthState = state;
@@ -115,25 +101,23 @@ app.get("/auth/discord", (req, res) => {
     client_id: DISCORD_CLIENT_ID,
     redirect_uri: DISCORD_REDIRECT_URI,
     response_type: "code",
-    scope: "identify", // add "email" if you want email
+    scope: "identify",
     state,
     prompt: "none", // change to "consent" if you want always prompt
   });
 
+  // NOTE: use discord.com/api/oauth2/authorize
   res.redirect(`https://discord.com/api/oauth2/authorize?${params.toString()}`);
 });
 
-// --- OAuth2 callback ---
 app.get("/auth/discord/callback", async (req, res) => {
   try {
     const { code, state } = req.query;
 
     if (!code) return res.status(400).send("Missing code");
-    if (!state || state !== req.session.oauthState) {
-      return res.status(400).send("Invalid state");
-    }
+    if (!state || state !== req.session.oauthState) return res.status(400).send("Invalid state");
 
-    // Exchange code -> access token
+    // Exchange code -> token
     const tokenRes = await fetch("https://discord.com/api/oauth2/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -148,12 +132,11 @@ app.get("/auth/discord/callback", async (req, res) => {
 
     if (!tokenRes.ok) {
       const txt = await tokenRes.text();
-      console.error("[Discord token] Failed:", tokenRes.status, txt);
+      console.error("[Discord token exchange failed]", tokenRes.status, txt);
       return res.status(500).send("Discord token exchange failed");
     }
 
     const tokenData = await tokenRes.json();
-    // tokenData: { access_token, token_type, expires_in, refresh_token, scope }
     const accessToken = tokenData.access_token;
 
     // Fetch user profile
@@ -163,34 +146,30 @@ app.get("/auth/discord/callback", async (req, res) => {
 
     if (!meRes.ok) {
       const txt = await meRes.text();
-      console.error("[Discord /users/@me] Failed:", meRes.status, txt);
+      console.error("[Discord profile fetch failed]", meRes.status, txt);
       return res.status(500).send("Discord profile fetch failed");
     }
 
-    const user = await meRes.json(); // { id, username, global_name, avatar, ... }
+    const user = await meRes.json();
 
-    // Store minimal user in session (DON'T store secrets client-side)
+    // Store minimal user in session
     req.session.user = {
       discordId: user.id,
       username: user.global_name || user.username,
       avatarUrl: discordAvatarUrl(user),
     };
 
-    // If you NEED token later (e.g. guilds), you can store access token in session.
-    // For panel profile only, it's not necessary.
-    // req.session.discordAccessToken = accessToken;
-
-    // cleanup
+    // cleanup state
     delete req.session.oauthState;
 
-    res.redirect(POST_LOGIN_REDIRECT);
+    // redirect to panel
+    return res.redirect(POST_LOGIN_REDIRECT);
   } catch (err) {
     console.error("[/auth/discord/callback] Error:", err);
-    res.status(500).send("Login error");
+    return res.status(500).send("Login error");
   }
 });
 
-// --- Logout ---
 app.post("/auth/logout", (req, res) => {
   req.session.destroy(() => {
     res.clearCookie("ls_panel_sid");
@@ -198,43 +177,53 @@ app.post("/auth/logout", (req, res) => {
   });
 });
 
-// --- Auth middleware ---
-function requireAuth(req, res, next) {
-  if (!req.session?.user) return res.status(401).json({ error: "unauthorized" });
-  next();
-}
+// ============================================================================
+// API
+// ============================================================================
 
-// --- API: current user for top-right chip ---
 app.get("/api/me", requireAuth, (req, res) => {
-  res.json({
-    user: req.session.user,
-  });
+  res.json({ user: req.session.user });
 });
 
-// --- Example protected endpoint (future: services/licenses/tickets) ---
+// (przykład endpointu chronionego)
 app.get("/api/ping", requireAuth, (req, res) => {
   res.json({ ok: true, ts: Date.now() });
 });
 
-// --- Static files ---
-// Put your panel.html in ./public/panel.html (and other files like index.html, workspace.html, etc.)
-app.use(express.static(path.join(__dirname, "public")));
+// ============================================================================
+// STATIC + PAGES (ROOT FILES)
+// ============================================================================
 
-// --- Simple guard: if someone opens panel without login, redirect to /auth/discord ---
-// If you prefer to allow viewing without login, remove this.
-app.get("/panel.html", (req, res, next) => {
-  if (!req.session?.user) return res.redirect("/auth/discord");
-  next();
-});
+// Serwuj wszystkie pliki statyczne z katalogu ROOT (tam gdzie index.html, panel.html, assets itp.)
+app.use(
+  express.static(__dirname, {
+    // na dev możesz wyłączyć cache, w prod zostaw default
+    etag: true,
+  })
+);
 
-// --- Home ---
+// Landing zawsze ma się otwierać na /
 app.get("/", (req, res) => {
-  // Option: show tiny landing or redirect to panel
-  res.redirect("/panel.html");
+  res.setHeader("Cache-Control", "no-store");
+  return res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// --- Start ---
+// Panel jest chroniony — bez sesji przekieruje na login
+app.get("/panel.html", (req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  if (!req.session?.user) return res.redirect("/auth/discord");
+  return res.sendFile(path.join(__dirname, "panel.html"));
+});
+
+// Fallback: jeśli ktoś wejdzie w coś nieistniejącego, daj 404 (żeby nie mylić z SPA rewritem)
+app.use((req, res) => {
+  res.status(404).send("Not Found");
+});
+
+// ============================================================================
+// START
+// ============================================================================
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`BASE_URL: ${BASE_URL}`);
 });
