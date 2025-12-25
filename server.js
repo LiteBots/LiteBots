@@ -31,7 +31,7 @@ const {
 
   // Session
   SESSION_SECRET,
-  MONGODB_URI, // Mongo connection string for session store
+  MONGO_URL, // ✅ Mongo connection string for session store (changed)
 
   // Admin (two allowed passwords, one input)
   ADMIN_PASS_1,
@@ -58,7 +58,7 @@ function must(name) {
 
 // Required core envs
 must("SESSION_SECRET");
-must("MONGODB_URI");
+must("MONGO_URL"); // ✅ changed
 must("DISCORD_CLIENT_ID");
 must("DISCORD_CLIENT_SECRET");
 must("DISCORD_REDIRECT_URI");
@@ -82,7 +82,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-      mongoUrl: MONGODB_URI,
+      mongoUrl: MONGO_URL, // ✅ changed
       collectionName: "sessions",
       ttl: 60 * 60 * 24 * 14, // 14 days
       autoRemove: "native",
