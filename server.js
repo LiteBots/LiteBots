@@ -1,28 +1,3 @@
-/**
- * server.js — Lite Solutions (landing + panel) w ROOT (bez folderu /public)
- *
- * ✅ /              -> index.html (landing)
- * ✅ /auth/discord  -> start Discord OAuth
- * ✅ /auth/discord/callback -> callback, zapis sesji
- * ✅ /panel.html    -> chroniony (bez sesji przekieruje na /auth/discord)
- * ✅ /api/me        -> dane usera (avatarUrl, username, discordId)
- *
- * Wymagane Railway Variables:
- * - SESSION_SECRET
- * - DISCORD_CLIENT_ID
- * - DISCORD_CLIENT_SECRET
- * - DISCORD_REDIRECT_URI   (np. https://www.litesolutions.pl/auth/discord/callback)
- * - NODE_ENV=production
- * Opcjonalne:
- * - POST_LOGIN_REDIRECT=/panel.html
- *
- * Install:
- *   npm i express express-session node-fetch@2
- *
- * Run:
- *   node server.js
- */
-
 const express = require("express");
 const session = require("express-session");
 const path = require("path");
@@ -34,47 +9,64 @@ const app = express();
 const {
   PORT = 3000,
   NODE_ENV = "development",
+
+  // Sessions
   SESSION_SECRET,
+
+  // Client panel Discord OAuth
   DISCORD_CLIENT_ID,
   DISCORD_CLIENT_SECRET,
-  DISCORD_REDIRECT_URI,
+  DISCORD_REDIRECT_URI, // https://www.litesolutions.pl/auth/discord/callback
   POST_LOGIN_REDIRECT = "/panel.html",
+
+  // Admin login (two passwords)
+  ADMIN_PASS_1,
+  ADMIN_PASS_2,
+
+  // Discord bot for tickets (admin)
+  DISCORD_BOT_TOKEN,
+  DISCORD_TICKETS_CATEGORY_ID, // ID kategorii, w której są kanały ticketów
 } = process.env;
 
-// ---- Fail fast on missing envs ----
 function requireEnv(name) {
   if (!process.env[name]) {
     console.error(`[ENV] Missing ${name}`);
     process.exit(1);
   }
 }
+
+// Required for base app
 requireEnv("SESSION_SECRET");
+
+// Required for client OAuth (panel)
 requireEnv("DISCORD_CLIENT_ID");
 requireEnv("DISCORD_CLIENT_SECRET");
 requireEnv("DISCORD_REDIRECT_URI");
 
-// Railway/proxy friendly
-app.set("trust proxy", 1);
+// Admin passwords required for admin panel login
+requireEnv("ADMIN_PASS_1");
+requireEnv("ADMIN_PASS_2");
 
+app.set("trust proxy", 1);
 app.use(express.json());
 
 // ---- Sessions ----
 app.use(
   session({
-    name: "ls_panel_sid",
+    name: "ls_sid",
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
       sameSite: "lax",
-      secure: NODE_ENV === "production", // https required
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      secure: NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     },
   })
 );
 
-// ---- Helper: Discord avatar URL ----
+// ---- Helpers ----
 function discordAvatarUrl(user) {
   if (!user?.id) return null;
   if (!user.avatar) return "https://cdn.discordapp.com/embed/avatars/0.png";
@@ -83,14 +75,18 @@ function discordAvatarUrl(user) {
   return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${ext}?size=128`;
 }
 
-// ---- Auth guard ----
-function requireAuth(req, res, next) {
+function requireUser(req, res, next) {
   if (!req.session?.user) return res.status(401).json({ error: "unauthorized" });
   next();
 }
 
+function requireAdmin(req, res, next) {
+  if (!req.session?.admin) return res.status(401).json({ error: "admin_unauthorized" });
+  next();
+}
+
 // ============================================================================
-// AUTH: Discord OAuth2
+// CLIENT AUTH: Discord OAuth2 (Panel Klienta)
 // ============================================================================
 
 app.get("/auth/discord", (req, res) => {
@@ -103,21 +99,18 @@ app.get("/auth/discord", (req, res) => {
     response_type: "code",
     scope: "identify",
     state,
-    prompt: "none", // change to "consent" if you want always prompt
+    prompt: "none",
   });
 
-  // NOTE: use discord.com/api/oauth2/authorize
   res.redirect(`https://discord.com/api/oauth2/authorize?${params.toString()}`);
 });
 
 app.get("/auth/discord/callback", async (req, res) => {
   try {
     const { code, state } = req.query;
-
     if (!code) return res.status(400).send("Missing code");
     if (!state || state !== req.session.oauthState) return res.status(400).send("Invalid state");
 
-    // Exchange code -> token
     const tokenRes = await fetch("https://discord.com/api/oauth2/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -139,7 +132,6 @@ app.get("/auth/discord/callback", async (req, res) => {
     const tokenData = await tokenRes.json();
     const accessToken = tokenData.access_token;
 
-    // Fetch user profile
     const meRes = await fetch("https://discord.com/api/users/@me", {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
@@ -152,17 +144,13 @@ app.get("/auth/discord/callback", async (req, res) => {
 
     const user = await meRes.json();
 
-    // Store minimal user in session
     req.session.user = {
       discordId: user.id,
       username: user.global_name || user.username,
       avatarUrl: discordAvatarUrl(user),
     };
 
-    // cleanup state
     delete req.session.oauthState;
-
-    // redirect to panel
     return res.redirect(POST_LOGIN_REDIRECT);
   } catch (err) {
     console.error("[/auth/discord/callback] Error:", err);
@@ -171,58 +159,176 @@ app.get("/auth/discord/callback", async (req, res) => {
 });
 
 app.post("/auth/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.clearCookie("ls_panel_sid");
-    res.json({ ok: true });
-  });
+  // Wylogowanie klienta (nie admina)
+  delete req.session.user;
+  res.json({ ok: true });
 });
 
-// ============================================================================
-// API
-// ============================================================================
-
-app.get("/api/me", requireAuth, (req, res) => {
+// Client API
+app.get("/api/me", requireUser, (req, res) => {
   res.json({ user: req.session.user });
 });
 
-// (przykład endpointu chronionego)
-app.get("/api/ping", requireAuth, (req, res) => {
-  res.json({ ok: true, ts: Date.now() });
+// ============================================================================
+// ADMIN AUTH: login with 2 passwords (Variables)
+// ============================================================================
+
+app.post("/admin/auth/login", (req, res) => {
+  const { pass1, pass2 } = req.body || {};
+  const ok = typeof pass1 === "string" && typeof pass2 === "string" &&
+    pass1 === ADMIN_PASS_1 && pass2 === ADMIN_PASS_2;
+
+  if (!ok) return res.status(401).json({ error: "invalid_admin_passwords" });
+
+  req.session.admin = true;
+  res.json({ ok: true });
+});
+
+app.post("/admin/auth/logout", (req, res) => {
+  delete req.session.admin;
+  res.json({ ok: true });
+});
+
+app.get("/api/admin/me", requireAdmin, (req, res) => {
+  res.json({ admin: true });
+});
+
+// Protect admin.html + ticket routes
+app.get("/admin.html", (req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  if (!req.session?.admin) return res.redirect("/admin/login.html");
+  return res.sendFile(path.join(__dirname, "admin.html"));
 });
 
 // ============================================================================
-// STATIC + PAGES (ROOT FILES)
+// DISCORD BOT: tickets list + read messages + send message
+// Tickets assumed: channels in a specific category (DISCORD_TICKETS_CATEGORY_ID)
 // ============================================================================
 
-// Serwuj wszystkie pliki statyczne z katalogu ROOT (tam gdzie index.html, panel.html, assets itp.)
-app.use(
-  express.static(__dirname, {
-    // na dev możesz wyłączyć cache, w prod zostaw default
-    etag: true,
-  })
-);
+async function discordBotFetch(url, options = {}) {
+  if (!DISCORD_BOT_TOKEN) {
+    throw new Error("Missing DISCORD_BOT_TOKEN (Railway Variables)");
+  }
+  const headers = {
+    Authorization: `Bot ${DISCORD_BOT_TOKEN}`,
+    "Content-Type": "application/json",
+    ...(options.headers || {}),
+  };
+  const res = await fetch(url, { ...options, headers });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Discord API error ${res.status}: ${text}`);
+  }
+  return res;
+}
 
-// Landing zawsze ma się otwierać na /
+// List ticket channels in category
+app.get("/api/admin/tickets", requireAdmin, async (req, res) => {
+  try {
+    if (!DISCORD_TICKETS_CATEGORY_ID) {
+      return res.json({ tickets: [] });
+    }
+
+    // Discord API: list channels in a guild requires guild_id, but category-only list is not directly available.
+    // Minimal approach: require you to provide a list of ticket channel IDs in DB later.
+    //
+    // Practical approach (works): set DISCORD_GUILD_ID and fetch all channels, filter by parent_id (category).
+    const DISCORD_GUILD_ID = process.env.DISCORD_GUILD_ID;
+    if (!DISCORD_GUILD_ID) {
+      return res.status(400).json({ error: "Missing DISCORD_GUILD_ID for tickets listing" });
+    }
+
+    const r = await discordBotFetch(`https://discord.com/api/v10/guilds/${DISCORD_GUILD_ID}/channels`);
+    const channels = await r.json();
+
+    const tickets = (channels || [])
+      .filter(ch => ch && ch.parent_id === DISCORD_TICKETS_CATEGORY_ID && ch.type === 0) // type 0 = text channel
+      .map(ch => ({ id: ch.id, name: ch.name }));
+
+    res.json({ tickets });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "tickets_fetch_failed" });
+  }
+});
+
+// Read last messages from a ticket channel
+app.get("/api/admin/tickets/:channelId", requireAdmin, async (req, res) => {
+  try {
+    const channelId = String(req.params.channelId || "").trim();
+    if (!channelId) return res.status(400).json({ error: "missing_channel_id" });
+
+    const r = await discordBotFetch(`https://discord.com/api/v10/channels/${channelId}/messages?limit=50`);
+    const msgs = await r.json();
+
+    const messages = (msgs || [])
+      .reverse()
+      .map(m => ({
+        id: m.id,
+        author: (m.author?.global_name || m.author?.username || "User"),
+        authorType: m.author?.bot ? "bot" : "user",
+        content: m.content || "",
+        timestamp: m.timestamp,
+      }));
+
+    res.json({ messages });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "ticket_messages_failed" });
+  }
+});
+
+// Send message as bot to ticket channel
+app.post("/api/admin/tickets/:channelId/send", requireAdmin, async (req, res) => {
+  try {
+    const channelId = String(req.params.channelId || "").trim();
+    const content = String(req.body?.content || "").trim();
+    if (!channelId) return res.status(400).json({ error: "missing_channel_id" });
+    if (!content) return res.status(400).json({ error: "missing_content" });
+
+    await discordBotFetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
+      method: "POST",
+      body: JSON.stringify({ content }),
+    });
+
+    res.json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "ticket_send_failed" });
+  }
+});
+
+// ============================================================================
+// STATIC FILES (ROOT)
+// ============================================================================
+
+app.use(express.static(__dirname));
+
+// Landing: always index.html
 app.get("/", (req, res) => {
   res.setHeader("Cache-Control", "no-store");
   return res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// Panel jest chroniony — bez sesji przekieruje na login
+// Client panel protected
 app.get("/panel.html", (req, res) => {
   res.setHeader("Cache-Control", "no-store");
   if (!req.session?.user) return res.redirect("/auth/discord");
   return res.sendFile(path.join(__dirname, "panel.html"));
 });
 
-// Fallback: jeśli ktoś wejdzie w coś nieistniejącego, daj 404 (żeby nie mylić z SPA rewritem)
+// Admin login page is public
+app.get("/admin/login.html", (req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  return res.sendFile(path.join(__dirname, "admin/login.html"));
+});
+
+// If you keep login file in root instead, change path above to:
+// return res.sendFile(path.join(__dirname, "admin.login.html"));
+
 app.use((req, res) => {
   res.status(404).send("Not Found");
 });
-
-// ============================================================================
-// START
-// ============================================================================
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
