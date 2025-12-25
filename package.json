@@ -4,12 +4,14 @@
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "bot": "node bot.js"
   },
   "dependencies": {
+    "connect-mongo": "^5.1.0",
+    "discord.js": "^14.17.3",
     "express": "^4.19.2",
     "express-session": "^1.17.3",
-    "connect-mongo": "^5.1.0",
     "node-fetch": "^2.7.0"
   }
 }
