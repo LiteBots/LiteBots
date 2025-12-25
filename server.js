@@ -1,8 +1,9 @@
 /**
- * server.js — Lite Solutions
+ * server.js — Lite Solutions (Mongo sessions)
  * - Static files from root (index.html, panel.html, admin.html, etc.)
  * - Discord OAuth2 login for client panel (/panel.html)
  * - Admin auth (ONE input, accepts 2 passwords in Variables) with session
+ * - Sessions stored in MongoDB (connect-mongo) -> no MemoryStore warning
  * - Admin API for tickets read/send via bot token
  */
 
@@ -10,10 +11,12 @@ const path = require("path");
 const express = require("express");
 const session = require("express-session");
 const crypto = require("crypto");
+const MongoStore = require("connect-mongo");
 
 const app = express();
 app.set("trust proxy", 1);
 
+// -------------------- ENV --------------------
 const {
   NODE_ENV,
   PORT,
@@ -23,20 +26,22 @@ const {
   DISCORD_CLIENT_SECRET,
   DISCORD_REDIRECT_URI, // e.g. https://www.litesolutions.pl/auth/discord/callback
 
-  // Session cookie
+  // Session
   SESSION_SECRET,
+  MONGODB_URI, // Mongo connection string for session store
 
-  // Admin (two allowed passwords)
+  // Admin (two allowed passwords, one input)
   ADMIN_PASS_1,
   ADMIN_PASS_2,
 
-  // Discord bot token for admin tickets API
+  // Discord bot token for admin tickets API (optional)
   DISCORD_BOT_TOKEN,
   DISCORD_TICKETS_CATEGORY_ID, // e.g. 1266064860802973859
 } = process.env;
 
 const IS_PROD = NODE_ENV === "production";
 const SERVER_PORT = PORT || 3000;
+const HAS_BOT_API = !!DISCORD_BOT_TOKEN;
 
 function must(name) {
   if (!process.env[name]) {
@@ -45,34 +50,18 @@ function must(name) {
   }
 }
 
+// Required core envs
 must("SESSION_SECRET");
+must("MONGODB_URI");
 must("DISCORD_CLIENT_ID");
 must("DISCORD_CLIENT_SECRET");
 must("DISCORD_REDIRECT_URI");
-
-// Admin passwords required (since you want admin login)
 must("ADMIN_PASS_1");
 must("ADMIN_PASS_2");
 
-const HAS_BOT_API = !!DISCORD_BOT_TOKEN;
-
+// -------------------- MIDDLEWARE --------------------
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
-
-app.use(
-  session({
-    name: "ls.sid",
-    secret: SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: IS_PROD,
-      maxAge: 1000 * 60 * 60 * 24 * 14, // 14 days
-    },
-  })
-);
 
 function noStore(res) {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
@@ -80,11 +69,34 @@ function noStore(res) {
   res.setHeader("Expires", "0");
 }
 
-// -------------------- STATIC (ROOT) --------------------
+app.use(
+  session({
+    name: "ls.sid",
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: MONGODB_URI,
+      collectionName: "sessions",
+      ttl: 60 * 60 * 24 * 14, // 14 days
+      autoRemove: "native",
+    }),
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: IS_PROD, // true on https in production
+      maxAge: 1000 * 60 * 60 * 24 * 14, // 14 days
+    },
+  })
+);
+
+// -------------------- STATIC FILES (ROOT) --------------------
+// You said: all files are stored in repository root, no /public.
 app.use(
   express.static(__dirname, {
     extensions: ["html"],
     setHeaders(res, filePath) {
+      // don't cache HTML
       if (filePath.endsWith(".html")) res.setHeader("Cache-Control", "no-store");
     },
   })
@@ -225,19 +237,19 @@ async function sendMessageAsBot(channelId, content) {
 
 // -------------------- ROUTES --------------------
 
-// Home always index.html
+// Home always index.html (no auto-login)
 app.get("/", (req, res) => {
   noStore(res);
   return res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// Panel requires Discord login
+// Client panel requires Discord login
 app.get("/panel.html", requireClientAuth, (req, res) => {
   noStore(res);
   return res.sendFile(path.join(__dirname, "panel.html"));
 });
 
-// Admin page is static (login inside admin.html)
+// Admin page is static file (login inside admin.html)
 app.get("/admin.html", (req, res) => {
   noStore(res);
   return res.sendFile(path.join(__dirname, "admin.html"));
@@ -289,7 +301,7 @@ app.post("/auth/logout", (req, res) => {
   });
 });
 
-// Panel user
+// Current logged in client user
 app.get("/api/me", (req, res) => {
   noStore(res);
   if (!req.session.user) return res.status(401).json({ error: "Unauthorized" });
@@ -309,6 +321,7 @@ app.post("/admin/auth/login", (req, res) => {
     req.session.admin = { ok: true, at: Date.now() };
     return res.json({ ok: true });
   }
+
   return res.status(401).json({ error: "Unauthorized" });
 });
 
@@ -324,13 +337,14 @@ app.get("/api/admin/me", (req, res) => {
   return res.json({ ok: true });
 });
 
-// ---- Admin tickets API ----
+// ---- Admin tickets API (Discord bot token) ----
 // Call examples:
 // GET /api/admin/tickets?guildId=YOUR_GUILD_ID
 // GET /api/admin/tickets/:channelId
 // POST /api/admin/tickets/:channelId/send {content}
 app.get("/api/admin/tickets", requireAdminAuth, async (req, res) => {
   noStore(res);
+
   try {
     if (!HAS_BOT_API) return res.status(400).json({ error: "DISCORD_BOT_TOKEN not set" });
 
@@ -350,6 +364,7 @@ app.get("/api/admin/tickets", requireAdminAuth, async (req, res) => {
 
 app.get("/api/admin/tickets/:channelId", requireAdminAuth, async (req, res) => {
   noStore(res);
+
   try {
     if (!HAS_BOT_API) return res.status(400).json({ error: "DISCORD_BOT_TOKEN not set" });
 
@@ -373,11 +388,13 @@ app.get("/api/admin/tickets/:channelId", requireAdminAuth, async (req, res) => {
 
 app.post("/api/admin/tickets/:channelId/send", requireAdminAuth, async (req, res) => {
   noStore(res);
+
   try {
     if (!HAS_BOT_API) return res.status(400).json({ error: "DISCORD_BOT_TOKEN not set" });
 
     const channelId = req.params.channelId;
     const { content } = req.body || {};
+
     if (!content || typeof content !== "string" || !content.trim()) {
       return res.status(400).json({ error: "Missing content" });
     }
