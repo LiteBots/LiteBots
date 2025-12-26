@@ -441,6 +441,36 @@
   <script type="text/babel">
     const { useEffect, useMemo, useState } = React;
 
+    // Normalizacja profilu — toleruje różne formaty backendu
+    function normalizeDiscordUser(input){
+      const raw = input || {};
+      const discordId =
+        raw.discordId ?? raw.discord_id ?? raw.id ?? raw.userId ?? raw.user_id ?? "";
+
+      const username =
+        raw.username ?? raw.global_name ?? raw.globalName ?? raw.name ?? raw.login ?? "Użytkownik";
+
+      // backend może zwracać:
+      // - avatarUrl (gotowy URL)
+      // - avatar_url
+      // - avatar (hash) + id
+      let avatarUrl =
+        raw.avatarUrl ?? raw.avatar_url ?? raw.picture ?? "";
+
+      const avatarHash = raw.avatar ?? raw.avatar_hash ?? raw.avatarHash ?? "";
+
+      if (!avatarUrl && discordId && avatarHash){
+        avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${avatarHash}.png?size=128`;
+      }
+
+      // fallback
+      if (!avatarUrl){
+        avatarUrl = "https://cdn.discordapp.com/embed/avatars/0.png";
+      }
+
+      return { discordId: String(discordId || ""), username: String(username || "Użytkownik"), avatarUrl };
+    }
+
     function App(){
       const tabs = useMemo(() => ([
         { id:"services", label:"Moje usługi", hint:"Status i zakres", badge:"—" },
@@ -451,26 +481,66 @@
       const [active, setActive] = useState("services");
 
       const [me, setMe] = useState(null);
+      const [loadingMe, setLoadingMe] = useState(true);
       const [meErr, setMeErr] = useState("");
 
       useEffect(() => {
+        let alive = true;
+
         (async () => {
+          setLoadingMe(true);
+          setMeErr("");
+
           try {
             const res = await fetch("/api/me", { credentials: "include" });
+
             if (res.status === 401) {
+              // brak sesji / brak cookie -> przerzucamy na OAuth
               window.location.href = "/auth/discord";
               return;
             }
+
             if (!res.ok) {
-              setMeErr("Nie udało się pobrać profilu użytkownika.");
+              if (!alive) return;
+              setMeErr("Nie udało się pobrać profilu użytkownika. (API error)");
               return;
             }
+
             const data = await res.json();
-            setMe(data.user);
+
+            // DEBUG (możesz usunąć)
+            console.log("API /api/me response:", data);
+
+            // tolerujemy różne formaty:
+            // { user: {...} } albo { me: {...} } albo {...}
+            const rawUser = data?.user ?? data?.me ?? data?.profile ?? data;
+
+            if (!rawUser) {
+              if (!alive) return;
+              setMeErr("API /api/me zwróciło pustą odpowiedź profilu.");
+              return;
+            }
+
+            const normalized = normalizeDiscordUser(rawUser);
+
+            if (!normalized.discordId && !normalized.username) {
+              if (!alive) return;
+              setMeErr("Profil zalogowany, ale brakuje pól użytkownika (sprawdź response /api/me).");
+              return;
+            }
+
+            if (!alive) return;
+            setMe(normalized);
           } catch (e) {
+            if (!alive) return;
             setMeErr("Błąd połączenia z serwerem. Spróbuj odświeżyć.");
+          } finally {
+            if (!alive) return;
+            setLoadingMe(false);
           }
         })();
+
+        return () => { alive = false; };
       }, []);
 
       const logout = async () => {
@@ -577,13 +647,13 @@
               </div>
 
               <div className="userArea">
-                {me ? (
+                {!loadingMe && me ? (
                   <>
-                    <div className="userChip" title={"Discord ID: " + me.discordId}>
-                      <img src={me.avatarUrl || "https://cdn.discordapp.com/embed/avatars/0.png"} alt="avatar" />
+                    <div className="userChip" title={me.discordId ? ("Discord ID: " + me.discordId) : "Profil Discord"}>
+                      <img src={me.avatarUrl} alt="avatar" />
                       <div className="userMeta">
                         <div className="uname">{me.username || "Użytkownik"}</div>
-                        <div className="uid">ID: {me.discordId}</div>
+                        <div className="uid">{me.discordId ? ("ID: " + me.discordId) : "ID: —"}</div>
                       </div>
                     </div>
                     <button className="btn" onClick={logout} type="button">Wyloguj</button>
@@ -591,8 +661,10 @@
                 ) : (
                   <div className="userChip" aria-label="Ładowanie profilu">
                     <div className="userMeta">
-                      <div className="uname" style={{color:"rgba(244,244,247,.75)"}}>Ładowanie…</div>
-                      <div className="uid"> </div>
+                      <div className="uname" style={{color:"rgba(244,244,247,.75)"}}>
+                        {meErr ? "Brak profilu" : "Ładowanie…"}
+                      </div>
+                      <div className="uid">{meErr ? "Sprawdź /api/me" : " "}</div>
                     </div>
                   </div>
                 )}
