@@ -405,8 +405,8 @@
       border: 1px dashed rgba(255,255,255,.16);
       background: rgba(10,10,14,.26);
       color: rgba(244,244,247,.68);
-      font-weight: 800;
-      font-size: 12px;
+      font-weight: 900;
+      font-size: 13px;
     }
 
     .error{
@@ -441,7 +441,6 @@
   <script type="text/babel">
     const { useEffect, useMemo, useState } = React;
 
-    // Normalizacja profilu — toleruje różne formaty backendu
     function normalizeDiscordUser(input){
       const raw = input || {};
       const discordId =
@@ -450,10 +449,6 @@
       const username =
         raw.username ?? raw.global_name ?? raw.globalName ?? raw.name ?? raw.login ?? "Użytkownik";
 
-      // backend może zwracać:
-      // - avatarUrl (gotowy URL)
-      // - avatar_url
-      // - avatar (hash) + id
       let avatarUrl =
         raw.avatarUrl ?? raw.avatar_url ?? raw.picture ?? "";
 
@@ -462,20 +457,22 @@
       if (!avatarUrl && discordId && avatarHash){
         avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${avatarHash}.png?size=128`;
       }
-
-      // fallback
       if (!avatarUrl){
         avatarUrl = "https://cdn.discordapp.com/embed/avatars/0.png";
       }
 
-      return { discordId: String(discordId || ""), username: String(username || "Użytkownik"), avatarUrl };
+      return {
+        discordId: String(discordId || ""),
+        username: String(username || "Użytkownik"),
+        avatarUrl
+      };
     }
 
     function App(){
       const tabs = useMemo(() => ([
-        { id:"services", label:"Moje usługi", hint:"Status i zakres", badge:"—" },
-        { id:"licenses", label:"Moje licencje", hint:"Klucze i ważność", badge:"—" },
-        { id:"tickets",  label:"Moje zgłoszenia", hint:"Obsługa i historia", badge:"—" },
+        { id:"services", label:"Moje usługi", hint:"Status i zakres", badge:"Brak" },
+        { id:"licenses", label:"Moje licencje", hint:"Klucze i ważność", badge:"Brak" },
+        { id:"tickets",  label:"Moje zgłoszenia", hint:"Obsługa i historia", badge:"Brak" },
       ]), []);
 
       const [active, setActive] = useState("services");
@@ -495,24 +492,17 @@
             const res = await fetch("/api/me", { credentials: "include" });
 
             if (res.status === 401) {
-              // brak sesji / brak cookie -> przerzucamy na OAuth
               window.location.href = "/auth/discord";
               return;
             }
 
             if (!res.ok) {
               if (!alive) return;
-              setMeErr("Nie udało się pobrać profilu użytkownika. (API error)");
+              setMeErr("Nie udało się pobrać profilu użytkownika.");
               return;
             }
 
             const data = await res.json();
-
-            // DEBUG (możesz usunąć)
-            console.log("API /api/me response:", data);
-
-            // tolerujemy różne formaty:
-            // { user: {...} } albo { me: {...} } albo {...}
             const rawUser = data?.user ?? data?.me ?? data?.profile ?? data;
 
             if (!rawUser) {
@@ -522,12 +512,6 @@
             }
 
             const normalized = normalizeDiscordUser(rawUser);
-
-            if (!normalized.discordId && !normalized.username) {
-              if (!alive) return;
-              setMeErr("Profil zalogowany, ale brakuje pól użytkownika (sprawdź response /api/me).");
-              return;
-            }
 
             if (!alive) return;
             setMe(normalized);
@@ -558,46 +542,46 @@
         if (active === "services") {
           return {
             title: "Moje usługi",
-            desc: "Podsumowanie usług i ich statusów. W kolejnych krokach podepniemy bazę danych i listę usług.",
+            desc: "Brak",
             stats: [
-              { k: "Status", v: "Aktywne (demo)" },
-              { k: "Monitoring / SLA", v: "—" },
-              { k: "Ostatnia zmiana", v: "—" },
+              { k: "Status", v: "Brak" },
+              { k: "Monitoring / SLA", v: "Brak" },
+              { k: "Ostatnia zmiana", v: "Brak" },
             ],
-            cta: { label: "Szczegóły", onClick: () => alert("Wkrótce: lista usług + szczegóły (backend + DB).") },
-            empty: "Tu będzie lista usług (bot, panel, zabezpieczenia, AI) z datami, statusem i szybkim kontaktem."
+            cta: { label: "Brak", onClick: () => {} },
+            empty: "Brak"
           };
         }
         if (active === "licenses") {
           return {
             title: "Moje licencje",
-            desc: "Klucze licencyjne i daty ważności. Dodamy aktywację licencji po wdrożeniu modułu licencjonowania.",
+            desc: "Brak",
             stats: [
-              { k: "Aktywne licencje", v: "0 (demo)" },
-              { k: "Najbliższe wygaśnięcie", v: "—" },
-              { k: "Ostatni klucz", v: "—" },
+              { k: "Aktywne licencje", v: "Brak" },
+              { k: "Najbliższe wygaśnięcie", v: "Brak" },
+              { k: "Ostatni klucz", v: "Brak" },
             ],
-            cta: { label: "Dodaj licencję", onClick: () => alert("Wkrótce: aktywacja licencji (backend + DB).") },
-            empty: "Tu pojawią się licencje + akcje: kopiuj klucz, pobierz pliki, historia."
+            cta: { label: "Brak", onClick: () => {} },
+            empty: "Brak"
           };
         }
         return {
           title: "Moje zgłoszenia",
-          desc: "Zgłoszenia i status obsługi. W następnym etapie podepniemy system ticketów i historię rozmów.",
+          desc: "Brak",
           stats: [
-            { k: "Otwarte", v: "0 (demo)" },
-            { k: "W trakcie", v: "0 (demo)" },
-            { k: "Zamknięte", v: "0 (demo)" },
+            { k: "Otwarte", v: "Brak" },
+            { k: "W trakcie", v: "Brak" },
+            { k: "Zamknięte", v: "Brak" },
           ],
-          cta: { label: "Nowe zgłoszenie", onClick: () => alert("Wkrótce: tworzenie zgłoszeń (backend + DB).") },
-          empty: "Tu będzie lista ticketów + tworzenie zgłoszenia, priorytet, załączniki i historia."
+          cta: { label: "Brak", onClick: () => {} },
+          empty: "Brak"
         };
       }, [active]);
 
       const subtitle = useMemo(() => {
-        if (active === "services") return "Zarządzaj usługami";
-        if (active === "licenses") return "Sprawdź licencje";
-        return "Obsługa zgłoszeń";
+        if (active === "services") return "Moje usługi";
+        if (active === "licenses") return "Moje licencje";
+        return "Moje zgłoszenia";
       }, [active]);
 
       return (
@@ -679,7 +663,7 @@
                   <h2>{view.title}</h2>
                   <div className="desc">{view.desc}</div>
                 </div>
-                <button className="btn primary" onClick={view.cta.onClick} type="button">
+                <button className="btn primary" onClick={view.cta.onClick} type="button" disabled>
                   {view.cta.label}
                 </button>
               </div>
@@ -695,7 +679,7 @@
                 </div>
 
                 <div className="empty">
-                  {view.empty}
+                  Brak
                 </div>
               </div>
             </section>
