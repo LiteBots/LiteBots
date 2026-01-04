@@ -27,7 +27,6 @@
     :root{
       --bg: #06060a;
       --bg2:#0b0b10;
-      --surface: rgba(18,18,24,.66);
       --text: #f4f4f7;
       --muted: rgba(244,244,247,.72);
       --border: rgba(255,255,255,.10);
@@ -104,7 +103,6 @@
     .blob.b1{ top:-180px; left:-160px; animation-duration: 22s; }
     .blob.b2{ top: 25vh; left: 52vw; width:460px; height:460px; animation-duration: 28s; opacity:.65;}
     .blob.b3{ bottom:-220px; right:-200px; width:520px; height:520px; animation-duration: 24s; opacity:.55;}
-
     @keyframes float{
       from{ transform: translate3d(0,0,0) rotate(0deg) scale(1); }
       to{ transform: translate3d(80px, -40px, 0) rotate(25deg) scale(1.08); }
@@ -121,7 +119,7 @@
     }
     #preloader.hidden{ opacity:0; pointer-events:none; transform: scale(1.03); }
     .loading-hint{
-      margin-top: 16px; text-align:center; color: rgba(244,244,247,.72);
+      margin-top: 16px; text-align:center; color: var(--muted);
       font-size:.95rem;
       letter-spacing:.02em;
     }
@@ -147,8 +145,8 @@
       background: rgba(18,18,24,.55);
       border: 1px solid var(--border);
       border-radius: 999px;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(var(--headerBlur));
+      -webkit-backdrop-filter: blur(var(--headerBlur));
       box-shadow: var(--shadow2);
     }
     .logo{ display:flex; align-items:center; gap:12px; padding: 6px 10px; border-radius:999px; }
@@ -160,7 +158,7 @@
     .nav-links a{
       padding: 10px 14px; border-radius: 999px;
       color: rgba(244,244,247,.75);
-      transition: background var(--speed) var(--ease), color var(--speed) var(--ease), transform var(--speed) var(--ease), border-color var(--speed) var(--ease);
+      transition: background var(--speed) var(--ease), color var(--speed) var(--ease), transform var(--speed) var(--ease);
       position:relative;
       outline: none;
       border: 1px solid transparent;
@@ -184,9 +182,9 @@
       display:inline-flex; gap:10px; align-items:center;
       padding: 10px 14px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
+      border: 1px solid var(--border);
       background: rgba(255,255,255,.05);
-      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), box-shadow var(--speed) var(--ease), background var(--speed) var(--ease);
+      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), box-shadow var(--speed) var(--ease);
       cursor:pointer;
       font-weight: 900;
       color: rgba(244,244,247,.92);
@@ -195,9 +193,7 @@
       transform: translateY(-1px) scale(1.02);
       border-color: rgba(0,163,255,.45);
       box-shadow: 0 0 24px rgba(0,163,255,.18);
-      background: rgba(255,255,255,.07);
     }
-    .pill svg{ width: 20px; height: 20px; }
 
     .scroll-progress{
       position:fixed; top:0; left:0; height:3px; width: 0%;
@@ -206,7 +202,7 @@
       box-shadow: 0 0 14px rgba(0,163,255,.25);
     }
 
-    /* Hero */
+    /* Hero + typografia */
     #hero{ min-height:100vh; display:flex; align-items:center; padding-top: 120px; }
     .hero-grid{ display:grid; grid-template-columns: 1fr; gap: 26px; align-items:center; }
 
@@ -334,10 +330,7 @@
     .icon svg{ width: 22px; height: 22px; color: rgba(255,255,255,.92); }
 
     .muted{ color: rgba(244,244,247,.72); }
-    .hr{
-      width: 100%; height: 1px; background: rgba(255,255,255,.08);
-      margin: 18px 0;
-    }
+    .hr{ width: 100%; height: 1px; background: rgba(255,255,255,.08); margin: 18px 0; }
 
     .stats{
       display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
@@ -349,17 +342,7 @@
       background: rgba(10,10,14,.45);
       border: 1px solid rgba(255,255,255,.10);
       padding: 16px;
-      position:relative;
-      overflow:hidden;
     }
-    .stat::after{
-      content:"";
-      position:absolute; inset:-2px;
-      background: radial-gradient(420px 120px at 20% 0%, rgba(0,163,255,.18), transparent 60%);
-      opacity:.8;
-      pointer-events:none;
-    }
-    .stat > *{ position:relative; z-index:1; }
     .stat .num{
       font-size: 1.7rem;
       font-weight: 950;
@@ -368,53 +351,6 @@
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     }
     .stat .lbl{ color: rgba(244,244,247,.70); font-weight: 900; font-size: .95rem; margin-top: 2px; }
-
-    .trustbar{
-      margin-top: 22px;
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items:center;
-    }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      color: rgba(244,244,247,.82);
-      font-weight: 850;
-      font-size: .95rem;
-    }
-    .badge svg{ width: 18px; height: 18px; opacity:.95; }
-
-    .checklist{
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-      margin-top: 14px;
-    }
-    .check{
-      display:flex;
-      gap: 10px;
-      align-items:flex-start;
-      color: rgba(244,244,247,.78);
-    }
-    .check i{
-      width: 20px;
-      height: 20px;
-      border-radius: 8px;
-      display:grid;
-      place-items:center;
-      background: rgba(0,163,255,.12);
-      border: 1px solid rgba(0,163,255,.18);
-      box-shadow: 0 0 16px rgba(0,163,255,.10);
-      flex: 0 0 auto;
-      margin-top: 2px;
-    }
-    .check i svg{ width: 14px; height: 14px; }
 
     /* Pricing */
     .pricing-grid{
@@ -443,28 +379,8 @@
       border-color: rgba(0,163,255,.35);
       box-shadow: 0 22px 70px rgba(0,0,0,.45);
     }
-    .price-card::before{
-      content:"";
-      position:absolute; inset:-2px;
-      background: radial-gradient(520px 200px at 20% 0%, rgba(0,163,255,.18), transparent 60%),
-                  radial-gradient(520px 220px at 90% 20%, rgba(30,77,255,.12), transparent 62%);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .price-card > *{ position:relative; z-index:1; }
-
-    .plan-top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .plan-name{
-      font-weight: 950;
-      font-size: 1.25rem;
-      letter-spacing:-.02em;
-    }
+    .plan-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:10px; }
+    .plan-name{ font-weight: 950; font-size: 1.25rem; letter-spacing:-.02em; }
     .plan-pill{
       padding: 8px 10px;
       border-radius: 999px;
@@ -480,12 +396,7 @@
       background: linear-gradient(90deg, rgba(0,163,255,.24), rgba(30,77,255,.18), rgba(51,230,255,.12));
       box-shadow: 0 0 18px rgba(0,163,255,.12);
     }
-    .price{
-      display:flex;
-      align-items:baseline;
-      gap: 10px;
-      margin: 10px 0 12px;
-    }
+    .price{ display:flex; align-items:baseline; gap: 10px; margin: 10px 0 12px; }
     .price .amount{
       font-size: 2.4rem;
       font-weight: 950;
@@ -493,14 +404,8 @@
       background: linear-gradient(90deg, rgba(255,255,255,.95), rgba(244,244,247,.65));
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     }
-    .price .per{
-      color: rgba(244,244,247,.70);
-      font-weight: 900;
-    }
-    .plan-desc{
-      color: rgba(244,244,247,.72);
-      max-width: 60ch;
-    }
+    .price .per{ color: rgba(244,244,247,.70); font-weight: 900; }
+    .plan-desc{ color: rgba(244,244,247,.72); max-width: 60ch; }
     .plan-meta{
       margin-top: 14px;
       display:flex;
@@ -517,13 +422,7 @@
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.14);
     }
-    .cta-row{
-      margin-top: 18px;
-      display:flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items:center;
-    }
+    .cta-row{ margin-top: 18px; display:flex; gap: 12px; flex-wrap: wrap; align-items:center; }
     .legal-note{
       margin-top: 16px;
       color: rgba(244,244,247,.58);
@@ -534,7 +433,7 @@
       margin-right:auto;
     }
 
-    /* Banner (Discord CTA) */
+    /* Banner Discord CTA */
     .discord-banner{
       max-width: 980px;
       margin: 40px auto 0;
@@ -551,37 +450,15 @@
       position:relative;
       overflow:hidden;
     }
-    .discord-banner::before{
-      content:"";
-      position:absolute; inset:-2px;
-      background: radial-gradient(520px 220px at 20% 0%, rgba(0,163,255,.18), transparent 60%);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .discord-banner > *{ position:relative; z-index:1; }
-    .discord-title{
-      font-weight: 950;
-      letter-spacing:-.02em;
-      font-size: 1.15rem;
-    }
-    .discord-sub{
-      color: rgba(244,244,247,.72);
-      font-weight: 800;
-      margin-top: 4px;
-      max-width: 70ch;
-    }
-    .discord-left{
-      display:flex;
-      gap: 12px;
-      align-items:flex-start;
-    }
+    .discord-title{ font-weight: 950; letter-spacing:-.02em; font-size: 1.15rem; }
+    .discord-sub{ color: rgba(244,244,247,.72); font-weight: 800; margin-top: 4px; max-width: 70ch; }
+    .discord-left{ display:flex; gap: 12px; align-items:flex-start; }
     .discord-mark{
       width: 44px; height: 44px;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(0,0,0,.18);
-      display:grid;
-      place-items:center;
+      display:grid; place-items:center;
       box-shadow: 0 0 22px rgba(0,163,255,.12);
       flex: 0 0 auto;
     }
@@ -826,6 +703,26 @@
 
   <div id="app"></div>
 
+  <!-- HARD FALLBACK: preloader znika nawet jeśli React się wysypie -->
+  <script>
+    (function(){
+      function hidePreloader(){
+        try{
+          var p = document.getElementById('preloader');
+          if (p) p.classList.add('hidden');
+          document.body.classList.remove('loading');
+        }catch(e){}
+      }
+      // jeśli app nie wystartuje -> po 2200ms i tak zdejmujemy preloader
+      window.addEventListener('load', function(){
+        setTimeout(hidePreloader, 2200);
+      });
+      // dodatkowy fallback
+      setTimeout(hidePreloader, 3000);
+      window.__hidePreloader = hidePreloader;
+    })();
+  </script>
+
   <script type="text/babel">
     const { useEffect, useMemo, useRef, useState } = React;
 
@@ -834,13 +731,14 @@
     function clamp01(x){ return Math.max(0, Math.min(1, x)); }
     function easeOutCubic(p){ return 1 - Math.pow(1 - p, 3); }
 
+    // BEZ replaceAll -> działa wszędzie
     function escapeHtml(str){
       return String(str)
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'","&#039;");
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
     }
 
     function App(){
@@ -866,26 +764,25 @@
 
       const optionMap = useMemo(() => ({
         showBotOptions: [
-          { text: 'Bot nie działa', action: 'showResponse', response: 'Daj: ID serwera, przybliżony czas zdarzenia, logi (stack trace) i opis. Szybko namierzymy źródło problemu.' },
-          { text: 'Nowa funkcja / moduł', action: 'showResponse', response: 'Opisz moduł, priorytet i deadline. Przygotujemy plan wdrożenia + wycenę.' },
-          { text: 'Tickets / support', action: 'showResponse', response: 'Zrobimy system zgłoszeń z logami, eskalacją i integracjami (webhooki, panel, role, SLA).' },
+          { text: 'Bot nie działa', action: 'showResponse', response: 'Daj: ID serwera, czas zdarzenia, logi (stack trace) i opis. Namierzymy problem.' },
+          { text: 'Nowa funkcja / moduł', action: 'showResponse', response: 'Opisz moduł, priorytet i deadline. Przygotujemy plan + wycenę.' },
+          { text: 'Tickets / support', action: 'showResponse', response: 'Zrobimy system zgłoszeń z logami, eskalacją i integracjami (webhooki/panel/role).' },
           { text: 'Zacznij od nowa', action: 'reset' }
         ],
         showPanelOptions: [
-          { text: 'Chcę panel do konfiguracji', action: 'showResponse', response: 'Panel może mieć: ustawienia modułów, role, logi, tickets, statystyki, integracje i uprawnienia — dopasujemy to pod Twój serwer.' },
           { text: 'Standard czy Premium?', action: 'showResponse', response: 'Standard (30 PLN/mies.) — panel do max 5 funkcji. Premium (60 PLN/mies.) — sterowanie każdą funkcją bota. Zakup: zgłoszenie na Discordzie.' },
           { text: 'Zakup subskrypcji', action: 'goDiscord' },
           { text: 'Zacznij od nowa', action: 'reset' }
         ],
         showSecurityOptions: [
-          { text: 'Antyspam / antyraid', action: 'showResponse', response: 'Wdrożymy: rate-limit, filtry, wykrywanie anomalii, automatyczne akcje i alerty. Opisz, jak wygląda atak.' },
-          { text: 'Audyt uprawnień', action: 'showResponse', response: 'Przegląd ról, uprawnień, logów i punktów ryzyka + lista rekomendacji.' },
+          { text: 'Antyspam / antyraid', action: 'showResponse', response: 'Wdrożymy: rate-limit, filtry, wykrywanie anomalii, akcje i alerty. Opisz atak.' },
+          { text: 'Audyt uprawnień', action: 'showResponse', response: 'Przegląd ról, uprawnień, logów i punktów ryzyka + rekomendacje.' },
           { text: 'Zacznij od nowa', action: 'reset' }
         ],
         showAIOptions: [
-          { text: 'AI odpowiada na zgłoszenia', action: 'showResponse', response: 'Bot zbiera kontekst, odpowiada, dopytuje i eskaluje do staffu. Możemy dodać bazę wiedzy i priorytety.' },
-          { text: 'Automatyzacje workflow', action: 'showResponse', response: 'Automaty typu: “jeśli X → zrób Y”, auto-raporty, powiadomienia, synchronizacja danych, webhooki.' },
-          { text: 'Moderacja wsparta AI', action: 'showResponse', response: 'Klasyfikacja treści, wykrywanie toksyczności/spamu, sugestie akcji dla staffu — z logami i progami.' },
+          { text: 'AI odpowiada na zgłoszenia', action: 'showResponse', response: 'Bot zbiera kontekst, odpowiada, dopytuje i eskaluje do staffu. Możemy dodać bazę wiedzy.' },
+          { text: 'Automatyzacje workflow', action: 'showResponse', response: 'Automaty: “jeśli X → zrób Y”, auto-raporty, notyfikacje, webhooki, synchronizacja danych.' },
+          { text: 'Moderacja wsparta AI', action: 'showResponse', response: 'Klasyfikacja treści, wykrywanie spamu/toksyczności, sugestie akcji — z logami i progami.' },
           { text: 'Zacznij od nowa', action: 'reset' }
         ]
       }), []);
@@ -977,12 +874,8 @@
       };
 
       useEffect(() => {
-        const preloader = document.getElementById('preloader');
-        document.body.classList.add('loading');
-        const t = setTimeout(() => {
-          preloader?.classList.add('hidden');
-          document.body.classList.remove('loading');
-        }, 1050);
+        // jeśli React wstaje -> zdejmujemy preloader natychmiast
+        if (window.__hidePreloader) window.__hidePreloader();
 
         const revealObs = new IntersectionObserver((entries) => {
           for (const e of entries) {
@@ -1010,7 +903,7 @@
           const visible = entries
             .filter(x => x.isIntersecting)
             .sort((a,b)=> b.intersectionRatio - a.intersectionRatio)[0];
-          if (visible?.target?.id) setActiveSection(visible.target.id);
+          if (visible && visible.target && visible.target.id) setActiveSection(visible.target.id);
         }, { threshold: 0.35 });
 
         sections.forEach(id => {
@@ -1029,7 +922,6 @@
         onScroll();
 
         return () => {
-          clearTimeout(t);
           revealObs.disconnect();
           secObs.disconnect();
           statsObs.disconnect();
@@ -1060,9 +952,6 @@
 
                 <div className="header-actions">
                   <a className="pill" href="/auth/discord" aria-label="Przejdź do Panelu Klienta">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                      <path d="M4 4h16a2 2 0 0 1 2 2v4H2V6a2 2 0 0 1 2-2zm-2 8h20v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6zm5 2v4h6v-4H7zm9 1h4v2h-4v-2z"/>
-                    </svg>
                     <span>Panel Klienta</span>
                   </a>
                 </div>
@@ -1075,7 +964,7 @@
               <div className="container">
                 <div className="hero-grid">
                   <div className="reveal">
-                    <div className="kicker" aria-label="Informacja">
+                    <div className="kicker">
                       <span className="dot" aria-hidden="true"></span>
                       <span>Produktowa jakość • Panel webowy • AI • Bezpieczeństwo</span>
                     </div>
@@ -1096,25 +985,6 @@
                       </button>
                       <button className="btn ghost" onClick={goDiscord}>Wejdź na Discord</button>
                       <button className="btn" onClick={()=>scrollTo('#services')}>Poznaj usługi</button>
-                    </div>
-
-                    <div className="trustbar" aria-label="Najważniejsze filary">
-                      <span className="badge">
-                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l9 4v6c0 5-3.8 9.4-9 12C6.8 21.4 3 17 3 12V6l9-4zm-1 13l6-6-1.4-1.4L11 12.2 8.4 9.6 7 11l4 4z"/></svg>
-                        SLA / monitoring
-                      </span>
-                      <span className="badge">
-                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16v4H4V4zm0 6h16v10H4V10zm4 2v6h8v-6H8z"/></svg>
-                        Panel webowy
-                      </span>
-                      <span className="badge">
-                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 017 7v2h2v2h-2v2a7 7 0 11-14 0v-2H3v-2h2V9a7 7 0 017-7zm-3 9v2h6v-2H9z"/></svg>
-                        AI automatyzacje
-                      </span>
-                      <span className="badge">
-                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1l9 4v6c0 5-3.8 9.4-9 12-5.2-2.6-9-7-9-12V5l9-4z"/></svg>
-                        Zabezpieczenia
-                      </span>
                     </div>
 
                     <div id="heroStatsSentinel" className="stats" aria-label="Najważniejsze liczby">
@@ -1162,7 +1032,7 @@
                   <h2 className="section-title">Misja: <span className="highlight">przewidywalny</span> system</h2>
                   <p className="section-subtitle">
                     U nas bot i panel to nie “skrypt”. To rozwiązanie, które da się utrzymać: moduły, uprawnienia,
-                    logi, monitoring, AI i zabezpieczenia. Wersjonowanie, porządek i czytelny proces.
+                    logi, monitoring, AI i zabezpieczenia.
                   </p>
                 </div>
 
@@ -1172,17 +1042,7 @@
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v10H6l-2 2V6zm3 3h10v2H7V9zm0 4h7v2H7v-2z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>Architektura i porządek</h3>
-                    <p className="muted">Czytelne moduły, uprawnienia, logika, logi i telemetryka — gotowe na rozwój i skalę.</p>
-                    <div className="checklist">
-                      <div className="check">
-                        <i aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/></svg></i>
-                        <span>Stabilność + łatwy rozwój</span>
-                      </div>
-                      <div className="check">
-                        <i aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/></svg></i>
-                        <span>Jasne granice modułów</span>
-                      </div>
-                    </div>
+                    <p className="muted">Czytelne moduły, uprawnienia, logika i logi — gotowe na rozwój.</p>
                   </div>
 
                   <div className="card reveal" style={{transitionDelay:'120ms'}}>
@@ -1190,17 +1050,7 @@
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>UX premium</h3>
-                    <p className="muted">Panel, procesy i automaty tak, żeby staff nie tracił czasu na ręczne rzeczy.</p>
-                    <div className="checklist">
-                      <div className="check">
-                        <i aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/></svg></i>
-                        <span>Szybkie konfiguracje</span>
-                      </div>
-                      <div className="check">
-                        <i aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/></svg></i>
-                        <span>Dashboard i kontrola</span>
-                      </div>
-                    </div>
+                    <p className="muted">Panel i komendy zaprojektowane, żeby były szybkie i intuicyjne.</p>
                   </div>
 
                   <div className="card reveal" style={{transitionDelay:'240ms'}}>
@@ -1208,17 +1058,7 @@
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l9 4v6c0 5-3.8 9.4-9 12-5.2-2.6-9-7-9-12V5l9-4zm0 6a3 3 0 100 6 3 3 0 000-6z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>Bezpieczeństwo</h3>
-                    <p className="muted">Rate-limit, antyspam, antyraid, audyty i kontrola dostępu — mniej incydentów.</p>
-                    <div className="checklist">
-                      <div className="check">
-                        <i aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/></svg></i>
-                        <span>Alerty i logi zdarzeń</span>
-                      </div>
-                      <div className="check">
-                        <i aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/></svg></i>
-                        <span>Wykrywanie anomalii</span>
-                      </div>
-                    </div>
+                    <p className="muted">Rate-limit, antyspam, audyty i kontrola dostępu — mniej incydentów.</p>
                   </div>
                 </div>
               </div>
@@ -1229,7 +1069,7 @@
                 <div className="reveal">
                   <h2 className="section-title">Usługi Lite Solutions</h2>
                   <p className="section-subtitle">
-                    Konkret: bot, panel i systemy wokół niego. Projektujemy, wdrażamy, utrzymujemy.
+                    Discord Boty, panel webowy, zabezpieczenia, AI i automatyzacje.
                   </p>
                 </div>
 
@@ -1239,23 +1079,19 @@
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v2h4a2 2 0 012 2v10a2 2 0 01-2 2h-5l-3 3-3-3H6a2 2 0 01-2-2V6a2 2 0 012-2h4V2zm-3 7h10v2H7V9zm0 4h7v2H7v-2z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>Discord Bot</h3>
-                    <p className="muted">
-                      Moderacja, ekonomia, rankingi, role, logi, tickets, automaty, integracje.
-                    </p>
+                    <p className="muted">Moderacja, ekonomia, rankingi, role, logi, tickets, automaty, integracje.</p>
                     <div className="hr"></div>
-                    <p className="muted"><strong>Plus:</strong> wersjonowanie, testy, monitoring, aktualizacje.</p>
+                    <p className="muted"><strong>Opcjonalnie:</strong> hosting, monitoring, SLA, aktualizacje.</p>
                   </div>
 
                   <div className="card reveal" style={{transitionDelay:'120ms'}}>
                     <div className="icon" aria-hidden="true">
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16v14H4V5zm2 2v2h12V7H6zm0 4v6h12v-6H6z"/></svg>
                     </div>
-                    <h3 style={{fontWeight:950}}>Panel webowy do zarządzania botem</h3>
-                    <p className="muted">
-                      Konfiguracja modułów, role, logi, tickets, integracje, statystyki, uprawnienia.
-                    </p>
+                    <h3 style={{fontWeight:950}}>Panel webowy</h3>
+                    <p className="muted">Konfiguracja modułów, role, logi, tickets, integracje, statystyki i uprawnienia.</p>
                     <div className="hr"></div>
-                    <p className="muted"><strong>Efekt:</strong> mniej ręcznej roboty, pełna kontrola.</p>
+                    <p className="muted"><strong>Efekt:</strong> pełna kontrola i mniej ręcznej roboty.</p>
                   </div>
 
                   <div className="card reveal" style={{transitionDelay:'240ms'}}>
@@ -1263,9 +1099,7 @@
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l9 4v6c0 5-3.8 9.4-9 12-5.2-2.6-9-7-9-12V5l9-4z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>Zabezpieczenia</h3>
-                    <p className="muted">
-                      Antyspam, antyraid, rate-limit, wykrywanie anomalii, alerty, audyt uprawnień.
-                    </p>
+                    <p className="muted">Antyspam, antyraid, rate-limit, wykrywanie anomalii, logi, alerty, audyt.</p>
                     <div className="hr"></div>
                     <p className="muted"><strong>Cel:</strong> stabilność i spokój.</p>
                   </div>
@@ -1283,19 +1117,19 @@
                 <div className="reveal">
                   <h2 className="section-title">Subskrypcje — Panel webowy</h2>
                   <p className="section-subtitle">
-                    Aby zakupić subskrypcję, skontaktuj się z nami poprzez <strong>zgłoszenie na Discordzie</strong>.
+                    Aby zakupić subskrypcję, skontaktuj się poprzez <strong>zgłoszenie na Discordzie</strong>.
                   </p>
                 </div>
 
                 <div className="pricing-grid">
                   <div
                     className="price-card reveal"
-                    style={pricingHighlight === 'standard' ? { borderColor:'rgba(0,163,255,.55)', boxShadow:'0 0 0 1px rgba(0,163,255,.25), 0 22px 70px rgba(0,0,0,.45)' } : null}
+                    style={pricingHighlight === 'standard' ? { borderColor:'rgba(0,163,255,.55)' } : null}
                   >
                     <div className="plan-top">
                       <div>
                         <div className="plan-name">Pakiet Standard</div>
-                        <div className="muted" style={{fontWeight:850}}>Dla małych i średnich serwerów</div>
+                        <div className="muted" style={{fontWeight:850}}>Start dla mniejszych serwerów</div>
                       </div>
                       <div className="plan-pill">Najlepszy start</div>
                     </div>
@@ -1306,25 +1140,10 @@
                     </div>
 
                     <div className="plan-desc">
-                      Zarządzanie w panelu do <strong>maks. 5 funkcji</strong> w bocie. Idealne, gdy chcesz uporządkować podstawowe moduły.
+                      Panel do zarządzania <strong>maks. 5 funkcjami</strong> w bocie.
                     </div>
 
                     <div className="hr"></div>
-
-                    <div className="checklist" aria-label="Zakres Standard">
-                      <div className="check">
-                        <i aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/></svg></i>
-                        <span>Panel: konfiguracja do 5 funkcji</span>
-                      </div>
-                      <div className="check">
-                        <i aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/></svg></i>
-                        <span>Podstawowe role i uprawnienia</span>
-                      </div>
-                      <div className="check">
-                        <i aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/></svg></i>
-                        <span>Logi działań w panelu</span>
-                      </div>
-                    </div>
 
                     <div className="plan-meta">
                       <span className="mini">Limit: 5 funkcji</span>
@@ -1333,10 +1152,10 @@
 
                     <div className="cta-row">
                       <a className="btn primary" style={{width:'100%'}} href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
-                        Kup Standard na Discordzie
+                        Kup Standard (zgłoszenie na Discordzie)
                       </a>
                       <button className="btn" style={{width:'100%'}} onClick={goDiscord}>
-                        Załóż zgłoszenie
+                        Dołącz na Discord
                       </button>
                     </div>
                   </div>
@@ -1345,15 +1164,13 @@
                     className="price-card reveal"
                     style={{
                       transitionDelay:'120ms',
-                      ...(pricingHighlight === 'premium'
-                        ? { borderColor:'rgba(0,163,255,.55)', boxShadow:'0 0 0 1px rgba(0,163,255,.25), 0 22px 70px rgba(0,0,0,.45)' }
-                        : null)
+                      ...(pricingHighlight === 'premium' ? { borderColor:'rgba(0,163,255,.55)' } : null)
                     }}
                   >
                     <div className="plan-top">
                       <div>
                         <div className="plan-name">Pakiet Premium</div>
-                        <div className="muted" style={{fontWeight:850}}>Pełna kontrola i skalowanie</div>
+                        <div className="muted" style={{fontWeight:850}}>Pełna kontrola</div>
                       </div>
                       <div className="plan-pill recommended">Rekomendowany</div>
                     </div>
@@ -1364,25 +1181,10 @@
                     </div>
 
                     <div className="plan-desc">
-                      Sterowanie w panelu <strong>każdą funkcją bota</strong>. Dla serwerów, które chcą kompletny panel i maksymalną elastyczność.
+                      Panel umożliwia sterowanie <strong>każdą funkcją bota</strong>.
                     </div>
 
                     <div className="hr"></div>
-
-                    <div className="checklist" aria-label="Zakres Premium">
-                      <div className="check">
-                        <i aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/></svg></i>
-                        <span>Panel: sterowanie każdą funkcją bota</span>
-                      </div>
-                      <div className="check">
-                        <i aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/></svg></i>
-                        <span>Zaawansowane role, polityki i dostęp</span>
-                      </div>
-                      <div className="check">
-                        <i aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/></svg></i>
-                        <span>Lepszy wgląd: logi i kontrola zmian</span>
-                      </div>
-                    </div>
 
                     <div className="plan-meta">
                       <span className="mini">Limit: bez limitu</span>
@@ -1391,32 +1193,17 @@
 
                     <div className="cta-row">
                       <a className="btn primary" style={{width:'100%'}} href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
-                        Kup Premium na Discordzie
+                        Kup Premium (zgłoszenie na Discordzie)
                       </a>
                       <button className="btn" style={{width:'100%'}} onClick={goDiscord}>
-                        Załóż zgłoszenie
+                        Dołącz na Discord
                       </button>
                     </div>
                   </div>
                 </div>
 
                 <div className="legal-note reveal" style={{marginTop: 18}}>
-                  Aby zakupić subskrypcję: dołącz na Discord i utwórz zgłoszenie. Podaj wybrany pakiet (Standard/Premium) oraz serwer.
-                </div>
-
-                <div className="discord-banner reveal">
-                  <div className="discord-left">
-                    <div className="discord-mark" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4.5A16.2 16.2 0 0016 3l-.4.8a15 15 0 00-3.6-.4c-1.2 0-2.4.1-3.6.4L8 3a16.2 16.2 0 00-4 1.5C2.6 7 2 9.4 2 11.8c0 2.4.6 4.8 2 7.3A16.4 16.4 0 008 21l.5-.9c1.1.4 2.3.6 3.5.6s2.4-.2 3.5-.6l.5.9a16.4 16.4 0 004-1.9c1.4-2.5 2-4.9 2-7.3 0-2.4-.6-4.8-2-7.3zM9.4 14.6c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5c.7 0 1.3.7 1.3 1.5s-.6 1.5-1.3 1.5zm5.2 0c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5c.7 0 1.3.7 1.3 1.5s-.6 1.5-1.3 1.5z"/></svg>
-                    </div>
-                    <div>
-                      <div className="discord-title">Kup subskrypcję przez zgłoszenie</div>
-                      <div className="discord-sub">Wejdź na Discord, załóż ticket i napisz: pakiet, serwer, oraz jakie funkcje chcesz w panelu.</div>
-                    </div>
-                  </div>
-                  <a className="btn primary" href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
-                    Dołącz na Discord
-                  </a>
+                  Zakup subskrypcji: wejdź na Discord, utwórz zgłoszenie i napisz: pakiet (Standard/Premium) + serwer + krótki opis.
                 </div>
               </div>
             </section>
@@ -1426,7 +1213,7 @@
                 <div className="reveal">
                   <h2 className="section-title">AI i Automatyzacje AI</h2>
                   <p className="section-subtitle">
-                    AI wdrażamy tylko tam, gdzie daje realny efekt: mniej pracy staffu, szybsze odpowiedzi, lepsza moderacja.
+                    AI tam, gdzie naprawdę robi robotę: mniej pracy staffu, szybsze odpowiedzi, lepsza moderacja.
                   </p>
                 </div>
 
@@ -1436,9 +1223,7 @@
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 2h6v2h2a2 2 0 012 2v2h-2V6H5v2H3V6a2 2 0 012-2h2V2zm-6 8h18v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10zm4 3h6v2H7v-2z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>Rozwiązania AI</h3>
-                    <p className="muted">
-                      Klasyfikowanie, rekomendacje, analiza treści i automatyczne akcje (reguły + AI) z logami i kontrolą.
-                    </p>
+                    <p className="muted">Klasyfikowanie, rekomendacje, analiza treści, akcje reguły+AI.</p>
                   </div>
 
                   <div className="card reveal" style={{transitionDelay:'120ms'}}>
@@ -1446,9 +1231,7 @@
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 019 9v3a3 3 0 01-3 3h-2v-2h2a1 1 0 001-1v-3a7 7 0 10-14 0v3a1 1 0 001 1h2v2H6a3 3 0 01-3-3v-3a9 9 0 019-9zm-1 6h2v6h-2V9zm0 8h2v2h-2v-2z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>AI odpowiada na zgłoszenia</h3>
-                    <p className="muted">
-                      Automatyzacja tickets: bot zbiera dane, odpowiada, dopytuje i eskaluje do staffu, gdy trzeba.
-                    </p>
+                    <p className="muted">Bot zbiera kontekst, odpowiada, dopytuje i eskaluje do staffu.</p>
                   </div>
 
                   <div className="card reveal" style={{transitionDelay:'240ms'}}>
@@ -1456,9 +1239,7 @@
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10v2H7V2zm-2 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zm2 4v2h10v-2H7zm0 4v2h7v-2H7z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>Automatyzacje workflow</h3>
-                    <p className="muted">
-                      “Jeśli X → zrób Y”, auto-raporty, notyfikacje, synchronizacja danych, webhooki i integracje z panelem.
-                    </p>
+                    <p className="muted">“Jeśli X → Y”, auto-raporty, notyfikacje, webhooki, integracje.</p>
                   </div>
                 </div>
               </div>
@@ -1469,21 +1250,21 @@
                 <div className="reveal">
                   <h2 className="section-title">Proces współpracy</h2>
                   <p className="section-subtitle">
-                    Krótko, konkretnie i bez zgadywania. Dowozimy etapami, z mierzalnym efektem.
+                    Prosto: analiza → budowa → wdrożenie.
                   </p>
                 </div>
 
                 <div className="grid-3">
                   <div className="card reveal">
                     <h3 style={{fontWeight:950}}>1) Analiza</h3>
-                    <p className="muted">Zakres, priorytety, role, tickets, integracje, wymagania AI i bezpieczeństwa.</p>
+                    <p className="muted">Zakres, priorytety, role, tickets, integracje, AI i bezpieczeństwo.</p>
                     <div className="hr"></div>
                     <p className="muted"><strong>Wynik:</strong> plan + wycena + harmonogram.</p>
                   </div>
 
                   <div className="card reveal" style={{transitionDelay:'120ms'}}>
                     <h3 style={{fontWeight:950}}>2) Budowa</h3>
-                    <p className="muted">Bot + panel + automatyzacje. Testy, UX, dopracowane uprawnienia i logowanie zmian.</p>
+                    <p className="muted">Bot + panel + automatyzacje. Testy i dopracowany UX.</p>
                     <div className="hr"></div>
                     <p className="muted"><strong>Wynik:</strong> MVP + iteracje.</p>
                   </div>
@@ -1502,25 +1283,21 @@
               <div className="container">
                 <div className="reveal">
                   <h2 className="section-title">FAQ</h2>
-                  <p className="section-subtitle">Najczęstsze pytania o boty, panele i AI.</p>
+                  <p className="section-subtitle">Najczęstsze pytania.</p>
                 </div>
 
                 <div className="faq reveal">
                   <details>
                     <summary>Jak kupić subskrypcję panelu? <span>+</span></summary>
-                    <div className="ans">Dołącz na Discord i załóż zgłoszenie (ticket). Napisz: pakiet (Standard/Premium), serwer i krótkie wymagania.</div>
+                    <div className="ans">Dołącz na Discord i załóż zgłoszenie (ticket). Napisz: pakiet (Standard/Premium), serwer i wymagania.</div>
                   </details>
                   <details>
-                    <summary>Standard vs Premium — co jest różnicą? <span>+</span></summary>
-                    <div className="ans"><strong>Standard:</strong> zarządzanie do 5 funkcji w bocie. <strong>Premium:</strong> pełna kontrola każdej funkcji bota.</div>
+                    <summary>Standard vs Premium — różnica? <span>+</span></summary>
+                    <div className="ans"><strong>Standard:</strong> max 5 funkcji. <strong>Premium:</strong> pełna kontrola każdej funkcji bota.</div>
                   </details>
                   <details>
-                    <summary>AI odpowiada na zgłoszenia — jak to wygląda? <span>+</span></summary>
-                    <div className="ans">Bot zbiera kontekst (ticket), proponuje rozwiązanie, dopytuje i eskaluje do staffu. Wszystko z logami i kontrolą.</div>
-                  </details>
-                  <details>
-                    <summary>Czy oferujecie wdrożenie / konfigurację? <span>+</span></summary>
-                    <div className="ans">Tak. Najszybciej przez zgłoszenie na Discordzie — opisz serwer, moduły i deadline.</div>
+                    <summary>Czy AI może obsługiwać zgłoszenia? <span>+</span></summary>
+                    <div className="ans">Tak — bot zbiera kontekst, odpowiada, dopytuje i eskaluje do staffu.</div>
                   </details>
                 </div>
               </div>
@@ -1568,13 +1345,13 @@
               </div>
             </section>
 
-            <!-- Kontakt -> Banner Discord (bez formularza) -->
+            <!-- Bez formularza: tylko banner Discord -->
             <section id="contact" className="section">
               <div className="container">
                 <div className="reveal">
                   <h2 className="section-title">Kontakt przez Discord</h2>
                   <p className="section-subtitle">
-                    Najszybciej załatwisz wszystko na serwerze: zakup subskrypcji, wdrożenia, konfigurację i support.
+                    Najszybciej: wejdź na serwer i utwórz zgłoszenie. Tak kupisz subskrypcję i dostaniesz support.
                   </p>
                 </div>
 
@@ -1585,11 +1362,11 @@
                     </div>
                     <div>
                       <div className="discord-title">Wejdź na Discord i załóż zgłoszenie</div>
-                      <div className="discord-sub">Podaj: wybrany pakiet (Standard/Premium), ID serwera i krótki opis czego potrzebujesz. Odpowiemy szybko.</div>
+                      <div className="discord-sub">Podaj: pakiet (Standard/Premium), serwer i krótki opis potrzeb.</div>
                     </div>
                   </div>
 
-                  <a className="btn primary" href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer" aria-label="Dołącz na Discord">
+                  <a className="btn primary" href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
                     Dołącz na Discord
                   </a>
                 </div>
