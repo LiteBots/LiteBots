@@ -9,18 +9,16 @@
   <meta name="keywords" content="discord bot, panel do bota, automatyzacje ai, ai, zabezpieczenia, tickets, support bot, premium" />
   <meta name="theme-color" content="#0b0b0f" />
 
-  <!-- OpenGraph -->
   <meta property="og:title" content="Lite Solutions — Boty, Panele, AI i Zabezpieczenia" />
   <meta property="og:description" content="Discord Boty, panele do zarządzania botem, zabezpieczenia oraz automatyzacje AI." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://imgur.com/a/iZuTkIq" />
+  <meta property="og:image" content="https://i.imgur.com/TbvImJS.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="icon" href="/images/favicon.png" type="image/png" />
 
-  <!-- React 18 UMD + Babel -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -34,10 +32,9 @@
       --muted: rgba(244,244,247,.72);
       --border: rgba(255,255,255,.10);
 
-      /* === NOWA PALETA: czarno-niebieska (zostaje vibe gradientów/aurory) === */
-      --p1: #1e4dff;            /* deep blue */
-      --p2: #00a3ff;            /* vivid blue */
-      --p3: #33e6ff;            /* cyan */
+      --p1: #1e4dff;
+      --p2: #00a3ff;
+      --p3: #33e6ff;
       --pGlow: rgba(0,163,255,.45);
 
       --radius: 18px;
@@ -73,7 +70,6 @@
     .container{ max-width:1150px; margin:0 auto; padding:0 20px; }
     .section{ padding: 120px 0; position:relative; }
 
-    /* ===== Backgrounds ===== */
     #grid-background{
       position:fixed; inset:0; z-index:-3;
       background-image:
@@ -114,7 +110,6 @@
       to{ transform: translate3d(80px, -40px, 0) rotate(25deg) scale(1.08); }
     }
 
-    /* ===== Preloader ===== */
     #preloader{
       position:fixed; inset:0; display:grid; place-items:center; z-index:9999;
       background: rgba(6,6,10,.55);
@@ -142,7 +137,6 @@
     }
     @keyframes load{ 0%{ transform: translateX(-60%);} 100%{ transform: translateX(220%);} }
 
-    /* ===== Header ===== */
     #app-header{ position:fixed; top:18px; left:18px; right:18px; z-index:2000; }
     .header-nav{
       display:flex; align-items:center; justify-content:space-between;
@@ -202,7 +196,6 @@
     }
     .pill svg{ width: 20px; height: 20px; }
 
-    /* Scroll progress */
     .scroll-progress{
       position:fixed; top:0; left:0; height:3px; width: 0%;
       background: linear-gradient(90deg, var(--p2), var(--p1), var(--p3));
@@ -210,7 +203,6 @@
       box-shadow: 0 0 14px rgba(0,163,255,.25);
     }
 
-    /* ===== Hero ===== */
     #hero{ min-height:100vh; display:flex; align-items:center; padding-top: 120px; }
     .hero-grid{
       display:grid;
@@ -280,7 +272,6 @@
     }
     .btn img{ width: 26px; height: 26px; }
 
-    /* ===== Shared components ===== */
     .section-title{
       text-align:center;
       font-size: clamp(2.3rem, 4.8vw, 3.6rem);
@@ -349,7 +340,6 @@
       margin: 18px 0;
     }
 
-    /* Stats */
     .stats{
       display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
       margin-top: 22px;
@@ -370,7 +360,6 @@
     }
     .stat .lbl{ color: rgba(244,244,247,.70); font-weight: 800; font-size: .95rem; margin-top: 2px; }
 
-    /* FAQ */
     .faq{
       max-width: 920px; margin: 0 auto;
       display:flex; flex-direction:column; gap: 12px;
@@ -393,7 +382,6 @@
     .faq summary::-webkit-details-marker{ display:none; }
     .faq .ans{ margin-top: 10px; color: rgba(244,244,247,.72); }
 
-    /* Team */
     .team-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     @media (max-width: 980px){ .team-grid{ grid-template-columns: 1fr; } }
     .team-card{
@@ -430,7 +418,6 @@
     .role.manager{ background-image: linear-gradient(90deg, #1e4dff, #0047b8); }
     .role.engineer{ background-image: linear-gradient(90deg, #33e6ff, #00a3ff); }
 
-    /* Lead form */
     .form{
       max-width: 860px;
       margin: 0 auto;
@@ -459,7 +446,6 @@
     .field textarea{ min-height: 110px; resize: vertical; }
     .form .full{ grid-column: 1/-1; }
 
-    /* Footer */
     footer{
       padding: 60px 0;
       border-top: 1px solid rgba(255,255,255,.08);
@@ -478,7 +464,6 @@
     }
     .footer-links a:hover{ transform: translateY(-1px); border-color: rgba(0,163,255,.35); }
 
-    /* ===== Reveal animations ===== */
     .reveal{
       opacity: 0;
       transform: translateY(26px) scale(.98);
@@ -490,7 +475,6 @@
       transform: translateY(0) scale(1);
     }
 
-    /* ===== Chat Widget ===== */
     #chat-toggle{
       position:fixed; right: 22px; bottom: 22px;
       width: 62px; height: 62px;
@@ -604,14 +588,12 @@
     }
     .option-btn:hover{ transform: translateY(-1px); border-color: rgba(0,163,255,.35); background: rgba(255,255,255,.06); }
 
-    /* Focus visibility */
     :focus-visible{
       outline: 2px solid rgba(51,230,255,.55);
       outline-offset: 3px;
       border-radius: 12px;
     }
 
-    /* Reduced motion */
     @media (prefers-reduced-motion: reduce){
       html{ scroll-behavior: auto; }
       *{ animation: none !important; transition: none !important; }
@@ -630,10 +612,9 @@
     <div class="blob b3"></div>
   </div>
 
-  <!-- PRELOADER -->
   <div id="preloader" aria-label="Ładowanie strony">
     <div style="display:flex; flex-direction:column; align-items:center;">
-      <img src="https://imgur.com/a/iZuTkIq" alt="Lite Solutions" style="width:76px; filter: drop-shadow(0 0 24px rgba(0,163,255,.25));" />
+      <img src="https://i.imgur.com/TbvImJS.png" alt="Lite Solutions" style="width:76px; filter: drop-shadow(0 0 24px rgba(0,163,255,.25));" />
       <div class="loading-hint">Ładuje doświadczenie</div>
       <div class="loading-bar" aria-hidden="true"><div></div></div>
     </div>
@@ -650,7 +631,6 @@
     function App(){
       const [activeSection, setActiveSection] = useState('hero');
 
-      // Chat
       const [isChatOpen, setIsChatOpen] = useState(false);
       const [isBotThinking, setIsBotThinking] = useState(false);
       const chatMessagesRef = useRef(null);
@@ -744,7 +724,6 @@
         }, 900);
       };
 
-      // Lead form (pod API)
       const [lead, setLead] = useState({ name:'', contact:'', type:'discord-bot', budget:'', details:'' });
       const [leadStatus, setLeadStatus] = useState('');
 
@@ -753,21 +732,13 @@
         setLeadStatus('Wysyłanie...');
 
         try {
-          // TODO: podłącz API, np.:
-          // await fetch('/api/lead', {
-          //   method: 'POST',
-          //   headers: { 'Content-Type': 'application/json' },
-          //   body: JSON.stringify(lead),
-          // });
-
-          await new Promise(r => setTimeout(r, 500)); // placeholder
+          await new Promise(r => setTimeout(r, 500));
           setLeadStatus('Wysłano! Odezwiemy się wkrótce.');
         } catch (err) {
           setLeadStatus('Błąd wysyłki. Spróbuj ponownie.');
         }
       };
 
-      // Stats
       const statsTarget = useMemo(() => ({ projects: 120, uptime: 99.9, response: 2, delivery: 7 }), []);
       const [animatedStats, setAnimatedStats] = useState({ projects: 0, uptime: 0, response: 0, delivery: 0 });
       const statsAnimatedOnceRef = useRef(false);
@@ -788,7 +759,6 @@
         requestAnimationFrame(tick);
       };
 
-      // Effects: preloader, reveal, active section, scroll progress
       useEffect(() => {
         const preloader = document.getElementById('preloader');
         document.body.classList.add('loading');
@@ -797,7 +767,6 @@
           document.body.classList.remove('loading');
         }, 1200);
 
-        // Reveal observer
         const revealObs = new IntersectionObserver((entries) => {
           for (const e of entries) {
             if (e.isIntersecting) e.target.classList.add('is-visible');
@@ -806,7 +775,6 @@
 
         document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-        // Hero stats trigger
         const heroStatsEl = document.getElementById('heroStatsSentinel');
         const statsObs = new IntersectionObserver((entries) => {
           const vis = entries.some(x => x.isIntersecting);
@@ -820,7 +788,6 @@
         }, { threshold: 0.25 });
         if (heroStatsEl) statsObs.observe(heroStatsEl);
 
-        // Active section tracking
         const sections = ['hero','about','services','ai','process','team','contact'];
         const secObs = new IntersectionObserver((entries) => {
           const visible = entries
@@ -834,7 +801,6 @@
           if (el) secObs.observe(el);
         });
 
-        // Scroll progress
         const prog = document.getElementById('scrollProgress');
         const onScroll = () => {
           const doc = document.documentElement;
@@ -856,12 +822,11 @@
 
       return (
         <div>
-          {/* HEADER */}
           <header id="app-header">
             <div className="container">
               <nav className="header-nav" aria-label="Główna nawigacja">
                 <a className="logo" href="#hero" onClick={(e)=>{e.preventDefault(); scrollTo('#hero');}} aria-label="Przejdź do sekcji start">
-                  <img src="https://imgur.com/a/iZuTkIq" alt="Lite Solutions Logo" />
+                  <img src="https://i.imgur.com/TbvImJS.png" alt="Lite Solutions Logo" />
                   <span className="logo-text">Lite Solutions</span>
                 </a>
 
@@ -886,9 +851,7 @@
             </div>
           </header>
 
-          {/* MAIN */}
           <main>
-            {/* HERO */}
             <section id="hero" className="section">
               <div className="container">
                 <div className="hero-grid">
@@ -929,12 +892,10 @@
                     </div>
                   </div>
 
-                  {/* USUNIĘTO: RIGHT TABLET + CTA */}
                 </div>
               </div>
             </section>
 
-            {/* ABOUT */}
             <section id="about" className="section">
               <div className="container">
                 <div className="reveal">
@@ -970,7 +931,6 @@
               </div>
             </section>
 
-            {/* SERVICES */}
             <section id="services" className="section">
               <div className="container">
                 <div className="reveal">
@@ -1020,7 +980,6 @@
               </div>
             </section>
 
-            {/* AI */}
             <section id="ai" className="section">
               <div className="container">
                 <div className="reveal">
@@ -1064,7 +1023,6 @@
               </div>
             </section>
 
-            {/* PROCESS */}
             <section id="process" className="section">
               <div className="container">
                 <div className="reveal">
@@ -1099,7 +1057,6 @@
               </div>
             </section>
 
-            {/* FAQ */}
             <section id="faq" className="section">
               <div className="container">
                 <div className="reveal">
@@ -1128,7 +1085,6 @@
               </div>
             </section>
 
-            {/* TEAM */}
             <section id="team" className="section">
               <div className="container">
                 <div className="reveal">
@@ -1148,7 +1104,7 @@
                   </div>
 
                   <div className="team-card reveal" style={{transitionDelay:'120ms'}}>
-                    <img src="https://imgur.com/a/ZCoyAqa#U5I1OLt" alt="Zdjęcie kubus" />
+                    <img src="https://i.imgur.com/U5I1OLt.png" alt="Zdjęcie kubus" />
                     <div className="team-overlay">
                       <div>
                         <h3 style={{fontWeight:900, fontSize:'1.2rem'}}>kubus</h3>
@@ -1171,7 +1127,6 @@
               </div>
             </section>
 
-            {/* CONTACT */}
             <section id="contact" className="section">
               <div className="container">
                 <div className="reveal">
@@ -1257,7 +1212,6 @@
             </div>
           </footer>
 
-          {/* CHAT */}
           <div id="chat-widget" className={isChatOpen ? 'is-open' : ''} role="dialog" aria-label="Czat wsparcia">
             <div className="chat-header">
               <h3>
