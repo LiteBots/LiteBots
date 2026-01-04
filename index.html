@@ -7,7 +7,7 @@
   <title>Lite Solutions — Discord Boty, Panele, AI i Zabezpieczenia</title>
   <meta name="description" content="Lite Solutions: Discord Boty, panele webowe do zarządzania botem, zabezpieczenia, rozwiązania AI i automatyzacje AI (bot odpowiada na zgłoszenia użytkowników)." />
   <meta name="keywords" content="discord bot, panel do bota, automatyzacje ai, ai, zabezpieczenia, tickets, support bot, premium" />
-  <meta name="theme-color" content="#0b0b0f" />
+  <meta name="theme-color" content="#070812" />
 
   <meta property="og:title" content="Lite Solutions — Boty, Panele, AI i Zabezpieczenia" />
   <meta property="og:description" content="Discord Boty, panele do zarządzania botem, zabezpieczenia oraz automatyzacje AI." />
@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="icon" href="/images/favicon.png" type="image/png" />
+  <link rel="icon" href="favicon.png" type="image/png" />
 
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -26,37 +26,53 @@
   <style>
     :root{
       --bg: #06060a;
-      --bg2:#0b0b10;
-      --text: #f4f4f7;
-      --muted: rgba(244,244,247,.72);
+      --bg2:#0a0b14;
+      --surface: rgba(18,18,28,.58);
+      --surface2: rgba(14,14,22,.72);
+
+      --text: #f5f6ff;
+      --muted: rgba(245,246,255,.70);
+      --muted2: rgba(245,246,255,.54);
+
       --border: rgba(255,255,255,.10);
+      --border2: rgba(255,255,255,.14);
 
       --p1: #1e4dff;
       --p2: #00a3ff;
       --p3: #33e6ff;
+      --p4: #8a5cff;
+
       --pGlow: rgba(0,163,255,.45);
+      --pGlow2: rgba(138,92,255,.32);
 
       --radius: 18px;
       --radius2: 26px;
+      --radius3: 34px;
 
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
-      --shadow2: 0 12px 28px rgba(0,0,0,.35);
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --shadow2: 0 14px 34px rgba(0,0,0,.42);
+      --shadow3: 0 8px 18px rgba(0,0,0,.30);
 
       --speed: .35s;
       --ease: cubic-bezier(.16, 1, .3, 1);
-      --headerBlur: 14px;
+      --headerBlur: 16px;
 
-      --grid: rgba(255,255,255,.05);
+      --grid: rgba(255,255,255,.045);
+      --ring: 0 0 0 1px rgba(255,255,255,.08) inset;
+
+      --ok: #2CFFB7;
+      --warn: #FFC65C;
     }
 
     *{ box-sizing:border-box; margin:0; padding:0; }
     html{ scroll-behavior:smooth; }
     body{
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
-      background: radial-gradient(1200px 800px at 20% 10%, rgba(0,163,255,.18), transparent 65%),
-                  radial-gradient(1000px 700px at 90% 30%, rgba(30,77,255,.16), transparent 60%),
-                  radial-gradient(900px 700px at 60% 90%, rgba(51,230,255,.10), transparent 55%),
-                  linear-gradient(180deg, var(--bg), var(--bg2));
+      background:
+        radial-gradient(1200px 800px at 18% 10%, rgba(0,163,255,.20), transparent 65%),
+        radial-gradient(1000px 700px at 85% 20%, rgba(30,77,255,.18), transparent 62%),
+        radial-gradient(900px 700px at 60% 95%, rgba(138,92,255,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
       color: var(--text);
       line-height:1.65;
       overflow-x:hidden;
@@ -66,54 +82,67 @@
     a{ color: inherit; text-decoration:none; }
     img{ max-width:100%; display:block; }
 
-    .container{ max-width:1150px; margin:0 auto; padding:0 20px; }
-    .section{ padding: 120px 0; position:relative; }
+    .container{ max-width:1160px; margin:0 auto; padding:0 20px; }
+    .section{ padding: 110px 0; position:relative; }
 
+    /* premium background stack */
     #grid-background{
-      position:fixed; inset:0; z-index:-3;
+      position:fixed; inset:0; z-index:-5;
       background-image:
         linear-gradient(to right, var(--grid) 1px, transparent 1px),
         linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
-      background-size: 44px 44px;
-      animation: pan-grid 70s linear infinite;
-      mask-image: radial-gradient(900px 600px at 50% 10%, rgba(0,0,0,.9), transparent 70%);
+      background-size: 46px 46px;
+      animation: pan-grid 75s linear infinite;
+      mask-image: radial-gradient(900px 650px at 50% 12%, rgba(0,0,0,.92), transparent 70%);
       opacity:.9;
     }
-    @keyframes pan-grid{ 0%{ background-position: 0 0; } 100%{ background-position: 1200px 700px; } }
+    @keyframes pan-grid{ 0%{ background-position: 0 0; } 100%{ background-position: 1400px 820px; } }
 
     .noise{
-      position:fixed; inset:0; z-index:-2; pointer-events:none;
+      position:fixed; inset:0; z-index:-4; pointer-events:none;
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
-      opacity:.35;
+      opacity:.34;
     }
 
     .aurora{
-      position:fixed; inset:0; z-index:-4; pointer-events:none;
-      filter: blur(80px);
-      opacity:.75;
+      position:fixed; inset:-40px; z-index:-6; pointer-events:none;
+      filter: blur(85px);
+      opacity:.85;
     }
     .blob{
-      position:absolute; width:540px; height:540px; border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, rgba(30,77,255,.55), transparent 60%),
-                  radial-gradient(circle at 70% 70%, rgba(0,163,255,.50), transparent 58%),
-                  radial-gradient(circle at 40% 80%, rgba(51,230,255,.35), transparent 62%);
+      position:absolute; width:560px; height:560px; border-radius:50%;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(30,77,255,.60), transparent 62%),
+        radial-gradient(circle at 70% 70%, rgba(0,163,255,.50), transparent 58%),
+        radial-gradient(circle at 38% 86%, rgba(138,92,255,.42), transparent 62%);
       animation: float 18s var(--ease) infinite alternate;
+      transform: translateZ(0);
     }
-    .blob.b1{ top:-180px; left:-160px; animation-duration: 22s; }
-    .blob.b2{ top: 25vh; left: 52vw; width:460px; height:460px; animation-duration: 28s; opacity:.65;}
-    .blob.b3{ bottom:-220px; right:-200px; width:520px; height:520px; animation-duration: 24s; opacity:.55;}
+    .blob.b1{ top:-220px; left:-180px; animation-duration: 22s; }
+    .blob.b2{ top: 24vh; left: 52vw; width:480px; height:480px; animation-duration: 30s; opacity:.62;}
+    .blob.b3{ bottom:-260px; right:-240px; width:540px; height:540px; animation-duration: 24s; opacity:.52;}
+
     @keyframes float{
       from{ transform: translate3d(0,0,0) rotate(0deg) scale(1); }
-      to{ transform: translate3d(80px, -40px, 0) rotate(25deg) scale(1.08); }
+      to{ transform: translate3d(90px, -46px, 0) rotate(26deg) scale(1.10); }
     }
 
-    /* Preloader */
+    /* glossy spotlight */
+    .spotlight{
+      position:absolute; inset:-1px; border-radius: inherit; pointer-events:none;
+      background: radial-gradient(800px 360px at 10% 0%, rgba(0,163,255,.16), transparent 60%),
+                  radial-gradient(700px 320px at 90% 20%, rgba(138,92,255,.14), transparent 62%);
+      opacity:.7;
+      mix-blend-mode: screen;
+    }
+
+    /* preloader */
     #preloader{
       position:fixed; inset:0; display:grid; place-items:center; z-index:9999;
-      background: rgba(6,6,10,.55);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(6,6,10,.58);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       transition: opacity .55s ease, transform .55s ease;
       opacity:1;
     }
@@ -124,44 +153,65 @@
       letter-spacing:.02em;
     }
     .loading-bar{
-      margin: 12px auto 0; width: 220px; height: 10px; border-radius: 999px;
+      margin: 12px auto 0; width: 240px; height: 10px; border-radius: 999px;
       background: rgba(255,255,255,.08); overflow:hidden; border:1px solid rgba(255,255,255,.10);
     }
     .loading-bar > div{
       height:100%;
       width: 40%;
-      background: linear-gradient(90deg, var(--p2), var(--p1), var(--p3));
-      filter: drop-shadow(0 0 12px var(--pGlow));
-      animation: load 1.1s infinite var(--ease);
+      background: linear-gradient(90deg, var(--p2), var(--p1), var(--p4), var(--p3));
+      filter: drop-shadow(0 0 14px var(--pGlow));
+      animation: load 1.05s infinite var(--ease);
     }
-    @keyframes load{ 0%{ transform: translateX(-60%);} 100%{ transform: translateX(220%);} }
+    @keyframes load{ 0%{ transform: translateX(-60%);} 100%{ transform: translateX(240%);} }
 
-    /* Header */
-    #app-header{ position:fixed; top:18px; left:18px; right:18px; z-index:2000; }
+    /* header */
+    #app-header{ position:fixed; top:16px; left:16px; right:16px; z-index:2000; }
     .header-nav{
       display:flex; align-items:center; justify-content:space-between;
-      gap: 14px;
-      padding: 12px 16px;
-      background: rgba(18,18,24,.55);
-      border: 1px solid var(--border);
+      gap: 12px;
+      padding: 12px 14px;
+      background: linear-gradient(180deg, rgba(18,18,28,.70), rgba(18,18,28,.42));
+      border: 1px solid rgba(255,255,255,.11);
       border-radius: 999px;
       backdrop-filter: blur(var(--headerBlur));
       -webkit-backdrop-filter: blur(var(--headerBlur));
-      box-shadow: var(--shadow2);
+      box-shadow: var(--shadow3);
     }
-    .logo{ display:flex; align-items:center; gap:12px; padding: 6px 10px; border-radius:999px; }
-    .logo img{ height: 34px; transition: transform var(--speed) var(--ease); filter: drop-shadow(0 0 14px rgba(0,163,255,.25)); }
-    .logo:hover img{ transform: rotate(-10deg) scale(1.06); }
-    .logo-text{ font-weight:900; letter-spacing:-.02em; }
+    .logo{
+      display:flex; align-items:center; gap:12px;
+      padding: 6px 10px;
+      border-radius:999px;
+      transition: background var(--speed) var(--ease);
+    }
+    .logo:hover{ background: rgba(255,255,255,.04); }
+    .logo img{ height: 34px; transition: transform var(--speed) var(--ease); filter: drop-shadow(0 0 18px rgba(0,163,255,.22)); }
+    .logo:hover img{ transform: rotate(-12deg) scale(1.08); }
+    .logo-text{
+      font-weight: 900;
+      letter-spacing:-.03em;
+      display:flex; flex-direction:column;
+      line-height:1.05;
+    }
+    .logo-text small{
+      font-weight:800;
+      font-size:.72rem;
+      color: rgba(245,246,255,.55);
+      letter-spacing:.08em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
 
     .nav-links{ display:flex; gap: 8px; list-style:none; align-items:center; justify-content:center; flex:1; }
     .nav-links a{
       padding: 10px 14px; border-radius: 999px;
-      color: rgba(244,244,247,.75);
-      transition: background var(--speed) var(--ease), color var(--speed) var(--ease), transform var(--speed) var(--ease);
+      color: rgba(245,246,255,.72);
+      transition: background var(--speed) var(--ease), color var(--speed) var(--ease), transform var(--speed) var(--ease), border-color var(--speed) var(--ease);
       position:relative;
       outline: none;
       border: 1px solid transparent;
+      font-weight: 800;
+      letter-spacing: .01em;
     }
     .nav-links a:hover{
       color: var(--text);
@@ -170,8 +220,9 @@
     }
     .nav-links a.active{
       color: var(--text);
-      background: linear-gradient(90deg, rgba(30,77,255,.20), rgba(0,163,255,.16), rgba(51,230,255,.12));
-      border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(90deg, rgba(30,77,255,.22), rgba(0,163,255,.16), rgba(138,92,255,.12));
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 0 0 1px rgba(0,163,255,.10) inset;
     }
     @media (max-width: 980px){
       .nav-links{ display:none; }
@@ -182,57 +233,70 @@
       display:inline-flex; gap:10px; align-items:center;
       padding: 10px 14px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.05);
-      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), box-shadow var(--speed) var(--ease);
+      border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), box-shadow var(--speed) var(--ease), filter var(--speed) var(--ease);
       cursor:pointer;
       font-weight: 900;
-      color: rgba(244,244,247,.92);
+      color: rgba(245,246,255,.94);
+      box-shadow: 0 10px 22px rgba(0,0,0,.18);
     }
     .pill:hover{
       transform: translateY(-1px) scale(1.02);
-      border-color: rgba(0,163,255,.45);
-      box-shadow: 0 0 24px rgba(0,163,255,.18);
+      border-color: rgba(0,163,255,.48);
+      box-shadow: 0 0 26px rgba(0,163,255,.18), 0 10px 22px rgba(0,0,0,.20);
+      filter: saturate(1.08);
     }
+    .pill svg{ width: 20px; height: 20px; }
 
     .scroll-progress{
       position:fixed; top:0; left:0; height:3px; width: 0%;
-      background: linear-gradient(90deg, var(--p2), var(--p1), var(--p3));
+      background: linear-gradient(90deg, var(--p2), var(--p1), var(--p4), var(--p3));
       z-index:3000;
-      box-shadow: 0 0 14px rgba(0,163,255,.25);
+      box-shadow: 0 0 16px rgba(0,163,255,.25);
     }
 
-    /* Hero + typografia */
+    /* HERO */
     #hero{ min-height:100vh; display:flex; align-items:center; padding-top: 120px; }
-    .hero-grid{ display:grid; grid-template-columns: 1fr; gap: 26px; align-items:center; }
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 22px;
+      align-items:center;
+    }
+    @media (max-width: 980px){
+      .hero-grid{ grid-template-columns: 1fr; }
+    }
 
     .kicker{
       display:inline-flex; gap:10px; align-items:center;
       padding: 8px 12px; border-radius: 999px;
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.04);
-      color: rgba(244,244,247,.78);
+      color: rgba(245,246,255,.78);
       width: fit-content;
+      box-shadow: var(--ring);
     }
     .dot{
       width: 10px; height: 10px; border-radius:50%;
       background: linear-gradient(180deg, var(--p1), var(--p2));
-      box-shadow: 0 0 14px var(--pGlow);
+      box-shadow: 0 0 16px var(--pGlow);
     }
     .hero-title{
-      font-size: clamp(2.8rem, 6.2vw, 5.2rem);
+      font-size: clamp(2.8rem, 6.2vw, 5.1rem);
       font-weight: 950;
-      letter-spacing: -.05em;
+      letter-spacing: -.055em;
       line-height: 1.02;
       margin: 14px 0 14px;
-      background: linear-gradient(180deg, #fff, rgba(244,244,247,.70));
+      background: linear-gradient(180deg, #fff, rgba(245,246,255,.62));
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     }
     .hero-subtitle{
-      color: rgba(244,244,247,.72);
-      font-size: clamp(1.05rem, 1.6vw, 1.2rem);
-      max-width: 68ch;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 1.65vw, 1.18rem);
+      max-width: 62ch;
     }
+
     .hero-cta{
       margin-top: 22px;
       display:flex; gap: 12px; flex-wrap:wrap; align-items:center;
@@ -243,276 +307,224 @@
       padding: 14px 18px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       color: var(--text);
-      font-weight: 900;
+      font-weight: 950;
       letter-spacing:.01em;
-      transition: transform var(--speed) var(--ease), box-shadow var(--speed) var(--ease), border-color var(--speed) var(--ease), background var(--speed) var(--ease);
+      transition: transform var(--speed) var(--ease), box-shadow var(--speed) var(--ease), border-color var(--speed) var(--ease), background var(--speed) var(--ease), filter var(--speed) var(--ease);
       cursor:pointer;
       user-select:none;
+      box-shadow: 0 10px 22px rgba(0,0,0,.18);
     }
     .btn:hover{
       transform: translateY(-1px) scale(1.02);
-      border-color: rgba(0,163,255,.45);
-      box-shadow: 0 0 26px rgba(0,163,255,.22);
+      border-color: rgba(0,163,255,.48);
+      box-shadow: 0 0 28px rgba(0,163,255,.18), 0 12px 24px rgba(0,0,0,.20);
       background: rgba(255,255,255,.07);
+      filter: saturate(1.08);
     }
     .btn.primary{
-      border: 1px solid rgba(0,163,255,.35);
-      background: linear-gradient(90deg, rgba(0,163,255,.35), rgba(30,77,255,.28), rgba(51,230,255,.20));
-      box-shadow: 0 18px 60px rgba(0,163,255,.12);
+      border: 1px solid rgba(0,163,255,.40);
+      background: linear-gradient(90deg, rgba(0,163,255,.40), rgba(30,77,255,.30), rgba(138,92,255,.22));
+      box-shadow: 0 18px 70px rgba(0,163,255,.14);
     }
     .btn.primary:hover{
-      box-shadow: 0 20px 70px rgba(0,163,255,.18), 0 0 30px rgba(51,230,255,.10);
+      box-shadow: 0 22px 80px rgba(0,163,255,.18), 0 0 34px rgba(51,230,255,.10);
     }
-    .btn.ghost{ background: rgba(0,0,0,.14); }
+    .btn.ghost{
+      background: rgba(255,255,255,.02);
+    }
 
+    .hero-side{
+      position:relative;
+      border-radius: var(--radius3);
+      border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(18,18,28,.55), rgba(12,12,18,.45));
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      padding: 18px;
+      min-height: 360px;
+    }
+    .hero-side .spotlight{ opacity:.8; }
+    .hero-side-inner{
+      position:relative;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+    }
+    .hero-metric-row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .hero-metric{
+      border-radius: 18px;
+      background: rgba(10,10,16,.50);
+      border: 1px solid rgba(255,255,255,.10);
+      padding: 14px 14px;
+      box-shadow: var(--ring);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero-metric::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(380px 180px at 18% 0%, rgba(0,163,255,.18), transparent 55%),
+                  radial-gradient(340px 180px at 85% 30%, rgba(138,92,255,.14), transparent 62%);
+      opacity:.8;
+      pointer-events:none;
+    }
+    .hero-metric > div{ position:relative; }
+    .hero-metric .k{ color: rgba(245,246,255,.60); font-weight: 900; font-size:.9rem; }
+    .hero-metric .v{
+      font-size: 1.65rem; font-weight: 950; letter-spacing:-.02em; margin-top: 2px;
+      background: linear-gradient(90deg, rgba(255,255,255,.95), rgba(245,246,255,.62));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .hero-bullets{
+      margin-top: 6px;
+      display:flex; flex-direction:column; gap: 10px;
+      padding: 10px 10px 2px;
+    }
+    .bullet{
+      display:flex; gap:10px; align-items:flex-start;
+      color: rgba(245,246,255,.72);
+      font-weight: 700;
+    }
+    .check{
+      width: 22px; height: 22px; border-radius: 10px;
+      background: linear-gradient(180deg, rgba(44,255,183,.18), rgba(44,255,183,.06));
+      border: 1px solid rgba(44,255,183,.25);
+      display:grid; place-items:center;
+      flex-shrink:0;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.15) inset;
+    }
+    .check svg{ width: 14px; height: 14px; color: var(--ok); }
+
+    /* section headers */
     .section-title{
       text-align:center;
-      font-size: clamp(2.2rem, 4.6vw, 3.5rem);
+      font-size: clamp(2.2rem, 4.6vw, 3.4rem);
       font-weight: 950;
-      letter-spacing: -0.04em;
+      letter-spacing: -0.05em;
       line-height:1.1;
-      margin-bottom: 14px;
-      background: linear-gradient(90deg, rgba(255,255,255,.92), rgba(244,244,247,.72));
+      margin-bottom: 12px;
+      background: linear-gradient(90deg, rgba(255,255,255,.95), rgba(245,246,255,.70));
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     }
     .highlight{
-      background: linear-gradient(90deg, var(--p2), var(--p1), var(--p3));
+      background: linear-gradient(90deg, var(--p2), var(--p1), var(--p4), var(--p3));
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-      filter: drop-shadow(0 0 18px rgba(0,163,255,.15));
+      filter: drop-shadow(0 0 18px rgba(0,163,255,.14));
     }
     .section-subtitle{
       text-align:center;
-      color: rgba(244,244,247,.72);
-      max-width: 78ch;
-      margin: 0 auto 56px;
+      color: var(--muted);
+      max-width: 80ch;
+      margin: 0 auto 54px;
       font-size: 1.08rem;
     }
 
+    /* grids & cards */
     .grid-3{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     @media (max-width: 980px){ .grid-3{ grid-template-columns: 1fr; } }
 
     .card{
-      background: rgba(18,18,24,.55);
+      background: linear-gradient(180deg, rgba(18,18,28,.58), rgba(10,10,16,.42));
       border: 1px solid rgba(255,255,255,.11);
-      border-radius: var(--radius);
+      border-radius: var(--radius2);
       padding: 22px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.22);
-      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), box-shadow var(--speed) var(--ease);
+      box-shadow: var(--shadow3);
+      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), box-shadow var(--speed) var(--ease), filter var(--speed) var(--ease);
       position:relative;
       overflow:hidden;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
     .card::before{
       content:""; position:absolute; inset:-2px; opacity:0;
-      background: radial-gradient(420px 180px at 20% 0%, rgba(0,163,255,.22), transparent 60%),
-                  radial-gradient(420px 180px at 80% 30%, rgba(51,230,255,.12), transparent 62%);
+      background: radial-gradient(520px 220px at 18% 0%, rgba(0,163,255,.18), transparent 60%),
+                  radial-gradient(520px 220px at 88% 35%, rgba(138,92,255,.12), transparent 62%);
       transition: opacity var(--speed) var(--ease);
       pointer-events:none;
     }
     .card:hover{
-      transform: translateY(-4px);
+      transform: translateY(-5px);
       border-color: rgba(0,163,255,.35);
-      box-shadow: 0 18px 60px rgba(0,0,0,.45);
+      box-shadow: var(--shadow2);
+      filter: saturate(1.06);
     }
     .card:hover::before{ opacity: 1; }
 
     .icon{
-      width: 44px; height: 44px; border-radius: 14px;
-      background: linear-gradient(180deg, rgba(0,163,255,.30), rgba(30,77,255,.22));
+      width: 46px; height: 46px; border-radius: 14px;
+      background: linear-gradient(180deg, rgba(0,163,255,.32), rgba(30,77,255,.22));
       border: 1px solid rgba(255,255,255,.12);
       display:grid; place-items:center;
-      box-shadow: 0 0 22px rgba(0,163,255,.12);
+      box-shadow: 0 0 24px rgba(0,163,255,.12);
       margin-bottom: 14px;
     }
     .icon svg{ width: 22px; height: 22px; color: rgba(255,255,255,.92); }
 
-    .muted{ color: rgba(244,244,247,.72); }
-    .hr{ width: 100%; height: 1px; background: rgba(255,255,255,.08); margin: 18px 0; }
+    .muted{ color: var(--muted); }
+    .muted2{ color: var(--muted2); }
 
-    .stats{
-      display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
-      margin-top: 22px;
+    .hr{
+      width: 100%; height: 1px; background: rgba(255,255,255,.08);
+      margin: 18px 0;
     }
-    @media (max-width: 980px){ .stats{ grid-template-columns: 1fr 1fr; } }
-    .stat{
-      border-radius: 18px;
-      background: rgba(10,10,14,.45);
-      border: 1px solid rgba(255,255,255,.10);
-      padding: 16px;
-    }
-    .stat .num{
-      font-size: 1.7rem;
-      font-weight: 950;
-      letter-spacing:-.02em;
-      background: linear-gradient(90deg, rgba(255,255,255,.92), rgba(244,244,247,.65));
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    }
-    .stat .lbl{ color: rgba(244,244,247,.70); font-weight: 900; font-size: .95rem; margin-top: 2px; }
-
-    /* Pricing */
-    .pricing-grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      max-width: 980px;
-      margin: 0 auto;
-    }
-    @media (max-width: 980px){ .pricing-grid{ grid-template-columns: 1fr; } }
-
-    .price-card{
-      position:relative;
-      overflow:hidden;
-      border-radius: 26px;
-      background: rgba(18,18,24,.55);
-      border: 1px solid rgba(255,255,255,.11);
-      padding: 24px;
-      box-shadow: 0 18px 60px rgba(0,0,0,.35);
-      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), box-shadow var(--speed) var(--ease);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-    .price-card:hover{
-      transform: translateY(-4px);
-      border-color: rgba(0,163,255,.35);
-      box-shadow: 0 22px 70px rgba(0,0,0,.45);
-    }
-    .plan-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:10px; }
-    .plan-name{ font-weight: 950; font-size: 1.25rem; letter-spacing:-.02em; }
-    .plan-pill{
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      color: rgba(244,244,247,.82);
-      font-weight: 900;
-      font-size: .85rem;
-      white-space:nowrap;
-    }
-    .plan-pill.recommended{
-      border-color: rgba(0,163,255,.35);
-      background: linear-gradient(90deg, rgba(0,163,255,.24), rgba(30,77,255,.18), rgba(51,230,255,.12));
-      box-shadow: 0 0 18px rgba(0,163,255,.12);
-    }
-    .price{ display:flex; align-items:baseline; gap: 10px; margin: 10px 0 12px; }
-    .price .amount{
-      font-size: 2.4rem;
-      font-weight: 950;
-      letter-spacing:-.03em;
-      background: linear-gradient(90deg, rgba(255,255,255,.95), rgba(244,244,247,.65));
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    }
-    .price .per{ color: rgba(244,244,247,.70); font-weight: 900; }
-    .plan-desc{ color: rgba(244,244,247,.72); max-width: 60ch; }
-    .plan-meta{
-      margin-top: 14px;
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items:center;
-      color: rgba(244,244,247,.72);
-      font-weight: 850;
-      font-size: .95rem;
-    }
-    .mini{
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.14);
-    }
-    .cta-row{ margin-top: 18px; display:flex; gap: 12px; flex-wrap: wrap; align-items:center; }
-    .legal-note{
-      margin-top: 16px;
-      color: rgba(244,244,247,.58);
-      font-size: .95rem;
-      text-align:center;
-      max-width: 90ch;
-      margin-left:auto;
-      margin-right:auto;
-    }
-
-    /* Banner Discord CTA */
-    .discord-banner{
-      max-width: 980px;
-      margin: 40px auto 0;
-      padding: 22px;
-      border-radius: 26px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: linear-gradient(90deg, rgba(0,163,255,.16), rgba(30,77,255,.12), rgba(51,230,255,.10));
-      box-shadow: 0 18px 60px rgba(0,0,0,.30);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 14px;
-      flex-wrap: wrap;
-      position:relative;
-      overflow:hidden;
-    }
-    .discord-title{ font-weight: 950; letter-spacing:-.02em; font-size: 1.15rem; }
-    .discord-sub{ color: rgba(244,244,247,.72); font-weight: 800; margin-top: 4px; max-width: 70ch; }
-    .discord-left{ display:flex; gap: 12px; align-items:flex-start; }
-    .discord-mark{
-      width: 44px; height: 44px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
-      display:grid; place-items:center;
-      box-shadow: 0 0 22px rgba(0,163,255,.12);
-      flex: 0 0 auto;
-    }
-    .discord-mark svg{ width: 22px; height: 22px; color: rgba(255,255,255,.92); }
 
     /* FAQ */
     .faq{
-      max-width: 920px; margin: 0 auto;
+      max-width: 940px; margin: 0 auto;
       display:flex; flex-direction:column; gap: 12px;
-      margin-top: 24px;
+      margin-top: 18px;
     }
     .faq details{
-      background: rgba(18,18,24,.50);
+      background: linear-gradient(180deg, rgba(18,18,28,.52), rgba(10,10,16,.40));
       border: 1px solid rgba(255,255,255,.10);
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 14px 16px;
+      box-shadow: var(--ring);
     }
     .faq summary{
       cursor:pointer;
       font-weight: 950;
-      color: rgba(244,244,247,.92);
+      color: rgba(245,246,255,.92);
       list-style:none;
       display:flex; justify-content:space-between; align-items:center;
       gap: 12px;
     }
     .faq summary::-webkit-details-marker{ display:none; }
-    .faq .ans{ margin-top: 10px; color: rgba(244,244,247,.72); }
+    .faq .ans{ margin-top: 10px; color: rgba(245,246,255,.72); }
 
-    /* Team */
+    /* team */
     .team-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     @media (max-width: 980px){ .team-grid{ grid-template-columns: 1fr; } }
     .team-card{
       position:relative; overflow:hidden;
-      border-radius: var(--radius2);
+      border-radius: var(--radius3);
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.03);
       aspect-ratio: 3/4;
-      box-shadow: var(--shadow2);
+      box-shadow: var(--shadow3);
       transform: translateZ(0);
     }
     .team-card img{
       width:100%; height:100%;
       object-fit: cover;
-      transition: transform .8s var(--ease), filter .8s var(--ease);
-      filter: saturate(1.05) contrast(1.02);
+      transition: transform .9s var(--ease), filter .9s var(--ease);
+      filter: saturate(1.06) contrast(1.02);
     }
-    .team-card:hover img{ transform: scale(1.12); filter: saturate(1.15) contrast(1.08); }
+    .team-card:hover img{ transform: scale(1.12); filter: saturate(1.18) contrast(1.08); }
     .team-overlay{
       position:absolute; inset:0;
-      background: linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,.0) 60%);
+      background: linear-gradient(to top, rgba(0,0,0,.94), rgba(0,0,0,.0) 62%);
       display:flex; align-items:flex-end;
       padding: 18px;
       transform: translateY(18px);
-      transition: transform .6s var(--ease);
+      transition: transform .7s var(--ease);
     }
     .team-card:hover .team-overlay{ transform: translateY(0); }
     .role{
@@ -524,11 +536,157 @@
     .role.manager{ background-image: linear-gradient(90deg, #1e4dff, #0047b8); }
     .role.engineer{ background-image: linear-gradient(90deg, #33e6ff, #00a3ff); }
 
-    /* Footer */
-    footer{
-      padding: 60px 0;
+    /* pricing */
+    .pricing-grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    @media (max-width: 980px){
+      .pricing-grid{ grid-template-columns: 1fr; }
+    }
+    .pricing-card{
+      position:relative;
+      border-radius: var(--radius3);
+      padding: 24px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(18,18,28,.60), rgba(10,10,16,.42));
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), filter var(--speed) var(--ease);
+    }
+    .pricing-card:hover{
+      transform: translateY(-5px);
+      border-color: rgba(0,163,255,.40);
+      filter: saturate(1.06);
+    }
+    .pricing-card .spotlight{ opacity:.9; }
+    .badge{
+      display:inline-flex; align-items:center; gap: 8px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-weight: 950;
+      font-size: .82rem;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      color: rgba(245,246,255,.82);
+      box-shadow: var(--ring);
+    }
+    .badge.popular{
+      border-color: rgba(0,163,255,.35);
+      background: linear-gradient(90deg, rgba(0,163,255,.22), rgba(30,77,255,.14), rgba(138,92,255,.12));
+    }
+    .price{
+      margin-top: 14px;
+      display:flex; align-items:baseline; gap: 8px;
+    }
+    .price .amt{
+      font-size: 2.55rem;
+      font-weight: 980;
+      letter-spacing:-.04em;
+      background: linear-gradient(90deg, rgba(255,255,255,.95), rgba(245,246,255,.62));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .price .per{
+      color: rgba(245,246,255,.62);
+      font-weight: 900;
+    }
+    .pricing-desc{
+      margin-top: 10px;
+      color: rgba(245,246,255,.70);
+      max-width: 52ch;
+      font-weight: 650;
+    }
+    .features{
+      margin-top: 16px;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      padding-top: 14px;
       border-top: 1px solid rgba(255,255,255,.08);
-      color: rgba(244,244,247,.65);
+    }
+    .feat{
+      display:flex;
+      gap: 10px;
+      align-items:flex-start;
+      color: rgba(245,246,255,.74);
+      font-weight: 700;
+    }
+    .feat .ic{
+      width: 22px; height: 22px; border-radius: 10px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      display:grid; place-items:center;
+      flex-shrink:0;
+      margin-top: 2px;
+    }
+    .feat .ic svg{ width: 14px; height: 14px; color: rgba(245,246,255,.86); }
+    .pricing-actions{
+      margin-top: 18px;
+      display:flex;
+      gap: 12px;
+      flex-wrap:wrap;
+    }
+    .pricing-note{
+      margin-top: 12px;
+      color: rgba(245,246,255,.56);
+      font-weight: 750;
+      font-size: .95rem;
+    }
+    .pricing-card.premium{
+      border-color: rgba(0,163,255,.28);
+    }
+    .pricing-card.premium::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(520px 260px at 18% 0%, rgba(0,163,255,.24), transparent 60%),
+                  radial-gradient(520px 260px at 88% 25%, rgba(138,92,255,.20), transparent 62%);
+      opacity:.9;
+      pointer-events:none;
+    }
+    .pricing-card > *{ position:relative; }
+
+    /* form */
+    .form{
+      max-width: 900px;
+      margin: 0 auto;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 22px;
+    }
+    @media (max-width: 980px){ .form{ grid-template-columns: 1fr; } }
+    .field{
+      background: linear-gradient(180deg, rgba(10,10,16,.55), rgba(10,10,16,.40));
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      padding: 12px 14px;
+      display:flex; flex-direction:column; gap: 6px;
+      box-shadow: var(--ring);
+    }
+    .field label{ font-size: .88rem; font-weight: 950; color: rgba(245,246,255,.78); }
+    .field input, .field textarea, .field select{
+      background: transparent;
+      border: none;
+      outline: none;
+      color: rgba(245,246,255,.92);
+      font-size: 1rem;
+      padding: 4px 0;
+    }
+    .field textarea{ min-height: 110px; resize: vertical; }
+    .form .full{ grid-column: 1/-1; }
+
+    /* footer */
+    footer{
+      padding: 64px 0;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: rgba(245,246,255,.65);
       text-align:center;
     }
     .footer-links{
@@ -540,10 +698,12 @@
       background: rgba(255,255,255,.03);
       border: 1px solid rgba(255,255,255,.08);
       transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease);
+      font-weight: 850;
+      color: rgba(245,246,255,.72);
     }
-    .footer-links a:hover{ transform: translateY(-1px); border-color: rgba(0,163,255,.35); }
+    .footer-links a:hover{ transform: translateY(-1px); border-color: rgba(0,163,255,.35); color: rgba(245,246,255,.9); }
 
-    /* Reveal */
+    /* reveal */
     .reveal{
       opacity: 0;
       transform: translateY(26px) scale(.985);
@@ -555,7 +715,7 @@
       transform: translateY(0) scale(1);
     }
 
-    /* Chat */
+    /* chat toggle + widget */
     #chat-toggle{
       position:fixed; right: 22px; bottom: 22px;
       width: 62px; height: 62px;
@@ -573,10 +733,10 @@
 
     #chat-widget{
       position:fixed; right: 22px; bottom: 96px;
-      width: 380px; max-width: 92vw;
-      height: 520px; max-height: 72vh;
-      border-radius: 22px;
-      background: rgba(18,18,24,.75);
+      width: 390px; max-width: 92vw;
+      height: 540px; max-height: 72vh;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(18,18,28,.78), rgba(10,10,16,.64));
       border: 1px solid rgba(255,255,255,.12);
       box-shadow: var(--shadow);
       display:flex; flex-direction:column;
@@ -585,8 +745,8 @@
       opacity:0; transform: translateY(14px) scale(.96);
       pointer-events:none;
       transition: all .28s var(--ease);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
     #chat-widget.is-open{
       opacity:1; transform: translateY(0) scale(1);
@@ -595,7 +755,7 @@
     .chat-header{
       padding: 14px 16px;
       border-bottom: 1px solid rgba(255,255,255,.10);
-      background: linear-gradient(90deg, rgba(0,163,255,.18), rgba(30,77,255,.14));
+      background: linear-gradient(90deg, rgba(0,163,255,.18), rgba(30,77,255,.14), rgba(138,92,255,.10));
       display:flex; justify-content:space-between; align-items:center;
       gap: 10px;
     }
@@ -609,7 +769,7 @@
     .chat-close-btn{
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.12);
-      color: rgba(244,244,247,.9);
+      color: rgba(245,246,255,.9);
       width: 34px; height: 34px;
       border-radius: 12px;
       cursor:pointer;
@@ -631,9 +791,10 @@
     .message-content{
       padding: 10px 12px;
       border-radius: 16px;
-      background: rgba(10,10,14,.55);
+      background: rgba(10,10,16,.62);
       border: 1px solid rgba(255,255,255,.10);
-      color: rgba(244,244,247,.80);
+      color: rgba(245,246,255,.78);
+      box-shadow: var(--ring);
     }
     .message.user .message-content{
       background: linear-gradient(180deg, rgba(0,163,255,.95), rgba(30,77,255,.92));
@@ -644,7 +805,7 @@
     .typing-indicator{ display:flex; gap: 5px; align-items:center; }
     .typing-indicator span{
       width: 7px; height: 7px; border-radius:50%;
-      background: rgba(244,244,247,.7);
+      background: rgba(245,246,255,.7);
       animation: typing 1.2s infinite;
     }
     .typing-indicator span:nth-child(2){ animation-delay: .15s; }
@@ -662,7 +823,7 @@
       border-radius: 999px;
       background: rgba(255,255,255,.04);
       border: 1px solid rgba(255,255,255,.10);
-      color: rgba(244,244,247,.92);
+      color: rgba(245,246,255,.92);
       cursor:pointer;
       font-weight: 950;
       transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), background var(--speed) var(--ease);
@@ -695,94 +856,62 @@
 
   <div id="preloader" aria-label="Ładowanie strony">
     <div style="display:flex; flex-direction:column; align-items:center;">
-      <img src="https://i.imgur.com/TbvImJS.png" alt="Lite Solutions" style="width:76px; filter: drop-shadow(0 0 24px rgba(0,163,255,.25));" />
-      <div class="loading-hint">Ładuje doświadczenie</div>
+      <img src="https://i.imgur.com/TbvImJS.png" alt="Lite Solutions" style="width:78px; filter: drop-shadow(0 0 26px rgba(0,163,255,.28));" />
+      <div class="loading-hint">Ładujemy premium doświadczenie…</div>
       <div class="loading-bar" aria-hidden="true"><div></div></div>
     </div>
   </div>
 
   <div id="app"></div>
 
-  <!-- HARD FALLBACK: preloader znika nawet jeśli React się wysypie -->
-  <script>
-    (function(){
-      function hidePreloader(){
-        try{
-          var p = document.getElementById('preloader');
-          if (p) p.classList.add('hidden');
-          document.body.classList.remove('loading');
-        }catch(e){}
-      }
-      // jeśli app nie wystartuje -> po 2200ms i tak zdejmujemy preloader
-      window.addEventListener('load', function(){
-        setTimeout(hidePreloader, 2200);
-      });
-      // dodatkowy fallback
-      setTimeout(hidePreloader, 3000);
-      window.__hidePreloader = hidePreloader;
-    })();
-  </script>
-
   <script type="text/babel">
     const { useEffect, useMemo, useRef, useState } = React;
-
-    const DISCORD_INVITE = "https://discord.gg/pxbhAEnUpu";
 
     function clamp01(x){ return Math.max(0, Math.min(1, x)); }
     function easeOutCubic(p){ return 1 - Math.pow(1 - p, 3); }
 
-    // BEZ replaceAll -> działa wszędzie
-    function escapeHtml(str){
-      return String(str)
-        .replace(/&/g,'&amp;')
-        .replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;')
-        .replace(/"/g,'&quot;')
-        .replace(/'/g,'&#039;');
-    }
-
     function App(){
       const [activeSection, setActiveSection] = useState('hero');
 
-      // Chat
       const [isChatOpen, setIsChatOpen] = useState(false);
       const [isBotThinking, setIsBotThinking] = useState(false);
       const chatMessagesRef = useRef(null);
 
       const [messages, setMessages] = useState(() => ([
-        { id: Date.now(), sender: 'bot', text: 'Witaj w Lite Solutions. Wybierz temat albo napisz krótko, czego potrzebujesz 👇' }
+        { id: Date.now(), sender: 'bot', text: 'Witaj w Lite Solutions! Wybierz temat albo napisz krótko, czego potrzebujesz 👇' }
       ]));
 
+      // ✅ USUNIĘTO: Kreator bota z opcji
       const mainOptions = useMemo(() => ([
         { text: 'Discord Bot', action: 'showBotOptions' },
-        { text: 'Panel webowy', action: 'showPanelOptions' },
-        { text: 'Subskrypcje', action: 'goSubscriptions' },
+        { text: 'Panele do bota', action: 'showPanelOptions' },
+        { text: 'Subskrypcje panelu', action: 'goPricing' },
         { text: 'Zabezpieczenia', action: 'showSecurityOptions' },
-        { text: 'AI / Automatyzacje AI', action: 'showAIOptions' },
-        { text: 'Dołącz na Discord', action: 'goDiscord' }
+        { text: 'AI / Automatyzacje AI', action: 'showAIOptions' }
       ]), []);
 
       const optionMap = useMemo(() => ({
         showBotOptions: [
-          { text: 'Bot nie działa', action: 'showResponse', response: 'Daj: ID serwera, czas zdarzenia, logi (stack trace) i opis. Namierzymy problem.' },
-          { text: 'Nowa funkcja / moduł', action: 'showResponse', response: 'Opisz moduł, priorytet i deadline. Przygotujemy plan + wycenę.' },
-          { text: 'Tickets / support', action: 'showResponse', response: 'Zrobimy system zgłoszeń z logami, eskalacją i integracjami (webhooki/panel/role).' },
+          { text: 'Bot nie działa', action: 'showResponse', response: 'Sprawdź status Discord API + logi bota. Najszybciej pomożemy: podaj ID serwera, czas zdarzenia i opis.' },
+          { text: 'Nowa funkcja / moduł', action: 'showResponse', response: 'Opisz moduł + priorytet + deadline. Przygotujemy plan i wycenę.' },
+          { text: 'Tickets / support', action: 'showResponse', response: 'Możemy wdrożyć system zgłoszeń: formularze, logi, eskalacje, integracje (webhooki) i panel.' },
           { text: 'Zacznij od nowa', action: 'reset' }
         ],
         showPanelOptions: [
-          { text: 'Standard czy Premium?', action: 'showResponse', response: 'Standard (30 PLN/mies.) — panel do max 5 funkcji. Premium (60 PLN/mies.) — sterowanie każdą funkcją bota. Zakup: zgłoszenie na Discordzie.' },
-          { text: 'Zakup subskrypcji', action: 'goDiscord' },
+          { text: 'Chcę panel do konfiguracji', action: 'showResponse', response: 'Panel może mieć: ustawienia modułów, role, logi, tickets, statystyki, integracje i uprawnienia — dopasujemy pod Twój serwer.' },
+          { text: 'Panel + dashboard statystyk', action: 'showResponse', response: 'Zrobimy dashboard: aktywność, top komendy, ekonomia, tickets, logi zdarzeń oraz eksport danych.' },
+          { text: 'Zobacz subskrypcje', action: 'goPricing' },
           { text: 'Zacznij od nowa', action: 'reset' }
         ],
         showSecurityOptions: [
-          { text: 'Antyspam / antyraid', action: 'showResponse', response: 'Wdrożymy: rate-limit, filtry, wykrywanie anomalii, akcje i alerty. Opisz atak.' },
-          { text: 'Audyt uprawnień', action: 'showResponse', response: 'Przegląd ról, uprawnień, logów i punktów ryzyka + rekomendacje.' },
+          { text: 'Antyspam / antyraid', action: 'showResponse', response: 'Wdrożymy: rate-limit, filtry, wykrywanie anomalii, automatyczne akcje i alerty. Opisz co dokładnie atakuje serwer.' },
+          { text: 'Audyt uprawnień', action: 'showResponse', response: 'Zrobimy przegląd ról, uprawnień, logów i punktów ryzyka + rekomendacje.' },
           { text: 'Zacznij od nowa', action: 'reset' }
         ],
         showAIOptions: [
-          { text: 'AI odpowiada na zgłoszenia', action: 'showResponse', response: 'Bot zbiera kontekst, odpowiada, dopytuje i eskaluje do staffu. Możemy dodać bazę wiedzy.' },
-          { text: 'Automatyzacje workflow', action: 'showResponse', response: 'Automaty: “jeśli X → zrób Y”, auto-raporty, notyfikacje, webhooki, synchronizacja danych.' },
-          { text: 'Moderacja wsparta AI', action: 'showResponse', response: 'Klasyfikacja treści, wykrywanie spamu/toksyczności, sugestie akcji — z logami i progami.' },
+          { text: 'AI odpowiada na zgłoszenia', action: 'showResponse', response: 'Bot zbiera kontekst, odpowiada, dopytuje i eskaluje do staffu. Możemy dodać bazę wiedzy i system priorytetów.' },
+          { text: 'Automatyzacje workflow', action: 'showResponse', response: 'Automaty typu: “jeśli X → zrób Y”, auto-raporty, powiadomienia, synchronizacja danych, webhooki.' },
+          { text: 'Moderacja wsparta AI', action: 'showResponse', response: 'Klasyfikacja treści, wykrywanie toksyczności/spamu, sugestie akcji dla staffu — z logami i progami.' },
           { text: 'Zacznij od nowa', action: 'reset' }
         ]
       }), []);
@@ -808,24 +937,28 @@
       };
 
       const resetChat = () => {
-        setMessages([{ id: Date.now(), sender: 'bot', text: 'Witaj w Lite Solutions. Wybierz temat albo napisz krótko, czego potrzebujesz 👇' }]);
+        setMessages([{ id: Date.now(), sender: 'bot', text: 'Witaj w Lite Solutions! Wybierz temat albo napisz krótko, czego potrzebujesz 👇' }]);
         setCurrentOptions(mainOptions);
         requestAnimationFrame(scrollToBottom);
       };
 
-      const goDiscord = () => window.open(DISCORD_INVITE, "_blank", "noopener,noreferrer");
-
       const handleOptionClick = (option) => {
-        if (option.action === 'goSubscriptions') {
-          scrollTo('#subscriptions');
-          return;
-        }
-        if (option.action === 'goDiscord') {
-          goDiscord();
+        if (option.action === 'goPricing') {
+          scrollTo('#pricing');
+          setMessages(prev => ([...prev, { id: Date.now() + Math.random(), sender: 'user', text: option.text }]));
+          setCurrentOptions([]);
+          setIsBotThinking(true);
+          scrollToBottom();
+          setTimeout(() => {
+            setIsBotThinking(false);
+            setMessages(prev => ([...prev, { id: Date.now() + Math.random(), sender: 'bot', text: 'Jasne — poniżej masz subskrypcje panelu (Standard i Premium). Jeśli chcesz, napisz jakie moduły ma mieć bot, a dobierzemy pakiet.' }]));
+            setCurrentOptions([{ text: 'Zacznij od nowa', action: 'reset' }]);
+            scrollToBottom();
+          }, 750);
           return;
         }
 
-        setMessages(prev => ([...prev, { id: Date.now() + Math.random(), sender: 'user', text: escapeHtml(option.text) }]));
+        setMessages(prev => ([...prev, { id: Date.now() + Math.random(), sender: 'user', text: option.text }]));
         setCurrentOptions([]);
         setIsBotThinking(true);
         scrollToBottom();
@@ -834,8 +967,8 @@
           setIsBotThinking(false);
 
           if (option.action === 'showResponse') {
-            setMessages(prev => ([...prev, { id: Date.now() + Math.random(), sender: 'bot', text: escapeHtml(option.response) }]));
-            setCurrentOptions([{ text: 'Zacznij od nowa', action: 'reset' }, { text:'Dołącz na Discord', action:'goDiscord' }]);
+            setMessages(prev => ([...prev, { id: Date.now() + Math.random(), sender: 'bot', text: option.response }]));
+            setCurrentOptions([{ text: 'Zacznij od nowa', action: 'reset' }]);
           } else if (option.action === 'reset') {
             resetChat();
           } else {
@@ -845,7 +978,22 @@
         }, 850);
       };
 
-      // Hero stats
+      const [lead, setLead] = useState({ name:'', contact:'', type:'discord-bot', budget:'', details:'' });
+      const [leadStatus, setLeadStatus] = useState('');
+
+      const submitLead = async (e) => {
+        e.preventDefault();
+        setLeadStatus('Wysyłanie...');
+
+        try {
+          await new Promise(r => setTimeout(r, 500));
+          setLeadStatus('Wysłano! Odezwiemy się wkrótce.');
+        } catch (err) {
+          setLeadStatus('Błąd wysyłki. Spróbuj ponownie.');
+        }
+      };
+
+      // animowane metryki (po wejściu w hero)
       const statsTarget = useMemo(() => ({ projects: 120, uptime: 99.9, response: 2, delivery: 7 }), []);
       const [animatedStats, setAnimatedStats] = useState({ projects: 0, uptime: 0, response: 0, delivery: 0 });
       const statsAnimatedOnceRef = useRef(false);
@@ -866,22 +1014,19 @@
         requestAnimationFrame(tick);
       };
 
-      const [pricingHighlight, setPricingHighlight] = useState(null);
-      const highlightPlan = (plan) => {
-        setPricingHighlight(plan);
-        scrollTo('#subscriptions');
-        setTimeout(() => setPricingHighlight(null), 2400);
-      };
-
       useEffect(() => {
-        // jeśli React wstaje -> zdejmujemy preloader natychmiast
-        if (window.__hidePreloader) window.__hidePreloader();
+        const preloader = document.getElementById('preloader');
+        document.body.classList.add('loading');
+        const t = setTimeout(() => {
+          preloader?.classList.add('hidden');
+          document.body.classList.remove('loading');
+        }, 1100);
 
         const revealObs = new IntersectionObserver((entries) => {
           for (const e of entries) {
             if (e.isIntersecting) e.target.classList.add('is-visible');
           }
-        }, { threshold: 0.18, rootMargin: '0px 0px -60px 0px' });
+        }, { threshold: 0.16, rootMargin: '0px 0px -60px 0px' });
 
         document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
@@ -898,12 +1043,12 @@
         }, { threshold: 0.25 });
         if (heroStatsEl) statsObs.observe(heroStatsEl);
 
-        const sections = ['hero','about','services','subscriptions','ai','process','faq','team','contact'];
+        const sections = ['hero','about','services','ai','process','pricing','faq','team','contact'];
         const secObs = new IntersectionObserver((entries) => {
           const visible = entries
             .filter(x => x.isIntersecting)
             .sort((a,b)=> b.intersectionRatio - a.intersectionRatio)[0];
-          if (visible && visible.target && visible.target.id) setActiveSection(visible.target.id);
+          if (visible?.target?.id) setActiveSection(visible.target.id);
         }, { threshold: 0.35 });
 
         sections.forEach(id => {
@@ -922,12 +1067,19 @@
         onScroll();
 
         return () => {
+          clearTimeout(t);
           revealObs.disconnect();
           secObs.disconnect();
           statsObs.disconnect();
           window.removeEventListener('scroll', onScroll);
         };
       }, [statsTarget]);
+
+      const pickPlan = (plan) => {
+        setLead(prev => ({ ...prev, type: 'panel', details: `Interesuje mnie subskrypcja panelu: ${plan}. Opisz proszę jak wygląda aktywacja, płatność i wdrożenie.` }));
+        setLeadStatus('');
+        scrollTo('#contact');
+      };
 
       return (
         <div>
@@ -936,22 +1088,27 @@
               <nav className="header-nav" aria-label="Główna nawigacja">
                 <a className="logo" href="#hero" onClick={(e)=>{e.preventDefault(); scrollTo('#hero');}} aria-label="Przejdź do sekcji start">
                   <img src="https://i.imgur.com/TbvImJS.png" alt="Lite Solutions Logo" />
-                  <span className="logo-text">Lite Solutions</span>
+                  <span className="logo-text">
+                    Lite Solutions
+                    <small>Boty • Panele • AI • Security</small>
+                  </span>
                 </a>
 
                 <ul className="nav-links" role="list">
                   <li><a className={activeSection==='about' ? 'active' : ''} href="#about" onClick={(e)=>{e.preventDefault(); scrollTo('#about');}}>O nas</a></li>
                   <li><a className={activeSection==='services' ? 'active' : ''} href="#services" onClick={(e)=>{e.preventDefault(); scrollTo('#services');}}>Usługi</a></li>
-                  <li><a className={activeSection==='subscriptions' ? 'active' : ''} href="#subscriptions" onClick={(e)=>{e.preventDefault(); scrollTo('#subscriptions');}}>Subskrypcje</a></li>
                   <li><a className={activeSection==='ai' ? 'active' : ''} href="#ai" onClick={(e)=>{e.preventDefault(); scrollTo('#ai');}}>AI</a></li>
                   <li><a className={activeSection==='process' ? 'active' : ''} href="#process" onClick={(e)=>{e.preventDefault(); scrollTo('#process');}}>Proces</a></li>
-                  <li><a className={activeSection==='faq' ? 'active' : ''} href="#faq" onClick={(e)=>{e.preventDefault(); scrollTo('#faq');}}>FAQ</a></li>
+                  <li><a className={activeSection==='pricing' ? 'active' : ''} href="#pricing" onClick={(e)=>{e.preventDefault(); scrollTo('#pricing');}}>Subskrypcje</a></li>
                   <li><a className={activeSection==='team' ? 'active' : ''} href="#team" onClick={(e)=>{e.preventDefault(); scrollTo('#team');}}>Zespół</a></li>
-                  <li><a className={activeSection==='contact' ? 'active' : ''} href="#contact" onClick={(e)=>{e.preventDefault(); scrollTo('#contact');}}>Discord</a></li>
+                  <li><a className={activeSection==='contact' ? 'active' : ''} href="#contact" onClick={(e)=>{e.preventDefault(); scrollTo('#contact');}}>Kontakt</a></li>
                 </ul>
 
                 <div className="header-actions">
                   <a className="pill" href="/auth/discord" aria-label="Przejdź do Panelu Klienta">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M4 4h16a2 2 0 0 1 2 2v4H2V6a2 2 0 0 1 2-2zm-2 8h20v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6zm5 2v4h6v-4H7zm9 1h4v2h-4v-2z"/>
+                    </svg>
                     <span>Panel Klienta</span>
                   </a>
                 </div>
@@ -966,62 +1123,78 @@
                   <div className="reveal">
                     <div className="kicker">
                       <span className="dot" aria-hidden="true"></span>
-                      <span>Produktowa jakość • Panel webowy • AI • Bezpieczeństwo</span>
+                      <span>Stabilne wdrożenia • UX premium • Bezpieczeństwo</span>
                     </div>
 
                     <h1 className="hero-title">
-                      Discord bot jako <span className="highlight">produkt</span>.<br/>
-                      Panel, AI i pełne zabezpieczenia.
+                      Budujemy <span className="highlight">Discord boty</span><br/>
+                      z panelami, AI i pełnym zabezpieczeniem.
                     </h1>
 
                     <p className="hero-subtitle">
-                      Budujemy stabilne boty i panele do zarządzania botem (SaaS). Dostajesz architekturę, monitoring,
-                      porządek w uprawnieniach, logach i procesach supportu — bez chaosu i półśrodków.
+                      Lite Solutions tworzy systemy jak produkt: modularny bot, panel do zarządzania, automatyzacje AI
+                      (np. bot sam odpowiada na zgłoszenia) oraz bezpieczeństwo na poziomie premium.
                     </p>
 
                     <div className="hero-cta">
-                      <button className="btn primary" onClick={()=>highlightPlan('premium')}>
-                        Zobacz subskrypcje panelu
+                      <button className="btn primary" onClick={()=>scrollTo('#pricing')}>
+                        <span>Zobacz subskrypcje panelu</span>
                       </button>
-                      <button className="btn ghost" onClick={goDiscord}>Wejdź na Discord</button>
-                      <button className="btn" onClick={()=>scrollTo('#services')}>Poznaj usługi</button>
+                      <button className="btn ghost" onClick={()=>scrollTo('#services')}>Poznaj usługi</button>
+                      <button className="btn" onClick={toggleChat}>Szybka konsultacja</button>
                     </div>
-
-                    <div id="heroStatsSentinel" className="stats" aria-label="Najważniejsze liczby">
-                      <div className="stat">
-                        <div className="num">{animatedStats.projects}</div>
-                        <div className="lbl">wdrożeń</div>
-                      </div>
-                      <div className="stat">
-                        <div className="num">{animatedStats.uptime}%</div>
-                        <div className="lbl">uptime (SLA)</div>
-                      </div>
-                      <div className="stat">
-                        <div className="num">{animatedStats.response}h</div>
-                        <div className="lbl">czas reakcji</div>
-                      </div>
-                      <div className="stat">
-                        <div className="num">{animatedStats.delivery}d</div>
-                        <div className="lbl">MVP średnio</div>
-                      </div>
-                    </div>
-
-                    <div className="discord-banner reveal" style={{marginTop: 22}}>
-                      <div className="discord-left">
-                        <div className="discord-mark" aria-hidden="true">
-                          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4.5A16.2 16.2 0 0016 3l-.4.8a15 15 0 00-3.6-.4c-1.2 0-2.4.1-3.6.4L8 3a16.2 16.2 0 00-4 1.5C2.6 7 2 9.4 2 11.8c0 2.4.6 4.8 2 7.3A16.4 16.4 0 008 21l.5-.9c1.1.4 2.3.6 3.5.6s2.4-.2 3.5-.6l.5.9a16.4 16.4 0 004-1.9c1.4-2.5 2-4.9 2-7.3 0-2.4-.6-4.8-2-7.3zM9.4 14.6c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5c.7 0 1.3.7 1.3 1.5s-.6 1.5-1.3 1.5zm5.2 0c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5c.7 0 1.3.7 1.3 1.5s-.6 1.5-1.3 1.5z"/></svg>
-                        </div>
-                        <div>
-                          <div className="discord-title">Kontakt i zakup subskrypcji przez Discord</div>
-                          <div className="discord-sub">Wbij na serwer i załóż zgłoszenie. Najszybciej ogarniemy subskrypcję panelu, wdrożenie i konfigurację.</div>
-                        </div>
-                      </div>
-                      <a className="btn primary" href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
-                        Dołącz na Discord
-                      </a>
-                    </div>
-
                   </div>
+
+                  <div className="hero-side reveal" style={{transitionDelay:'120ms'}}>
+                    <div className="spotlight" aria-hidden="true"></div>
+                    <div className="hero-side-inner">
+                      <div className="hero-metric-row" id="heroStatsSentinel" aria-label="Najważniejsze liczby">
+                        <div className="hero-metric">
+                          <div className="k">Wdrożenia</div>
+                          <div className="v">{animatedStats.projects}+</div>
+                        </div>
+                        <div className="hero-metric">
+                          <div className="k">SLA uptime</div>
+                          <div className="v">{animatedStats.uptime}%</div>
+                        </div>
+                        <div className="hero-metric">
+                          <div className="k">Reakcja</div>
+                          <div className="v">{animatedStats.response}h</div>
+                        </div>
+                        <div className="hero-metric">
+                          <div className="k">MVP</div>
+                          <div className="v">{animatedStats.delivery}d</div>
+                        </div>
+                      </div>
+
+                      <div className="hero-bullets" aria-label="Najważniejsze zalety">
+                        <div className="bullet">
+                          <div className="check" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20.3 7.7l-1.4-1.4z"/></svg>
+                          </div>
+                          <div>Panel + uprawnienia + logi — pełna kontrola bez grzebania w kodzie</div>
+                        </div>
+                        <div className="bullet">
+                          <div className="check" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20.3 7.7l-1.4-1.4z"/></svg>
+                          </div>
+                          <div>Bezpieczeństwo: rate-limit, antyraid, alerty, audyty ról</div>
+                        </div>
+                        <div className="bullet">
+                          <div className="check" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20.3 7.7l-1.4-1.4z"/></svg>
+                          </div>
+                          <div>AI do tickets: zbieranie kontekstu, odpowiedzi, eskalacje do staffu</div>
+                        </div>
+                      </div>
+
+                      <div style={{marginTop:'6px', display:'flex', gap:'10px', flexWrap:'wrap', padding:'6px 10px 0'}}>
+                        <button className="btn primary" style={{flex:'1 1 160px'}} onClick={()=>scrollTo('#contact')}>Wyceń projekt</button>
+                        <button className="btn" style={{flex:'1 1 160px'}} onClick={()=>scrollTo('#pricing')}>Subskrypcje</button>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </section>
@@ -1029,10 +1202,9 @@
             <section id="about" className="section">
               <div className="container">
                 <div className="reveal">
-                  <h2 className="section-title">Misja: <span className="highlight">przewidywalny</span> system</h2>
+                  <h2 className="section-title">Misja: <span className="highlight">produkt</span>, nie “skrypt”</h2>
                   <p className="section-subtitle">
-                    U nas bot i panel to nie “skrypt”. To rozwiązanie, które da się utrzymać: moduły, uprawnienia,
-                    logi, monitoring, AI i zabezpieczenia.
+                    Budujemy rozwiązania, które da się rozwijać: moduły, panel, monitoring, AI i zabezpieczenia. Działamy szybko, ale bez kompromisów jakości.
                   </p>
                 </div>
 
@@ -1041,24 +1213,22 @@
                     <div className="icon" aria-hidden="true">
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v10H6l-2 2V6zm3 3h10v2H7V9zm0 4h7v2H7v-2z"/></svg>
                     </div>
-                    <h3 style={{fontWeight:950}}>Architektura i porządek</h3>
-                    <p className="muted">Czytelne moduły, uprawnienia, logika i logi — gotowe na rozwój.</p>
+                    <h3 style={{fontWeight:950}}>Jasna architektura</h3>
+                    <p className="muted">Moduły, role, logi, monitoring, wersjonowanie — gotowe na długie życie produktu.</p>
                   </div>
-
                   <div className="card reveal" style={{transitionDelay:'120ms'}}>
                     <div className="icon" aria-hidden="true">
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>UX premium</h3>
-                    <p className="muted">Panel i komendy zaprojektowane, żeby były szybkie i intuicyjne.</p>
+                    <p className="muted">Panel i komendy zaprojektowane, żeby były szybkie, czytelne i odporne na błędy.</p>
                   </div>
-
                   <div className="card reveal" style={{transitionDelay:'240ms'}}>
                     <div className="icon" aria-hidden="true">
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l9 4v6c0 5-3.8 9.4-9 12-5.2-2.6-9-7-9-12V5l9-4zm0 6a3 3 0 100 6 3 3 0 000-6z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>Bezpieczeństwo</h3>
-                    <p className="muted">Rate-limit, antyspam, audyty i kontrola dostępu — mniej incydentów.</p>
+                    <p className="muted">Rate-limit, antyspam, audyty i kontrola dostępu — mniej incydentów i większy spokój.</p>
                   </div>
                 </div>
               </div>
@@ -1069,7 +1239,7 @@
                 <div className="reveal">
                   <h2 className="section-title">Usługi Lite Solutions</h2>
                   <p className="section-subtitle">
-                    Discord Boty, panel webowy, zabezpieczenia, AI i automatyzacje.
+                    Discord Boty, panele webowe do zarządzania botem, zabezpieczenia oraz AI — wszystko z naciskiem na stabilność i rozwój.
                   </p>
                 </div>
 
@@ -1079,7 +1249,9 @@
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v2h4a2 2 0 012 2v10a2 2 0 01-2 2h-5l-3 3-3-3H6a2 2 0 01-2-2V6a2 2 0 012-2h4V2zm-3 7h10v2H7V9zm0 4h7v2H7v-2z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>Discord Bot</h3>
-                    <p className="muted">Moderacja, ekonomia, rankingi, role, logi, tickets, automaty, integracje.</p>
+                    <p className="muted">
+                      Moderacja, ekonomia, rankingi, role, logi, tickets, automaty, integracje — modułowo i pod Twoje potrzeby.
+                    </p>
                     <div className="hr"></div>
                     <p className="muted"><strong>Opcjonalnie:</strong> hosting, monitoring, SLA, aktualizacje.</p>
                   </div>
@@ -1089,9 +1261,11 @@
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16v14H4V5zm2 2v2h12V7H6zm0 4v6h12v-6H6z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>Panel webowy</h3>
-                    <p className="muted">Konfiguracja modułów, role, logi, tickets, integracje, statystyki i uprawnienia.</p>
+                    <p className="muted">
+                      Konfiguracja modułów, role, logi, tickets, integracje, statystyki i uprawnienia — bez chaosu.
+                    </p>
                     <div className="hr"></div>
-                    <p className="muted"><strong>Efekt:</strong> pełna kontrola i mniej ręcznej roboty.</p>
+                    <p className="muted"><strong>Efekt:</strong> mniej ręcznej roboty, pełna kontrola.</p>
                   </div>
 
                   <div className="card reveal" style={{transitionDelay:'240ms'}}>
@@ -1099,111 +1273,12 @@
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l9 4v6c0 5-3.8 9.4-9 12-5.2-2.6-9-7-9-12V5l9-4z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>Zabezpieczenia</h3>
-                    <p className="muted">Antyspam, antyraid, rate-limit, wykrywanie anomalii, logi, alerty, audyt.</p>
+                    <p className="muted">
+                      Antyspam, antyraid, rate-limit, wykrywanie anomalii, alerty, audyt uprawnień i twarde zasady dostępu.
+                    </p>
                     <div className="hr"></div>
                     <p className="muted"><strong>Cel:</strong> stabilność i spokój.</p>
                   </div>
-                </div>
-
-                <div className="reveal" style={{marginTop: 28, textAlign:'center'}}>
-                  <button className="btn primary" onClick={()=>highlightPlan('standard')}>Zobacz subskrypcje panelu</button>
-                  <button className="btn ghost" style={{marginLeft:12}} onClick={goDiscord}>Kontakt przez Discord</button>
-                </div>
-              </div>
-            </section>
-
-            <section id="subscriptions" className="section">
-              <div className="container">
-                <div className="reveal">
-                  <h2 className="section-title">Subskrypcje — Panel webowy</h2>
-                  <p className="section-subtitle">
-                    Aby zakupić subskrypcję, skontaktuj się poprzez <strong>zgłoszenie na Discordzie</strong>.
-                  </p>
-                </div>
-
-                <div className="pricing-grid">
-                  <div
-                    className="price-card reveal"
-                    style={pricingHighlight === 'standard' ? { borderColor:'rgba(0,163,255,.55)' } : null}
-                  >
-                    <div className="plan-top">
-                      <div>
-                        <div className="plan-name">Pakiet Standard</div>
-                        <div className="muted" style={{fontWeight:850}}>Start dla mniejszych serwerów</div>
-                      </div>
-                      <div className="plan-pill">Najlepszy start</div>
-                    </div>
-
-                    <div className="price">
-                      <div className="amount">30 PLN</div>
-                      <div className="per">/ miesiąc</div>
-                    </div>
-
-                    <div className="plan-desc">
-                      Panel do zarządzania <strong>maks. 5 funkcjami</strong> w bocie.
-                    </div>
-
-                    <div className="hr"></div>
-
-                    <div className="plan-meta">
-                      <span className="mini">Limit: 5 funkcji</span>
-                      <span className="mini">Zakup: Discord</span>
-                    </div>
-
-                    <div className="cta-row">
-                      <a className="btn primary" style={{width:'100%'}} href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
-                        Kup Standard (zgłoszenie na Discordzie)
-                      </a>
-                      <button className="btn" style={{width:'100%'}} onClick={goDiscord}>
-                        Dołącz na Discord
-                      </button>
-                    </div>
-                  </div>
-
-                  <div
-                    className="price-card reveal"
-                    style={{
-                      transitionDelay:'120ms',
-                      ...(pricingHighlight === 'premium' ? { borderColor:'rgba(0,163,255,.55)' } : null)
-                    }}
-                  >
-                    <div className="plan-top">
-                      <div>
-                        <div className="plan-name">Pakiet Premium</div>
-                        <div className="muted" style={{fontWeight:850}}>Pełna kontrola</div>
-                      </div>
-                      <div className="plan-pill recommended">Rekomendowany</div>
-                    </div>
-
-                    <div className="price">
-                      <div className="amount">60 PLN</div>
-                      <div className="per">/ miesiąc</div>
-                    </div>
-
-                    <div className="plan-desc">
-                      Panel umożliwia sterowanie <strong>każdą funkcją bota</strong>.
-                    </div>
-
-                    <div className="hr"></div>
-
-                    <div className="plan-meta">
-                      <span className="mini">Limit: bez limitu</span>
-                      <span className="mini">Zakup: Discord</span>
-                    </div>
-
-                    <div className="cta-row">
-                      <a className="btn primary" style={{width:'100%'}} href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
-                        Kup Premium (zgłoszenie na Discordzie)
-                      </a>
-                      <button className="btn" style={{width:'100%'}} onClick={goDiscord}>
-                        Dołącz na Discord
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="legal-note reveal" style={{marginTop: 18}}>
-                  Zakup subskrypcji: wejdź na Discord, utwórz zgłoszenie i napisz: pakiet (Standard/Premium) + serwer + krótki opis.
                 </div>
               </div>
             </section>
@@ -1213,7 +1288,7 @@
                 <div className="reveal">
                   <h2 className="section-title">AI i Automatyzacje AI</h2>
                   <p className="section-subtitle">
-                    AI tam, gdzie naprawdę robi robotę: mniej pracy staffu, szybsze odpowiedzi, lepsza moderacja.
+                    Wprowadzamy AI tam, gdzie realnie oszczędza czas i poprawia obsługę: tickets, moderacja, workflow i raporty.
                   </p>
                 </div>
 
@@ -1223,15 +1298,19 @@
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 2h6v2h2a2 2 0 012 2v2h-2V6H5v2H3V6a2 2 0 012-2h2V2zm-6 8h18v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10zm4 3h6v2H7v-2z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>Rozwiązania AI</h3>
-                    <p className="muted">Klasyfikowanie, rekomendacje, analiza treści, akcje reguły+AI.</p>
+                    <p className="muted">
+                      Klasyfikowanie, rekomendacje, analiza treści, automatyczne akcje na bazie reguł + AI.
+                    </p>
                   </div>
 
                   <div className="card reveal" style={{transitionDelay:'120ms'}}>
                     <div className="icon" aria-hidden="true">
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 019 9v3a3 3 0 01-3 3h-2v-2h2a1 1 0 001-1v-3a7 7 0 10-14 0v3a1 1 0 001 1h2v2H6a3 3 0 01-3-3v-3a9 9 0 019-9zm-1 6h2v6h-2V9zm0 8h2v2h-2v-2z"/></svg>
                     </div>
-                    <h3 style={{fontWeight:950}}>AI odpowiada na zgłoszenia</h3>
-                    <p className="muted">Bot zbiera kontekst, odpowiada, dopytuje i eskaluje do staffu.</p>
+                    <h3 style={{fontWeight:950}}>Bot odpowiada na zgłoszenia</h3>
+                    <p className="muted">
+                      Automatyzacja tickets: bot zbiera dane, odpowiada, dopytuje i eskaluje do staffu, gdy trzeba.
+                    </p>
                   </div>
 
                   <div className="card reveal" style={{transitionDelay:'240ms'}}>
@@ -1239,7 +1318,9 @@
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10v2H7V2zm-2 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zm2 4v2h10v-2H7zm0 4v2h7v-2H7z"/></svg>
                     </div>
                     <h3 style={{fontWeight:950}}>Automatyzacje workflow</h3>
-                    <p className="muted">“Jeśli X → Y”, auto-raporty, notyfikacje, webhooki, integracje.</p>
+                    <p className="muted">
+                      “Jeśli X → zrób Y”, auto-raporty, powiadomienia, synchronizacja danych, webhooki.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -1250,30 +1331,124 @@
                 <div className="reveal">
                   <h2 className="section-title">Proces współpracy</h2>
                   <p className="section-subtitle">
-                    Prosto: analiza → budowa → wdrożenie.
+                    Ustalamy cel, projektujemy moduły + panel, wdrażamy i dowozimy opiekę. Bez niepotrzebnych komplikacji.
                   </p>
                 </div>
 
                 <div className="grid-3">
                   <div className="card reveal">
                     <h3 style={{fontWeight:950}}>1) Analiza</h3>
-                    <p className="muted">Zakres, priorytety, role, tickets, integracje, AI i bezpieczeństwo.</p>
+                    <p className="muted">Zakres, priorytety, role, tickets, integracje, wymagania AI i bezpieczeństwa.</p>
                     <div className="hr"></div>
                     <p className="muted"><strong>Wynik:</strong> plan + wycena + harmonogram.</p>
                   </div>
 
                   <div className="card reveal" style={{transitionDelay:'120ms'}}>
                     <h3 style={{fontWeight:950}}>2) Budowa</h3>
-                    <p className="muted">Bot + panel + automatyzacje. Testy i dopracowany UX.</p>
+                    <p className="muted">Bot + panel admina + automatyzacje AI. Testy, UX i stabilność.</p>
                     <div className="hr"></div>
                     <p className="muted"><strong>Wynik:</strong> MVP + iteracje.</p>
                   </div>
 
                   <div className="card reveal" style={{transitionDelay:'240ms'}}>
                     <h3 style={{fontWeight:950}}>3) Wdrożenie</h3>
-                    <p className="muted">Hosting, monitoring, alerty, zabezpieczenia, dokumentacja, opieka.</p>
+                    <p className="muted">Hosting, monitoring, alerty, zabezpieczenia, dokumentacja i opieka.</p>
                     <div className="hr"></div>
                     <p className="muted"><strong>Wynik:</strong> stabilny release + wsparcie.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ✅ NOWA SEKCJA: SUBSKRYPCJE */}
+            <section id="pricing" className="section">
+              <div className="container">
+                <div className="reveal">
+                  <h2 className="section-title">Subskrypcje panelu</h2>
+                  <p className="section-subtitle">
+                    Panel webowy do zarządzania botem. Wybierz pakiet i steruj funkcjami bez dotykania kodu.
+                  </p>
+                </div>
+
+                <div className="pricing-grid">
+                  <div className="pricing-card reveal">
+                    <div className="spotlight" aria-hidden="true"></div>
+                    <div className="badge">Pakiet Standard</div>
+                    <div className="price">
+                      <div className="amt">30 PLN</div>
+                      <div className="per">/ miesiąc</div>
+                    </div>
+                    <div className="pricing-desc">
+                      Idealny start. Panel pozwala zarządzać maksymalnie <strong>5 funkcjami</strong> w bocie.
+                    </div>
+
+                    <div className="features" aria-label="Funkcje pakietu Standard">
+                      <div className="feat">
+                        <div className="ic" aria-hidden="true">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20.3 7.7l-1.4-1.4z"/></svg>
+                        </div>
+                        <div>Panel: konfiguracja do 5 funkcji/modułów</div>
+                      </div>
+                      <div className="feat">
+                        <div className="ic" aria-hidden="true">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20.3 7.7l-1.4-1.4z"/></svg>
+                        </div>
+                        <div>Uprawnienia + role do panelu</div>
+                      </div>
+                      <div className="feat">
+                        <div className="ic" aria-hidden="true">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20.3 7.7l-1.4-1.4z"/></svg>
+                        </div>
+                        <div>Podgląd logów / zdarzeń (podstawowy)</div>
+                      </div>
+                    </div>
+
+                    <div className="pricing-actions">
+                      <button className="btn primary" onClick={() => pickPlan('Standard 30 PLN/mies.')}>Wybieram Standard</button>
+                      <button className="btn" onClick={()=>scrollTo('#contact')}>Zapytaj o wdrożenie</button>
+                    </div>
+
+                    <div className="pricing-note">Dla serwerów, które chcą szybki start i prostą kontrolę.</div>
+                  </div>
+
+                  <div className="pricing-card premium reveal" style={{transitionDelay:'120ms'}}>
+                    <div className="spotlight" aria-hidden="true"></div>
+                    <div className="badge popular">Pakiet Premium • Najczęściej wybierany</div>
+                    <div className="price">
+                      <div className="amt">60 PLN</div>
+                      <div className="per">/ miesiąc</div>
+                    </div>
+                    <div className="pricing-desc">
+                      Pełna kontrola. Panel umożliwia sterowanie <strong>każdą funkcją bota</strong>.
+                    </div>
+
+                    <div className="features" aria-label="Funkcje pakietu Premium">
+                      <div className="feat">
+                        <div className="ic" aria-hidden="true">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20.3 7.7l-1.4-1.4z"/></svg>
+                        </div>
+                        <div>Panel: sterowanie wszystkimi funkcjami/modułami</div>
+                      </div>
+                      <div className="feat">
+                        <div className="ic" aria-hidden="true">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20.3 7.7l-1.4-1.4z"/></svg>
+                        </div>
+                        <div>Zaawansowane role/uprawnienia + audyt akcji</div>
+                      </div>
+                      <div className="feat">
+                        <div className="ic" aria-hidden="true">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20.3 7.7l-1.4-1.4z"/></svg>
+                        </div>
+                        <div>Logi i dashboard (rozszerzony) + eksport</div>
+                      </div>
+                    </div>
+
+                    <div className="pricing-actions">
+                      <button className="btn primary" onClick={() => pickPlan('Premium 60 PLN/mies.')}>Wybieram Premium</button>
+                      <button className="btn" onClick={toggleChat}>Dopytaj na czacie</button>
+                    </div>
+
+                    <div className="pricing-note">Dla serwerów, które chcą pełnej kontroli i skalowania.</div>
                   </div>
                 </div>
               </div>
@@ -1283,21 +1458,25 @@
               <div className="container">
                 <div className="reveal">
                   <h2 className="section-title">FAQ</h2>
-                  <p className="section-subtitle">Najczęstsze pytania.</p>
+                  <p className="section-subtitle">Najczęstsze pytania o boty, panele, subskrypcje i AI.</p>
                 </div>
 
                 <div className="faq reveal">
                   <details>
-                    <summary>Jak kupić subskrypcję panelu? <span>+</span></summary>
-                    <div className="ans">Dołącz na Discord i załóż zgłoszenie (ticket). Napisz: pakiet (Standard/Premium), serwer i wymagania.</div>
+                    <summary>Jak działa subskrypcja panelu? <span>+</span></summary>
+                    <div className="ans">Aktywujemy panel dla Twojego bota/serwera, ustawiamy role i uprawnienia, a Ty zarządzasz funkcjami z poziomu dashboardu.</div>
                   </details>
                   <details>
-                    <summary>Standard vs Premium — różnica? <span>+</span></summary>
-                    <div className="ans"><strong>Standard:</strong> max 5 funkcji. <strong>Premium:</strong> pełna kontrola każdej funkcji bota.</div>
+                    <summary>Standard vs Premium — co wybrać? <span>+</span></summary>
+                    <div className="ans">Standard jest idealny na start (do 5 funkcji). Premium daje pełne sterowanie wszystkimi funkcjami i lepszy wgląd w dane.</div>
                   </details>
                   <details>
-                    <summary>Czy AI może obsługiwać zgłoszenia? <span>+</span></summary>
-                    <div className="ans">Tak — bot zbiera kontekst, odpowiada, dopytuje i eskaluje do staffu.</div>
+                    <summary>AI odpowiada na zgłoszenia — jak to wygląda? <span>+</span></summary>
+                    <div className="ans">Bot zbiera kontekst (formularz/ticket), proponuje rozwiązanie, dopytuje i eskaluje do staffu, gdy sprawa jest trudna.</div>
+                  </details>
+                  <details>
+                    <summary>Czy dostanę hosting i monitoring? <span>+</span></summary>
+                    <div className="ans">Tak. Oferujemy hosting + monitoring + alerty, a w pakietach premium również SLA i szybki czas reakcji.</div>
                   </details>
                 </div>
               </div>
@@ -1345,36 +1524,75 @@
               </div>
             </section>
 
-            <!-- Bez formularza: tylko banner Discord -->
             <section id="contact" className="section">
               <div className="container">
                 <div className="reveal">
-                  <h2 className="section-title">Kontakt przez Discord</h2>
+                  <h2 className="section-title">Porozmawiajmy o wdrożeniu</h2>
                   <p className="section-subtitle">
-                    Najszybciej: wejdź na serwer i utwórz zgłoszenie. Tak kupisz subskrypcję i dostaniesz support.
+                    Napisz krótko: co ma robić bot, czy chcesz panel (Standard/Premium) i czy ma być AI do tickets.
                   </p>
                 </div>
 
-                <div className="discord-banner reveal" style={{marginTop: 10}}>
-                  <div className="discord-left">
-                    <div className="discord-mark" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4.5A16.2 16.2 0 0016 3l-.4.8a15 15 0 00-3.6-.4c-1.2 0-2.4.1-3.6.4L8 3a16.2 16.2 0 00-4 1.5C2.6 7 2 9.4 2 11.8c0 2.4.6 4.8 2 7.3A16.4 16.4 0 008 21l.5-.9c1.1.4 2.3.6 3.5.6s2.4-.2 3.5-.6l.5.9a16.4 16.4 0 004-1.9c1.4-2.5 2-4.9 2-7.3 0-2.4-.6-4.8-2-7.3zM9.4 14.6c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5c.7 0 1.3.7 1.3 1.5s-.6 1.5-1.3 1.5zm5.2 0c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5c.7 0 1.3.7 1.3 1.5s-.6 1.5-1.3 1.5z"/></svg>
-                    </div>
-                    <div>
-                      <div className="discord-title">Wejdź na Discord i załóż zgłoszenie</div>
-                      <div className="discord-sub">Podaj: pakiet (Standard/Premium), serwer i krótki opis potrzeb.</div>
-                    </div>
+                {/* ✅ USUNIĘTO: "Kreator bota" */}
+                <div className="grid-3 reveal" style={{marginTop:26}}>
+                  <div className="card">
+                    <h3 style={{fontWeight:950}}>Subskrypcje panelu</h3>
+                    <p className="muted">Wybierz Standard lub Premium — aktywujemy panel i podpinamy do Twojego bota.</p>
+                    <div className="hr"></div>
+                    <button className="btn primary" style={{width:'100%'}} onClick={()=>scrollTo('#pricing')}>Zobacz subskrypcje</button>
+                  </div>
+                  <div className="card">
+                    <h3 style={{fontWeight:950}}>Panel Klienta</h3>
+                    <p className="muted">Zaloguj się i zarządzaj projektem / usługami.</p>
+                    <div className="hr"></div>
+                    <a className="btn" style={{width:'100%'}} href="panel.html">Przejdź do Panelu</a>
+                  </div>
+                  <div className="card">
+                    <h3 style={{fontWeight:950}}>Szybka konsultacja</h3>
+                    <p className="muted">Powiedz: moduły, panel, integracje, AI i deadline — a damy plan + wycenę.</p>
+                    <div className="hr"></div>
+                    <button className="btn" style={{width:'100%'}} onClick={toggleChat}>Otwórz wsparcie</button>
+                  </div>
+                </div>
+
+                <form className="form reveal" onSubmit={submitLead}>
+                  <div className="field">
+                    <label htmlFor="name">Imię / Nick</label>
+                    <input id="name" value={lead.name} onChange={(e)=>setLead(v=>({...v, name:e.target.value.trimStart()}))} type="text" placeholder="np. zxq0" required />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="contactField">Kontakt (Discord / e-mail)</label>
+                    <input id="contactField" value={lead.contact} onChange={(e)=>setLead(v=>({...v, contact:e.target.value.trimStart()}))} type="text" placeholder="np. zxq#0001 / mail@..." required />
+                  </div>
+                  <div className="field">
+                    <label htmlFor="type">Czego potrzebujesz?</label>
+                    <select id="type" value={lead.type} onChange={(e)=>setLead(v=>({...v, type:e.target.value}))} required>
+                      <option value="discord-bot">Discord Bot</option>
+                      <option value="panel">Panel do zarządzania botem</option>
+                      <option value="security">Zabezpieczenia</option>
+                      <option value="ai">Rozwiązania AI</option>
+                      <option value="ai-automation">Automatyzacje AI (tickets/obsługa)</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label htmlFor="budget">Budżet (opcjonalnie)</label>
+                    <input id="budget" value={lead.budget} onChange={(e)=>setLead(v=>({...v, budget:e.target.value}))} type="text" placeholder="np. 500–1000 zł" />
+                  </div>
+                  <div className="field full">
+                    <label htmlFor="details">Opis projektu</label>
+                    <textarea id="details" value={lead.details} onChange={(e)=>setLead(v=>({...v, details:e.target.value}))} placeholder="Jakie moduły? Czy ma być panel (Standard/Premium)? Jak ma działać AI? Integracje? Terminy?" required />
                   </div>
 
-                  <a className="btn primary" href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">
-                    Dołącz na Discord
-                  </a>
-                </div>
+                  <div className="field full" style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'flex-end', gap:12}}>
+                    <button className="btn primary" type="submit">Wyślij</button>
+                  </div>
+                </form>
 
-                <div className="reveal" style={{textAlign:'center', marginTop: 16}}>
-                  <button className="btn" onClick={()=>scrollTo('#subscriptions')}>Zobacz subskrypcje</button>
-                  <button className="btn ghost" style={{marginLeft:12}} onClick={goDiscord}>Otwórz Discord</button>
-                </div>
+                {leadStatus && (
+                  <div className="muted" style={{maxWidth:900, margin:'10px auto 0', fontWeight:950}}>
+                    {leadStatus}
+                  </div>
+                )}
               </div>
             </section>
           </main>
@@ -1382,14 +1600,12 @@
           <footer>
             <div className="container">
               <div style={{fontWeight:950, letterSpacing:'-.02em'}}>© 2025 Lite Solutions</div>
-              <div className="muted" style={{marginTop:6}}>Rozwiązania dla społeczności Discord • Boty • Panele • AI • Security</div>
+              <div className="muted" style={{marginTop:6}}>Rozwiązania dla społeczności Discord</div>
               <div className="footer-links">
                 <a href="#hero" onClick={(e)=>{e.preventDefault(); scrollTo('#hero');}}>Start</a>
                 <a href="#services" onClick={(e)=>{e.preventDefault(); scrollTo('#services');}}>Usługi</a>
-                <a href="#subscriptions" onClick={(e)=>{e.preventDefault(); scrollTo('#subscriptions');}}>Subskrypcje</a>
-                <a href="#contact" onClick={(e)=>{e.preventDefault(); scrollTo('#contact');}}>Discord</a>
-                <a href={DISCORD_INVITE} target="_blank" rel="noopener noreferrer">Dołącz</a>
-                <a href="/auth/discord">Panel Klienta</a>
+                <a href="#pricing" onClick={(e)=>{e.preventDefault(); scrollTo('#pricing');}}>Subskrypcje</a>
+                <a href="panel.html">Panel Klienta</a>
               </div>
             </div>
           </footer>
@@ -1437,7 +1653,7 @@
           </div>
 
           <div id="chat-toggle" onClick={toggleChat} aria-label="Otwórz czat">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
               <path d="M21 4H3C1.897 4 1 4.897 1 6V16C1 17.103 1.897 18 3 18H8.813C8.901 18.411 9.034 18.809 9.208 19.187L9.687 20.14C10.152 21.07 11.053 21.625 12 21.625C12.947 21.625 13.848 21.07 14.313 20.14L14.792 19.187C14.966 18.809 15.099 18.411 15.187 18H21C22.103 18 23 17.103 23 16V6C23 4.897 22.103 4 21 4zM8 11C7.448 11 7 10.552 7 10S7.448 9 8 9S9 9.448 9 10S8.552 11 8 11zm8 0c-0.552 0-1-0.448-1-1s0.448-1 1-1s1 0.448 1 1S16.552 11 16 11z"></path>
             </svg>
           </div>
