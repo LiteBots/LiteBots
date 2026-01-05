@@ -58,7 +58,7 @@
     button{ font-family: inherit; }
     :focus-visible{ outline: 2px solid rgba(0,194,255,.65); outline-offset: 3px; border-radius: 10px; }
 
-    /* ======= NAPRAWA: FULLSCREEN OVERLAY (ignoruje zewnętrzne wrappery) ======= */
+    /* FULLSCREEN OVERLAY */
     #app{
       position: fixed !important;
       inset: 0 !important;
@@ -80,7 +80,6 @@
       max-width: none !important;
     }
 
-    /* ===== LAYOUT ===== */
     .sidebar{
       width: var(--sidebar);
       flex: 0 0 var(--sidebar);
@@ -135,7 +134,6 @@
       padding: calc(var(--pad) + var(--safe-top)) var(--pad) calc(var(--pad) + var(--safe-bottom));
     }
 
-    /* ===== TOPBAR ===== */
     .topbar{
       display:flex; align-items:center; justify-content:space-between;
       gap: 12px;
@@ -210,7 +208,6 @@
     }
     .pill:hover{ transform: translateY(-1px); border-color: rgba(0,194,255,.35); background: rgba(0,194,255,.13); }
 
-    /* ===== CONTENT ===== */
     .content{ margin-top: 14px; display:grid; gap: 12px; }
 
     .card{
@@ -325,18 +322,6 @@
     }
     .toast.show{ opacity: 1; transform: translateX(-50%) translateY(-4px); }
 
-    /* ===== MOBILE ===== */
-    .mobile-top{ display:none; gap: 10px; align-items:center; }
-    .burger{
-      width: 44px; height: 44px;
-      display:grid; place-items:center;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      cursor:pointer;
-    }
-    .burger svg{ width: 22px; height: 22px; color: rgba(255,255,255,.92); }
-
     @media (max-width: 980px){
       .app{ flex-direction:column; }
       .sidebar{
@@ -345,15 +330,7 @@
         height: auto;
         border-right: none;
         border-bottom: 1px solid var(--stroke);
-        padding: calc(var(--pad) + var(--safe-top)) var(--pad) 12px;
-        display: none;
       }
-      .sidebar.open{ display:block; }
-      .main{
-        padding: 12px var(--pad) calc(var(--pad) + var(--safe-bottom));
-        height: 100%;
-      }
-      .mobile-top{ display:flex; margin-bottom: 10px; }
       table{ min-width: 680px; }
     }
 
@@ -389,11 +366,6 @@
           <path d="M12 8.8v6.4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeDasharray="2.2 2.2"/>
         </svg>
       ),
-      Menu: (p) => (
-        <svg {...p} viewBox="0 0 24 24" fill="currentColor">
-          <path d="M4 7.5h16a1 1 0 000-2H4a1 1 0 000 2zm0 6h16a1 1 0 000-2H4a1 1 0 000 2zm0 6h16a1 1 0 000-2H4a1 1 0 000 2z"/>
-        </svg>
-      ),
       Logout: (p) => (
         <svg {...p} viewBox="0 0 24 24" fill="none">
           <path d="M10 7V6a2 2 0 012-2h7a2 2 0 012 2v12a2 2 0 01-2 2h-7a2 2 0 01-2-2v-1" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"/>
@@ -417,6 +389,44 @@
       return { ok: res.ok, status: res.status, json };
     }
 
+    // === NORMALIZACJA USERA (naprawa nick/id/avatar niezależnie od formatu backendu) ===
+    function normalizeDiscordUser(payload) {
+      if (!payload || typeof payload !== 'object') return null;
+
+      const u = payload.user && typeof payload.user === 'object' ? payload.user : payload;
+
+      const discordId =
+        u.discordId ?? u.discord_id ?? u.id ?? u.userId ?? u.user_id ?? u.uid ?? null;
+
+      const discordNick =
+        u.discordNick ?? u.discord_nick ?? u.username ?? u.global_name ?? u.displayName ?? u.display_name ?? u.name ?? null;
+
+      // avatar może być: pełny url albo hash (discord "avatar" / "avatarHash")
+      const rawAvatar =
+        u.discordAvatarUrl ?? u.discord_avatar_url ?? u.avatarUrl ?? u.avatar_url ?? u.avatar ?? u.avatarHash ?? u.avatar_hash ?? null;
+
+      let discordAvatarUrl = null;
+
+      const isUrl = (v) => typeof v === 'string' && /^https?:\/\//i.test(v);
+
+      if (isUrl(rawAvatar)) {
+        discordAvatarUrl = rawAvatar;
+      } else if (discordId && typeof rawAvatar === 'string' && rawAvatar.length > 5) {
+        // CDN Discord
+        discordAvatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${rawAvatar}.png?size=128`;
+      } else if (discordId) {
+        // fallback: default avatar
+        // (Discord ma kilka domyślnych; tu nie robimy "modulo", żeby nie bawić się w detale – dajemy jeden neutralny)
+        discordAvatarUrl = `https://cdn.discordapp.com/embed/avatars/0.png`;
+      }
+
+      return {
+        discordId: discordId ? String(discordId) : null,
+        discordNick: discordNick ? String(discordNick) : null,
+        discordAvatarUrl
+      };
+    }
+
     async function apiGetList(path) {
       const { ok, status, json } = await apiGetRaw(path);
 
@@ -435,7 +445,10 @@
     async function apiGetMe(path) {
       const { ok, status, json } = await apiGetRaw(path);
 
-      if (ok) return (json && (json.user ?? json)) ?? null;
+      if (ok) {
+        const normalized = normalizeDiscordUser(json);
+        return normalized;
+      }
       if (status === 404 || status === 204) return null;
 
       const msg = (json && (json.error || json.message)) || `Błąd ${status}`;
@@ -460,7 +473,6 @@
 
     function App(){
       const [tab, setTab] = useState('services');
-      const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
       const [me, setMe] = useState(null);
       const [meLoading, setMeLoading] = useState(true);
@@ -512,10 +524,7 @@
       };
 
       useEffect(() => { fetchMe(); }, []);
-      useEffect(() => {
-        fetchTabData(tab);
-        setMobileSidebarOpen(false);
-      }, [tab]);
+      useEffect(() => { fetchTabData(tab); }, [tab]);
 
       const logout = async () => {
         push('Wylogowano.');
@@ -582,7 +591,6 @@
 
       const renderTable = (rows, columns, keyField='id') => {
         if (!Array.isArray(rows)) return null;
-
         if (rows.length === 0) return <div className="empty">Brak danych.</div>;
 
         const q = query.trim().toLowerCase();
@@ -695,7 +703,6 @@
             <div className="toolbar">
               <input className="input" placeholder="Szukaj…" value={query} onChange={(e)=>setQuery(e.target.value)} />
               <button className="btn" onClick={() => fetchTabData('tickets')} type="button">Odśwież</button>
-              <button className="btn primary" onClick={() => push("OK")} type="button">Nowe zgłoszenie</button>
             </div>
             <Status isLoading={isLoading} err={err} />
             {isLoading ? <div className="empty">Ładowanie…</div> : (
@@ -705,14 +712,9 @@
         );
       };
 
-      const setTabAndClear = (next) => {
-        setQuery('');
-        setTab(next);
-      };
-
       return (
         <div className="app">
-          <aside className={"sidebar " + (mobileSidebarOpen ? "open" : "")}>
+          <aside className="sidebar">
             <div className="brand">
               <img src="https://i.imgur.com/TbvImJS.png" alt="Lite Solutions" />
               <div style={{minWidth:0}}>
@@ -722,21 +724,19 @@
             </div>
 
             <nav className="nav" aria-label="Nawigacja panelu">
-              <a href="#services" className={tab === 'services' ? 'active' : ''} onClick={(e)=>{e.preventDefault(); setTabAndClear('services');}}>
+              <a href="#services" className={tab === 'services' ? 'active' : ''} onClick={(e)=>{e.preventDefault(); setQuery(''); setTab('services');}}>
                 <Icons.Grid style={{width:18,height:18}} /> Moje usługi
               </a>
-              <a href="#licenses" className={tab === 'licenses' ? 'active' : ''} onClick={(e)=>{e.preventDefault(); setTabAndClear('licenses');}}>
+              <a href="#licenses" className={tab === 'licenses' ? 'active' : ''} onClick={(e)=>{e.preventDefault(); setQuery(''); setTab('licenses');}}>
                 <Icons.Key style={{width:18,height:18}} /> Moje Licencje
               </a>
-              <a href="#tickets" className={tab === 'tickets' ? 'active' : ''} onClick={(e)=>{e.preventDefault(); setTabAndClear('tickets');}}>
+              <a href="#tickets" className={tab === 'tickets' ? 'active' : ''} onClick={(e)=>{e.preventDefault(); setQuery(''); setTab('tickets');}}>
                 <Icons.Ticket style={{width:18,height:18}} /> Moje Zgłoszenia
               </a>
             </nav>
           </aside>
 
           <main className="main">
-            <div className="mobile-top" style={{display:'none'}}></div>
-
             <div className="topbar">
               <div style={{minWidth:0}}>
                 <h1>{title}</h1>
