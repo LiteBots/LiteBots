@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
@@ -211,19 +211,6 @@
       align-items:center;
     }
 
-    .kicker{
-      display:inline-flex; gap:10px; align-items:center;
-      padding: 8px 12px; border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      color: rgba(244,244,247,.78);
-      width: fit-content;
-    }
-    .dot{
-      width: 10px; height: 10px; border-radius:50%;
-      background: linear-gradient(180deg, var(--p1), var(--p2));
-      box-shadow: 0 0 14px var(--pGlow);
-    }
     .hero-title{
       font-size: clamp(2.9rem, 6.5vw, 5.6rem);
       font-weight: 900;
@@ -270,7 +257,6 @@
     .btn.primary:hover{
       box-shadow: 0 20px 70px rgba(0,163,255,.18), 0 0 30px rgba(51,230,255,.10);
     }
-    .btn img{ width: 26px; height: 26px; }
 
     .section-title{
       text-align:center;
@@ -297,6 +283,9 @@
 
     .grid-3{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     @media (max-width: 980px){ .grid-3{ grid-template-columns: 1fr; } }
+
+    .grid-2{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    @media (max-width: 980px){ .grid-2{ grid-template-columns: 1fr; } }
 
     .card{
       background: rgba(18,18,24,.55);
@@ -417,34 +406,6 @@
     }
     .role.manager{ background-image: linear-gradient(90deg, #1e4dff, #0047b8); }
     .role.engineer{ background-image: linear-gradient(90deg, #33e6ff, #00a3ff); }
-
-    .form{
-      max-width: 860px;
-      margin: 0 auto;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-top: 24px;
-    }
-    @media (max-width: 980px){ .form{ grid-template-columns: 1fr; } }
-    .field{
-      background: rgba(10,10,14,.45);
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 16px;
-      padding: 12px 14px;
-      display:flex; flex-direction:column; gap: 6px;
-    }
-    .field label{ font-size: .88rem; font-weight: 900; color: rgba(244,244,247,.78); }
-    .field input, .field textarea, .field select{
-      background: transparent;
-      border: none;
-      outline: none;
-      color: rgba(244,244,247,.92);
-      font-size: 1rem;
-      padding: 4px 0;
-    }
-    .field textarea{ min-height: 110px; resize: vertical; }
-    .form .full{ grid-column: 1/-1; }
 
     footer{
       padding: 60px 0;
@@ -643,8 +604,7 @@
         { text: 'Discord Bot', action: 'showBotOptions' },
         { text: 'Panele do bota', action: 'showPanelOptions' },
         { text: 'Zabezpieczenia', action: 'showSecurityOptions' },
-        { text: 'AI / Automatyzacje AI', action: 'showAIOptions' },
-        { text: 'Zaprojektuj bota', action: 'goWorkspace' }
+        { text: 'AI / Automatyzacje AI', action: 'showAIOptions' }
       ]), []);
 
       const optionMap = useMemo(() => ({
@@ -699,11 +659,6 @@
       };
 
       const handleOptionClick = (option) => {
-        if (option.action === 'goWorkspace') {
-          window.location.href = 'workspace.html';
-          return;
-        }
-
         setMessages(prev => ([...prev, { id: Date.now() + Math.random(), sender: 'user', text: option.text }]));
         setCurrentOptions([]);
         setIsBotThinking(true);
@@ -722,21 +677,6 @@
           }
           scrollToBottom();
         }, 900);
-      };
-
-      const [lead, setLead] = useState({ name:'', contact:'', type:'discord-bot', budget:'', details:'' });
-      const [leadStatus, setLeadStatus] = useState('');
-
-      const submitLead = async (e) => {
-        e.preventDefault();
-        setLeadStatus('Wysyłanie...');
-
-        try {
-          await new Promise(r => setTimeout(r, 500));
-          setLeadStatus('Wysłano! Odezwiemy się wkrótce.');
-        } catch (err) {
-          setLeadStatus('Błąd wysyłki. Spróbuj ponownie.');
-        }
       };
 
       const statsTarget = useMemo(() => ({ projects: 120, uptime: 99.9, response: 2, delivery: 7 }), []);
@@ -788,7 +728,7 @@
         }, { threshold: 0.25 });
         if (heroStatsEl) statsObs.observe(heroStatsEl);
 
-        const sections = ['hero','about','services','ai','process','team','contact'];
+        const sections = ['hero','about','services','ai','process','faq','team','contact'];
         const secObs = new IntersectionObserver((entries) => {
           const visible = entries
             .filter(x => x.isIntersecting)
@@ -866,9 +806,7 @@
                     </p>
 
                     <div className="hero-cta">
-                      <a className="btn primary" href="workspace.html">
-                        <span>Zaprojektuj swojego bota</span>
-                      </a>
+                      <button className="btn primary" onClick={()=>scrollTo('#contact')}>Skontaktuj się</button>
                       <button className="btn" onClick={()=>scrollTo('#services')}>Poznaj usługi</button>
                     </div>
 
@@ -1130,19 +1068,13 @@
             <section id="contact" className="section">
               <div className="container">
                 <div className="reveal">
-                  <h2 className="section-title">Zróbmy Twojego bota</h2>
+                  <h2 className="section-title">Kontakt</h2>
                   <p className="section-subtitle">
-                    Napisz krótko, co ma robić bot + czy ma być panel + czy chcesz AI do tickets. Albo przejdź do kreatora.
+                    Napisz krótko, co ma robić bot + czy ma być panel + czy chcesz AI do tickets — a damy plan i wycenę.
                   </p>
                 </div>
 
-                <div className="grid-3 reveal" style={{marginTop:26}}>
-                  <div className="card">
-                    <h3 style={{fontWeight:900}}>Kreator bota</h3>
-                    <p className="muted">Wypełnij “Zaprojektuj swojego bota” — masz gotowy brief.</p>
-                    <div className="hr"></div>
-                    <a className="btn primary" style={{width:'100%'}} href="workspace.html">Zaprojektuj swojego bota</a>
-                  </div>
+                <div className="grid-2 reveal" style={{marginTop:26}}>
                   <div className="card">
                     <h3 style={{fontWeight:900}}>Panel Klienta</h3>
                     <p className="muted">Zaloguj się do panelu i zarządzaj projektem / usługami.</p>
@@ -1153,48 +1085,9 @@
                     <h3 style={{fontWeight:900}}>Szybka konsultacja</h3>
                     <p className="muted">Powiedz: moduły, panel, integracje, AI i deadline — a damy plan + wycenę.</p>
                     <div className="hr"></div>
-                    <button className="btn" style={{width:'100%'}} onClick={toggleChat}>Otwórz wsparcie</button>
+                    <button className="btn primary" style={{width:'100%'}} onClick={toggleChat}>Otwórz wsparcie</button>
                   </div>
                 </div>
-
-                <form className="form reveal" onSubmit={submitLead}>
-                  <div className="field">
-                    <label htmlFor="name">Imię / Nick</label>
-                    <input id="name" value={lead.name} onChange={(e)=>setLead(v=>({...v, name:e.target.value.trimStart()}))} type="text" placeholder="np. zxq0" required />
-                  </div>
-                  <div className="field">
-                    <label htmlFor="contactField">Kontakt (Discord / e-mail)</label>
-                    <input id="contactField" value={lead.contact} onChange={(e)=>setLead(v=>({...v, contact:e.target.value.trimStart()}))} type="text" placeholder="np. zxq#0001 / mail@..." required />
-                  </div>
-                  <div className="field">
-                    <label htmlFor="type">Czego potrzebujesz?</label>
-                    <select id="type" value={lead.type} onChange={(e)=>setLead(v=>({...v, type:e.target.value}))} required>
-                      <option value="discord-bot">Discord Bot</option>
-                      <option value="panel">Panel do zarządzania botem</option>
-                      <option value="security">Zabezpieczenia</option>
-                      <option value="ai">Rozwiązania AI</option>
-                      <option value="ai-automation">Automatyzacje AI (tickets/obsługa)</option>
-                    </select>
-                  </div>
-                  <div className="field">
-                    <label htmlFor="budget">Budżet (opcjonalnie)</label>
-                    <input id="budget" value={lead.budget} onChange={(e)=>setLead(v=>({...v, budget:e.target.value}))} type="text" placeholder="np. 500–1000 zł" />
-                  </div>
-                  <div className="field full">
-                    <label htmlFor="details">Opis projektu</label>
-                    <textarea id="details" value={lead.details} onChange={(e)=>setLead(v=>({...v, details:e.target.value}))} placeholder="Jakie moduły? Czy ma być panel? Jak ma działać AI? Integracje? Terminy?" required />
-                  </div>
-
-                  <div className="field full" style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'flex-end', gap:12}}>
-                    <button className="btn primary" type="submit">Wyślij</button>
-                  </div>
-                </form>
-
-                {leadStatus && (
-                  <div className="muted" style={{maxWidth:860, margin:'10px auto 0', fontWeight:900}}>
-                    {leadStatus}
-                  </div>
-                )}
               </div>
             </section>
           </main>
@@ -1206,7 +1099,7 @@
               <div className="footer-links">
                 <a href="#hero" onClick={(e)=>{e.preventDefault(); scrollTo('#hero');}}>Start</a>
                 <a href="#services" onClick={(e)=>{e.preventDefault(); scrollTo('#services');}}>Usługi</a>
-                <a href="workspace.html">Zaprojektuj bota</a>
+                <a href="#contact" onClick={(e)=>{e.preventDefault(); scrollTo('#contact');}}>Kontakt</a>
                 <a href="panel.html">Panel Klienta</a>
               </div>
             </div>
