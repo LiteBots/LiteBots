@@ -7,7 +7,7 @@
   <title>Lite Solutions — Discord Boty, Panele, AI i Zabezpieczenia</title>
   <meta name="description" content="Lite Solutions: Discord Boty, panele webowe do zarządzania botem, zabezpieczenia, rozwiązania AI i automatyzacje AI (bot odpowiada na zgłoszenia użytkowników)." />
   <meta name="keywords" content="discord bot, panel do bota, automatyzacje ai, ai, zabezpieczenia, tickets, support bot, premium" />
-  <meta name="theme-color" content="#060812" />
+  <meta name="theme-color" content="#050815" />
 
   <meta property="og:title" content="Lite Solutions — Boty, Panele, AI i Zabezpieczenia" />
   <meta property="og:description" content="Discord Boty, panele do zarządzania botem, zabezpieczenia oraz automatyzacje AI." />
@@ -25,54 +25,56 @@
 
   <style>
     :root{
-      /* ---- Premium Dark System ---- */
-      --bg0: #050611;
-      --bg1: #070816;
-      --bg2: #0a0c1c;
+      /* --- Foundation --- */
+      --bg0: #050815;
+      --bg1: #070b1b;
+      --bg2: #0a1026;
 
       --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.72);
-      --muted2: rgba(255,255,255,.58);
+      --muted: rgba(255,255,255,.70);
+      --muted2: rgba(255,255,255,.56);
 
-      --border: rgba(255,255,255,.10);
-      --border2: rgba(255,255,255,.14);
+      --stroke: rgba(255,255,255,.10);
+      --stroke2: rgba(255,255,255,.14);
 
-      --radius: 18px;
-      --radius2: 26px;
+      --r1: 16px;
+      --r2: 22px;
+      --r3: 28px;
 
-      --shadow: 0 26px 92px rgba(0,0,0,.55);
-      --shadow2: 0 16px 44px rgba(0,0,0,.38);
+      --shadow: 0 28px 120px rgba(0,0,0,.55);
+      --shadow2: 0 14px 44px rgba(0,0,0,.34);
 
       --ease: cubic-bezier(.16, 1, .3, 1);
-      --speed: .32s;
+      --speed: .30s;
 
-      /* ---- Brand (controlled glow) ---- */
-      --p1: #2d63ff;   /* royal */
-      --p2: #00b7ff;   /* azure */
-      --p3: #55f3ff;   /* ice */
+      /* --- Brand --- */
+      --a1: #2d63ff;   /* royal */
+      --a2: #00c2ff;   /* cyan */
+      --a3: #7cf7ff;   /* ice */
 
-      --glow: rgba(0,183,255,.22);
-      --glow2: rgba(45,99,255,.14);
+      --glow1: rgba(0,194,255,.22);
+      --glow2: rgba(45,99,255,.16);
 
-      --grid: rgba(255,255,255,.040);
-      --headerBlur: 18px;
-      --focus: rgba(85,243,255,.70);
+      --grid: rgba(255,255,255,.038);
+      --focus: rgba(124,247,255,.80);
+
+      /* --- Sizing --- */
+      --container: 1180px;
+      --padX: 22px;
     }
 
     *{ box-sizing:border-box; margin:0; padding:0; }
     html{ scroll-behavior:smooth; }
-
     body{
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
       color: var(--text);
       line-height:1.65;
       overflow-x:hidden;
 
-      /* premium background stack */
       background:
-        radial-gradient(1200px 900px at 18% 8%, rgba(0,183,255,.14), transparent 62%),
-        radial-gradient(1100px 820px at 86% 22%, rgba(45,99,255,.12), transparent 60%),
-        radial-gradient(900px 700px at 56% 92%, rgba(85,243,255,.08), transparent 60%),
+        radial-gradient(1200px 850px at 18% 10%, rgba(0,194,255,.12), transparent 62%),
+        radial-gradient(1100px 760px at 86% 22%, rgba(45,99,255,.12), transparent 60%),
+        radial-gradient(900px 700px at 52% 92%, rgba(124,247,255,.07), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg2));
     }
     body.loading{ overflow:hidden; }
@@ -80,61 +82,83 @@
     a{ color: inherit; text-decoration:none; }
     img{ max-width:100%; display:block; }
 
-    .container{ max-width:1160px; margin:0 auto; padding:0 22px; }
-    .section{ padding: 118px 0; position:relative; }
+    .container{ max-width: var(--container); margin:0 auto; padding:0 var(--padX); }
+    .section{ padding: 112px 0; position:relative; }
+    .muted{ color: var(--muted); }
+    .muted2{ color: var(--muted2); }
 
-    /* --- Subtle grid (cleaner) --- */
+    /* --- Background layers --- */
     #grid-background{
-      position:fixed; inset:0; z-index:-3;
+      position:fixed; inset:0; z-index:-4;
       background-image:
         linear-gradient(to right, var(--grid) 1px, transparent 1px),
         linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
-      background-size: 56px 56px;
-      animation: pan-grid 96s linear infinite;
+      background-size: 64px 64px;
+      animation: pan-grid 110s linear infinite;
       mask-image: radial-gradient(980px 650px at 50% 12%, rgba(0,0,0,.92), transparent 74%);
-      opacity:.90;
+      opacity:.86;
     }
     @keyframes pan-grid{
       0%{ background-position: 0 0; }
-      100%{ background-position: 1700px 980px; }
+      100%{ background-position: 1900px 1100px; }
     }
 
-    /* --- Noise: softer --- */
     .noise{
       position:fixed; inset:0; z-index:-2; pointer-events:none;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.14'/%3E%3C/svg%3E");
       mix-blend-mode: overlay;
-      opacity:.24;
+      opacity:.22;
     }
 
-    /* --- Aurora blobs: more “studio”, less neon --- */
     .aurora{
-      position:fixed; inset:0; z-index:-4; pointer-events:none;
-      filter: blur(100px) saturate(1.04);
-      opacity:.70;
+      position:fixed; inset:0; z-index:-5; pointer-events:none;
+      filter: blur(110px) saturate(1.02);
+      opacity:.74;
     }
     .blob{
-      position:absolute; width:590px; height:590px; border-radius:50%;
+      position:absolute;
+      width: 620px; height: 620px;
+      border-radius: 42% 58% 55% 45% / 48% 44% 56% 52%;
       background:
         radial-gradient(circle at 30% 30%, rgba(45,99,255,.44), transparent 62%),
-        radial-gradient(circle at 70% 70%, rgba(0,183,255,.36), transparent 60%),
-        radial-gradient(circle at 45% 85%, rgba(85,243,255,.22), transparent 66%);
-      animation: float 22s var(--ease) infinite alternate;
+        radial-gradient(circle at 70% 70%, rgba(0,194,255,.34), transparent 60%),
+        radial-gradient(circle at 45% 85%, rgba(124,247,255,.18), transparent 66%);
+      animation: float 24s var(--ease) infinite alternate;
       will-change: transform;
     }
-    .blob.b1{ top:-220px; left:-210px; animation-duration: 28s; }
-    .blob.b2{ top: 20vh; left: 56vw; width:500px; height:500px; animation-duration: 34s; opacity:.58;}
-    .blob.b3{ bottom:-260px; right:-240px; width:540px; height:540px; animation-duration: 30s; opacity:.52;}
-
+    .blob.b1{ top:-260px; left:-260px; animation-duration: 30s; }
+    .blob.b2{
+      top: 18vh; left: 58vw;
+      width:540px; height:540px;
+      border-radius: 58% 42% 52% 48% / 44% 56% 44% 56%;
+      animation-duration: 36s; opacity:.58;
+    }
+    .blob.b3{
+      bottom:-280px; right:-260px;
+      width:560px; height:560px;
+      border-radius: 46% 54% 45% 55% / 52% 46% 54% 48%;
+      animation-duration: 32s; opacity:.52;
+    }
     @keyframes float{
       from{ transform: translate3d(0,0,0) rotate(0deg) scale(1); }
-      to{ transform: translate3d(100px, -58px, 0) rotate(18deg) scale(1.07); }
+      to{ transform: translate3d(110px, -62px, 0) rotate(16deg) scale(1.06); }
     }
 
-    /* --- Preloader: cleaner glass --- */
+    /* subtle rings */
+    .rings{
+      position:fixed; inset:0; z-index:-3; pointer-events:none;
+      opacity:.22;
+      background:
+        radial-gradient(900px 420px at 15% 20%, rgba(124,247,255,.18), transparent 60%),
+        radial-gradient(820px 420px at 85% 30%, rgba(45,99,255,.16), transparent 60%);
+      mask-image: radial-gradient(980px 650px at 50% 12%, rgba(0,0,0,.90), transparent 74%);
+      filter: blur(1px);
+    }
+
+    /* --- Preloader --- */
     #preloader{
       position:fixed; inset:0; display:grid; place-items:center; z-index:9999;
-      background: rgba(5,6,17,.62);
+      background: rgba(5,8,21,.62);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       transition: opacity .55s ease, transform .55s ease;
@@ -143,62 +167,64 @@
     #preloader.hidden{ opacity:0; pointer-events:none; transform: scale(1.03); }
     .loading-hint{
       margin-top: 14px; text-align:center; color: var(--muted);
-      font-size:.95rem;
-      letter-spacing:.02em;
+      font-size:.95rem; letter-spacing:.02em;
     }
     .loading-bar{
-      margin: 12px auto 0; width: 250px; height: 10px; border-radius: 999px;
+      margin: 12px auto 0; width: 260px; height: 10px; border-radius: 999px;
       background: rgba(255,255,255,.08); overflow:hidden;
       border:1px solid rgba(255,255,255,.10);
     }
     .loading-bar > div{
       height:100%;
       width: 42%;
-      background: linear-gradient(90deg, var(--p2), var(--p1), var(--p3));
-      filter: drop-shadow(0 0 16px var(--glow));
+      background: linear-gradient(90deg, var(--a2), var(--a1), var(--a3));
+      filter: drop-shadow(0 0 16px var(--glow1));
       animation: load 1.08s infinite var(--ease);
     }
     @keyframes load{ 0%{ transform: translateX(-60%);} 100%{ transform: translateX(260%);} }
 
-    /* --- Scroll progress: cleaner --- */
+    /* --- Scroll progress --- */
     .scroll-progress{
       position:fixed; top:0; left:0; height:3px; width: 0%;
-      background: linear-gradient(90deg, var(--p2), var(--p1), var(--p3));
+      background: linear-gradient(90deg, var(--a2), var(--a1), var(--a3));
       z-index:3000;
-      box-shadow: 0 0 14px rgba(0,183,255,.16);
+      box-shadow: 0 0 14px rgba(0,194,255,.16);
     }
 
-    /* --- Header: premium glass --- */
+    /* --- Header --- */
     #app-header{ position:fixed; top:18px; left:18px; right:18px; z-index:2000; }
     .header-nav{
       display:flex; align-items:center; justify-content:space-between;
       gap: 14px;
-      padding: 12px 16px;
-      background: rgba(12,12,18,.60);
-      border: 1px solid var(--border);
+      padding: 12px 14px;
+      background: rgba(10,14,30,.62);
+      border: 1px solid var(--stroke);
       border-radius: 999px;
-      backdrop-filter: blur(var(--headerBlur));
-      -webkit-backdrop-filter: blur(var(--headerBlur));
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
       box-shadow: var(--shadow2);
     }
     .logo{ display:flex; align-items:center; gap:12px; padding: 6px 10px; border-radius:999px; }
     .logo img{
       height: 34px;
       transition: transform var(--speed) var(--ease), filter var(--speed) var(--ease);
-      filter: drop-shadow(0 0 18px rgba(0,183,255,.14));
+      filter: drop-shadow(0 0 18px rgba(0,194,255,.14));
     }
-    .logo:hover img{ transform: rotate(-9deg) scale(1.06); filter: drop-shadow(0 0 24px rgba(0,183,255,.20)); }
-    .logo-text{ font-weight:900; letter-spacing:-.02em; }
+    .logo:hover img{ transform: rotate(-8deg) scale(1.06); filter: drop-shadow(0 0 26px rgba(0,194,255,.22)); }
+    .logo-text{ font-weight: 950; letter-spacing:-.02em; }
 
-    .nav-links{ display:flex; gap: 8px; list-style:none; align-items:center; justify-content:center; flex:1; }
+    .nav-links{
+      display:flex; gap: 8px; list-style:none; align-items:center; justify-content:center; flex:1;
+    }
     .nav-links a{
       padding: 10px 14px; border-radius: 999px;
       color: rgba(255,255,255,.74);
       transition: background var(--speed) var(--ease), color var(--speed) var(--ease), transform var(--speed) var(--ease), border-color var(--speed) var(--ease);
       outline: none;
       border: 1px solid transparent;
-      font-weight: 850;
-      font-size: .95rem;
+      font-weight: 900;
+      font-size: .94rem;
+      letter-spacing: .01em;
     }
     .nav-links a:hover{
       color: var(--text);
@@ -208,54 +234,60 @@
     .nav-links a.active{
       color: var(--text);
       background:
-        radial-gradient(110% 200% at 20% 0%, rgba(85,243,255,.10), transparent 56%),
-        linear-gradient(90deg, rgba(45,99,255,.22), rgba(0,183,255,.14), rgba(85,243,255,.08));
+        radial-gradient(110% 220% at 20% 0%, rgba(124,247,255,.10), transparent 56%),
+        linear-gradient(90deg, rgba(45,99,255,.22), rgba(0,194,255,.14), rgba(124,247,255,.08));
       border: 1px solid rgba(255,255,255,.13);
     }
     @media (max-width: 980px){ .nav-links{ display:none; } }
 
     .header-actions{ display:flex; gap: 10px; align-items:center; }
 
-    /* --- CTA pill: make it look like real CTA --- */
+    /* --- CTA in header --- */
     .pill{
       display:inline-flex; gap:10px; align-items:center;
       padding: 10px 14px;
       border-radius: 999px;
-      border: 1px solid rgba(0,183,255,.22);
+      border: 1px solid rgba(0,194,255,.22);
       background:
-        radial-gradient(120% 210% at 20% 0%, rgba(85,243,255,.12), transparent 55%),
-        linear-gradient(90deg, rgba(0,183,255,.18), rgba(45,99,255,.14));
+        radial-gradient(120% 220% at 18% 0%, rgba(124,247,255,.12), transparent 55%),
+        linear-gradient(90deg, rgba(0,194,255,.18), rgba(45,99,255,.14));
       transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), box-shadow var(--speed) var(--ease), filter var(--speed) var(--ease);
       cursor:pointer;
       font-weight: 950;
       color: rgba(255,255,255,.92);
-      box-shadow: 0 18px 70px rgba(0,183,255,.08);
+      box-shadow: 0 18px 70px rgba(0,194,255,.08);
+      position: relative;
+      overflow:hidden;
+    }
+    .pill::after{
+      content:"";
+      position:absolute; inset:-1px;
+      background: radial-gradient(260px 120px at 20% 0%, rgba(255,255,255,.10), transparent 62%);
+      opacity:.75;
+      pointer-events:none;
     }
     .pill:hover{
       transform: translateY(-1px) scale(1.02);
-      border-color: rgba(0,183,255,.36);
-      box-shadow: 0 24px 92px rgba(0,183,255,.12);
+      border-color: rgba(0,194,255,.38);
+      box-shadow: 0 24px 92px rgba(0,194,255,.12);
       filter: saturate(1.03);
     }
     .pill svg{ width: 20px; height: 20px; }
 
-    /* --- Hero typography: cleaner “product” look --- */
-    #hero{ min-height:100vh; display:flex; align-items:center; padding-top: 126px; }
-    .hero-grid{ display:grid; grid-template-columns: 1fr; gap: 26px; align-items:center; }
-
+    /* --- Typography --- */
     .hero-title{
-      font-size: clamp(2.85rem, 6.6vw, 5.65rem);
+      font-size: clamp(2.65rem, 6.2vw, 5.35rem);
       font-weight: 950;
       letter-spacing: -.06em;
-      line-height: 1.01;
+      line-height: 1.02;
       margin: 16px 0 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.64));
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.62));
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     }
     .highlight{
-      background: linear-gradient(90deg, var(--p2), var(--p1), var(--p3));
+      background: linear-gradient(90deg, var(--a2), var(--a1), var(--a3));
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-      filter: drop-shadow(0 0 18px rgba(0,183,255,.10));
+      filter: drop-shadow(0 0 18px rgba(0,194,255,.10));
     }
     .hero-subtitle{
       color: var(--muted);
@@ -263,14 +295,9 @@
       max-width: 62ch;
     }
 
-    .hero-cta{
-      margin-top: 26px;
-      display:flex; gap: 12px; flex-wrap:wrap; align-items:center;
-    }
-
-    /* --- Buttons: true premium --- */
+    /* --- Buttons --- */
     .btn{
-      display:inline-flex; gap: 12px; align-items:center; justify-content:center;
+      display:inline-flex; gap: 10px; align-items:center; justify-content:center;
       padding: 14px 18px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,.14);
@@ -287,101 +314,167 @@
     .btn::before{
       content:"";
       position:absolute; inset:-2px;
-      background: radial-gradient(260px 120px at 20% 0%, rgba(255,255,255,.08), transparent 60%);
-      opacity:.9;
+      background: radial-gradient(260px 120px at 20% 0%, rgba(255,255,255,.09), transparent 62%);
+      opacity:.85;
       pointer-events:none;
     }
     .btn:hover{
       transform: translateY(-1px) scale(1.02);
-      border-color: rgba(0,183,255,.30);
-      box-shadow: 0 20px 80px rgba(0,0,0,.42), 0 0 28px rgba(0,183,255,.10);
+      border-color: rgba(0,194,255,.28);
+      box-shadow: 0 20px 80px rgba(0,0,0,.42), 0 0 28px rgba(0,194,255,.10);
       background: rgba(255,255,255,.08);
       filter: saturate(1.02);
     }
-    .btn.primary{
-      border: 1px solid rgba(0,183,255,.30);
+    .btn--primary{
+      border: 1px solid rgba(0,194,255,.30);
       background:
-        radial-gradient(120% 220% at 18% 0%, rgba(85,243,255,.16), transparent 56%),
-        linear-gradient(90deg, rgba(0,183,255,.26), rgba(45,99,255,.22), rgba(85,243,255,.12));
-      box-shadow: 0 26px 100px rgba(0,183,255,.10);
+        radial-gradient(120% 220% at 18% 0%, rgba(124,247,255,.16), transparent 56%),
+        linear-gradient(90deg, rgba(0,194,255,.26), rgba(45,99,255,.22), rgba(124,247,255,.12));
+      box-shadow: 0 26px 100px rgba(0,194,255,.10);
     }
-    .btn.primary:hover{
-      box-shadow: 0 34px 120px rgba(0,183,255,.14);
+    .btn--primary:hover{ box-shadow: 0 34px 120px rgba(0,194,255,.14); }
+    .btn--ghost{
+      background: rgba(255,255,255,.03);
+      border-color: rgba(255,255,255,.12);
+    }
+    .btn--soft{
+      background:
+        radial-gradient(120% 220% at 18% 0%, rgba(124,247,255,.10), transparent 56%),
+        rgba(255,255,255,.05);
+      border-color: rgba(255,255,255,.12);
     }
 
     .section-title{
       text-align:center;
-      font-size: clamp(2.25rem, 4.8vw, 3.65rem);
+      font-size: clamp(2.15rem, 4.6vw, 3.45rem);
       font-weight: 950;
       letter-spacing: -0.05em;
       line-height:1.1;
       margin-bottom: 14px;
-      background: linear-gradient(90deg, rgba(255,255,255,.92), rgba(255,255,255,.68));
+      background: linear-gradient(90deg, rgba(255,255,255,.92), rgba(255,255,255,.66));
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     }
     .section-subtitle{
       text-align:center;
       color: var(--muted);
-      max-width: 78ch;
-      margin: 0 auto 56px;
+      max-width: 80ch;
+      margin: 0 auto 52px;
       font-size: 1.06rem;
     }
 
-    .grid-3{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-    @media (max-width: 980px){ .grid-3{ grid-template-columns: 1fr; } }
-
+    /* --- Layout grids --- */
     .grid-2{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
     @media (max-width: 980px){ .grid-2{ grid-template-columns: 1fr; } }
 
-    /* --- Cards: gradient border illusion (premium) --- */
+    .bento{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+    .col-6{ grid-column: span 6; }
+    .col-7{ grid-column: span 7; }
+    .col-5{ grid-column: span 5; }
+    .col-4{ grid-column: span 4; }
+    .col-8{ grid-column: span 8; }
+    .col-12{ grid-column: span 12; }
+    @media (max-width: 980px){
+      .col-6,.col-7,.col-5,.col-4,.col-8{ grid-column: span 12; }
+    }
+
+    /* --- Cards (gradient border illusion) --- */
     .card{
-      background: rgba(12,12,18,.58);
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
+      background: rgba(10,14,30,.62);
+      border-radius: var(--r2);
       padding: 22px;
-      box-shadow: 0 12px 34px rgba(0,0,0,.24);
-      transition: transform .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease);
       position:relative;
       overflow:hidden;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 12px 34px rgba(0,0,0,.22);
+      transition: transform .35s var(--ease), box-shadow .35s var(--ease);
     }
     .card::before{
       content:"";
-      position:absolute; inset:-2px;
-      background:
-        radial-gradient(560px 260px at 20% 0%, rgba(0,183,255,.12), transparent 62%),
-        radial-gradient(560px 280px at 86% 34%, rgba(45,99,255,.10), transparent 64%);
-      opacity: 0;
-      transition: opacity .35s var(--ease);
+      position:absolute; inset:0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(0,194,255,.28), rgba(45,99,255,.14), rgba(255,255,255,.08));
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity:.85;
       pointer-events:none;
     }
     .card::after{
       content:"";
       position:absolute; inset:0;
-      background: linear-gradient(180deg, rgba(255,255,255,.06), transparent 28%);
-      opacity:.55;
+      background: radial-gradient(720px 240px at 18% 0%, rgba(124,247,255,.10), transparent 60%);
+      opacity:.45;
       pointer-events:none;
     }
     .card:hover{
       transform: translateY(-4px);
-      border-color: rgba(0,183,255,.22);
-      box-shadow: 0 26px 92px rgba(0,0,0,.52);
+      box-shadow: 0 26px 92px rgba(0,0,0,.50);
     }
-    .card:hover::before{ opacity: 1; }
+    .card h3{ font-weight: 950; letter-spacing:-.02em; }
+    .card p{ margin-top: 8px; }
 
+    .hr{ width: 100%; height: 1px; background: rgba(255,255,255,.08); margin: 16px 0; }
+
+    /* icons */
     .icon{
-      width: 44px; height: 44px; border-radius: 14px;
-      background: linear-gradient(180deg, rgba(0,183,255,.18), rgba(45,99,255,.14));
-      border: 1px solid rgba(255,255,255,.12);
+      width: 46px; height: 46px;
+      border-radius: 16px;
       display:grid; place-items:center;
-      box-shadow: 0 0 22px rgba(0,183,255,.08);
       margin-bottom: 14px;
+      position: relative;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 0 22px rgba(0,194,255,.08);
+      overflow:hidden;
     }
-    .icon svg{ width: 22px; height: 22px; color: rgba(255,255,255,.92); }
+    .icon::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(220px 120px at 20% 0%, rgba(0,194,255,.18), transparent 62%);
+      opacity:.9;
+      pointer-events:none;
+    }
+    .icon svg{
+      width: 22px; height: 22px;
+      color: rgba(255,255,255,.92);
+      position:relative;
+    }
 
-    .muted{ color: var(--muted); }
-    .hr{ width: 100%; height: 1px; background: rgba(255,255,255,.08); margin: 18px 0; }
+    /* --- Reveal --- */
+    .reveal{
+      opacity: 0;
+      transform: translateY(22px) scale(.987);
+      transition: opacity .9s var(--ease), transform .9s var(--ease);
+      will-change: opacity, transform;
+    }
+    .reveal.is-visible{
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* --- HERO (new split) --- */
+    #hero{ min-height:100vh; display:flex; align-items:center; padding-top: 130px; }
+    .hero-split{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 18px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .hero-split{ grid-template-columns: 1fr; }
+    }
+    .hero-cta{
+      margin-top: 22px;
+      display:flex; gap: 12px; flex-wrap:wrap; align-items:center;
+    }
 
     .stats{
       display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
@@ -389,23 +482,23 @@
     }
     @media (max-width: 980px){ .stats{ grid-template-columns: 1fr 1fr; } }
     .stat{
-      border-radius: 18px;
-      background: rgba(0,0,0,.18);
+      border-radius: var(--r2);
+      background: rgba(0,0,0,.16);
       border: 1px solid rgba(255,255,255,.10);
-      padding: 16px;
+      padding: 14px;
       position: relative;
       overflow:hidden;
     }
     .stat::before{
       content:"";
       position:absolute; inset:-2px;
-      background: radial-gradient(520px 180px at 22% 0%, rgba(0,183,255,.10), transparent 60%);
+      background: radial-gradient(520px 180px at 22% 0%, rgba(0,194,255,.10), transparent 60%);
       opacity:.55;
       pointer-events:none;
     }
     .stat .num{
       position:relative;
-      font-size: 1.75rem;
+      font-size: 1.70rem;
       font-weight: 950;
       letter-spacing:-.03em;
       background: linear-gradient(90deg, rgba(255,255,255,.92), rgba(255,255,255,.60));
@@ -413,16 +506,122 @@
     }
     .stat .lbl{ position:relative; color: rgba(255,255,255,.70); font-weight: 900; font-size: .95rem; margin-top: 2px; }
 
+    /* right side preview */
+    .preview{
+      position:relative;
+      border-radius: var(--r3);
+      overflow:hidden;
+      background: rgba(10,14,30,.55);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .preview::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(700px 220px at 20% 0%, rgba(124,247,255,.14), transparent 60%),
+        radial-gradient(700px 220px at 80% 40%, rgba(45,99,255,.12), transparent 62%);
+      opacity:.75;
+      pointer-events:none;
+    }
+    .preview-top{
+      position:relative;
+      display:flex; justify-content:space-between; align-items:center;
+      gap: 10px;
+      padding: 10px 10px 14px;
+    }
+    .dots{ display:flex; gap:6px; }
+    .dot{ width:10px; height:10px; border-radius:999px; background: rgba(255,255,255,.14); }
+    .dot:nth-child(1){ background: rgba(255,90,90,.35); }
+    .dot:nth-child(2){ background: rgba(255,200,90,.30); }
+    .dot:nth-child(3){ background: rgba(124,247,255,.26); }
+    .preview-title{
+      font-weight: 950; letter-spacing:-.02em;
+      color: rgba(255,255,255,.86);
+      font-size: .95rem;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .preview-grid{
+      position:relative;
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 6px 8px 10px;
+    }
+    .mini{
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      padding: 12px;
+      overflow:hidden;
+      position:relative;
+      min-height: 104px;
+    }
+    .mini::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(320px 140px at 18% 0%, rgba(0,194,255,.12), transparent 62%);
+      opacity:.70;
+      pointer-events:none;
+    }
+    .mini h4{
+      position:relative;
+      font-size: .95rem;
+      font-weight: 950;
+      letter-spacing:-.02em;
+    }
+    .mini p{
+      position:relative;
+      margin-top: 6px;
+      color: rgba(255,255,255,.66);
+      font-weight: 700;
+      font-size: .92rem;
+      line-height:1.45;
+    }
+    .mini-row{
+      position:relative;
+      margin-top: 10px;
+      display:flex; gap: 8px; flex-wrap:wrap;
+    }
+    .tag{
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: .78rem;
+      color: rgba(255,255,255,.82);
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.10);
+    }
+
+    /* --- FAQ --- */
     .faq{
       max-width: 920px; margin: 0 auto;
       display:flex; flex-direction:column; gap: 12px;
-      margin-top: 24px;
+      margin-top: 18px;
     }
     .faq details{
-      background: rgba(12,12,18,.56);
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 16px;
+      background: rgba(10,14,30,.58);
+      border-radius: 18px;
       padding: 14px 16px;
+      position:relative;
+      overflow:hidden;
+    }
+    .faq details::before{
+      content:"";
+      position:absolute; inset:0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(0,194,255,.22), rgba(255,255,255,.08));
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity:.9;
+      pointer-events:none;
     }
     .faq summary{
       cursor:pointer;
@@ -435,11 +634,12 @@
     .faq summary::-webkit-details-marker{ display:none; }
     .faq .ans{ margin-top: 10px; color: rgba(255,255,255,.72); font-weight: 700; }
 
+    /* --- Team --- */
     .team-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     @media (max-width: 980px){ .team-grid{ grid-template-columns: 1fr; } }
     .team-card{
       position:relative; overflow:hidden;
-      border-radius: 26px;
+      border-radius: 30px;
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.03);
       aspect-ratio: 3/4;
@@ -450,7 +650,7 @@
       width:100%; height:100%;
       object-fit: cover;
       transition: transform .8s var(--ease), filter .8s var(--ease);
-      filter: saturate(1.05) contrast(1.04);
+      filter: saturate(1.06) contrast(1.04);
     }
     .team-card:hover img{ transform: scale(1.10); filter: saturate(1.10) contrast(1.07); }
     .team-overlay{
@@ -458,32 +658,29 @@
       background: linear-gradient(to top, rgba(0,0,0,.94), rgba(0,0,0,.0) 62%);
       display:flex; align-items:flex-end;
       padding: 18px;
-      transform: translateY(14px);
+      transform: translateY(12px);
       transition: transform .6s var(--ease);
     }
     .team-card:hover .team-overlay{ transform: translateY(0); }
     .role{
       font-weight: 950;
+      letter-spacing:.02em;
       background: linear-gradient(90deg, #ffb000, #ff3d00);
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-      letter-spacing:.02em;
     }
     .role.manager{ background-image: linear-gradient(90deg, #2d63ff, #0047b8); }
-    .role.engineer{ background-image: linear-gradient(90deg, #55f3ff, #00b7ff); }
+    .role.engineer{ background-image: linear-gradient(90deg, #7cf7ff, #00c2ff); }
 
-    .contact-banner{
-      max-width: 1120px;
-      margin: 26px auto 0;
-      padding: 18px;
-    }
+    /* --- Contact banner --- */
+    .contact-banner{ max-width: 1120px; margin: 26px auto 0; padding: 0; }
     .discord-banner{
       width: 100%;
-      border-radius: 24px;
+      border-radius: 26px;
       border: 1px solid rgba(255,255,255,.12);
       background:
-        radial-gradient(900px 320px at 18% 0%, rgba(0,183,255,.12), transparent 62%),
+        radial-gradient(900px 320px at 18% 0%, rgba(0,194,255,.12), transparent 62%),
         radial-gradient(900px 320px at 82% 40%, rgba(45,99,255,.10), transparent 64%),
-        rgba(12,12,18,.58);
+        rgba(10,14,30,.62);
       box-shadow: var(--shadow);
       padding: 22px;
       display:flex;
@@ -495,42 +692,19 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
     }
-    .discord-banner::before{
-      content:"";
-      position:absolute; inset:-2px;
-      background:
-        radial-gradient(520px 260px at 20% 0%, rgba(85,243,255,.10), transparent 60%),
-        radial-gradient(560px 280px at 86% 30%, rgba(0,183,255,.10), transparent 62%);
-      opacity:.85;
-      pointer-events:none;
-    }
-    .discord-left{
-      display:flex;
-      align-items:center;
-      gap: 14px;
-      position:relative;
-      z-index:1;
-      min-width: 0;
-    }
+    .discord-left{ display:flex; align-items:center; gap: 14px; position:relative; z-index:1; min-width: 0; }
     .discord-logo{
-      width: 58px;
-      height: 58px;
-      border-radius: 18px;
+      width: 58px; height: 58px; border-radius: 18px;
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(0,0,0,.18);
-      display:grid;
-      place-items:center;
-      overflow:hidden;
-      flex-shrink:0;
-      box-shadow: 0 0 22px rgba(0,183,255,.10);
+      display:grid; place-items:center;
+      overflow:hidden; flex-shrink:0;
+      box-shadow: 0 0 22px rgba(0,194,255,.10);
     }
     .discord-logo img{
       width: 44px; height: 44px;
       object-fit: contain;
-      filter: drop-shadow(0 0 16px rgba(0,183,255,.16));
-    }
-    .discord-text{
-      min-width: 0;
+      filter: drop-shadow(0 0 16px rgba(0,194,255,.16));
     }
     .discord-text h3{
       font-size: 1.25rem;
@@ -544,29 +718,14 @@
       font-weight: 750;
       max-width: 60ch;
     }
-    .discord-actions{
-      position:relative;
-      z-index:1;
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      flex-shrink:0;
-    }
-    .btn.discord{
-      border: 1px solid rgba(88,101,242,.32);
-      background: linear-gradient(90deg, rgba(88,101,242,.30), rgba(0,183,255,.18), rgba(45,99,255,.14));
-      box-shadow: 0 18px 64px rgba(88,101,242,.10);
-    }
-    .btn.discord:hover{
-      border-color: rgba(88,101,242,.52);
-      box-shadow: 0 26px 92px rgba(88,101,242,.14);
-    }
+    .discord-actions{ position:relative; z-index:1; display:flex; align-items:center; gap: 10px; flex-shrink:0; }
     @media (max-width: 720px){
       .discord-banner{ flex-direction:column; align-items:flex-start; }
       .discord-actions{ width:100%; }
       .discord-actions .btn{ width:100%; }
     }
 
+    /* --- Footer --- */
     footer{
       padding: 60px 0;
       border-top: 1px solid rgba(255,255,255,.08);
@@ -585,27 +744,15 @@
       font-weight: 850;
       color: rgba(255,255,255,.74);
     }
-    .footer-links a:hover{ transform: translateY(-1px); border-color: rgba(0,183,255,.20); background: rgba(255,255,255,.05); }
+    .footer-links a:hover{ transform: translateY(-1px); border-color: rgba(0,194,255,.20); background: rgba(255,255,255,.05); }
 
-    /* Reveal */
-    .reveal{
-      opacity: 0;
-      transform: translateY(22px) scale(.986);
-      transition: opacity .9s var(--ease), transform .9s var(--ease);
-      will-change: opacity, transform;
-    }
-    .reveal.is-visible{
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-
-    /* Chat toggle */
+    /* --- Chat toggle + widget --- */
     #chat-toggle{
       position:fixed; right: 22px; bottom: 22px;
       width: 62px; height: 62px;
       border-radius: 999px;
-      background: linear-gradient(180deg, rgba(0,183,255,1), rgba(45,99,255,1));
-      box-shadow: 0 12px 40px rgba(0,183,255,.18), 0 0 24px rgba(85,243,255,.06);
+      background: linear-gradient(180deg, rgba(0,194,255,1), rgba(45,99,255,1));
+      box-shadow: 0 12px 40px rgba(0,194,255,.18), 0 0 24px rgba(124,247,255,.06);
       border: 1px solid rgba(255,255,255,.18);
       display:grid; place-items:center;
       cursor:pointer;
@@ -615,13 +762,12 @@
     #chat-toggle:hover{ transform: scale(1.06); filter: saturate(1.03); }
     #chat-toggle svg{ width: 30px; height: 30px; color:white; }
 
-    /* Chat widget */
     #chat-widget{
       position:fixed; right: 22px; bottom: 96px;
       width: 388px; max-width: 92vw;
       height: 536px; max-height: 72vh;
-      border-radius: 22px;
-      background: rgba(12,12,18,.82);
+      border-radius: 24px;
+      background: rgba(10,14,30,.86);
       border: 1px solid rgba(255,255,255,.12);
       box-shadow: var(--shadow);
       display:flex; flex-direction:column;
@@ -640,7 +786,7 @@
     .chat-header{
       padding: 14px 16px;
       border-bottom: 1px solid rgba(255,255,255,.10);
-      background: linear-gradient(90deg, rgba(0,183,255,.14), rgba(45,99,255,.10));
+      background: linear-gradient(90deg, rgba(0,194,255,.14), rgba(45,99,255,.10));
       display:flex; justify-content:space-between; align-items:center;
       gap: 10px;
     }
@@ -676,13 +822,13 @@
     .message-content{
       padding: 10px 12px;
       border-radius: 16px;
-      background: rgba(0,0,0,.22);
+      background: rgba(0,0,0,.20);
       border: 1px solid rgba(255,255,255,.10);
       color: rgba(255,255,255,.82);
       font-weight: 700;
     }
     .message.user .message-content{
-      background: linear-gradient(180deg, rgba(0,183,255,.90), rgba(45,99,255,.90));
+      background: linear-gradient(180deg, rgba(0,194,255,.92), rgba(45,99,255,.92));
       border-color: rgba(255,255,255,.18);
       color: white;
     }
@@ -701,7 +847,7 @@
       padding: 12px;
       border-top: 1px solid rgba(255,255,255,.10);
       display:flex; gap: 10px; flex-wrap: wrap;
-      background: rgba(0,0,0,.16);
+      background: rgba(0,0,0,.14);
     }
     .option-btn{
       padding: 9px 12px;
@@ -715,7 +861,7 @@
     }
     .option-btn:hover{
       transform: translateY(-1px);
-      border-color: rgba(0,183,255,.22);
+      border-color: rgba(0,194,255,.22);
       background: rgba(255,255,255,.07);
     }
 
@@ -724,7 +870,6 @@
       outline-offset: 3px;
       border-radius: 12px;
     }
-
     @media (prefers-reduced-motion: reduce){
       html{ scroll-behavior: auto; }
       *{ animation: none !important; transition: none !important; }
@@ -736,6 +881,7 @@
 <body class="loading">
   <div class="scroll-progress" id="scrollProgress"></div>
   <div id="grid-background"></div>
+  <div class="rings"></div>
   <div class="noise"></div>
   <div class="aurora" aria-hidden="true">
     <div class="blob b1"></div>
@@ -745,7 +891,7 @@
 
   <div id="preloader" aria-label="Ładowanie strony">
     <div style="display:flex; flex-direction:column; align-items:center;">
-      <img src="https://i.imgur.com/TbvImJS.png" alt="Lite Solutions" style="width:76px; filter: drop-shadow(0 0 28px rgba(0,183,255,.18));" />
+      <img src="https://i.imgur.com/TbvImJS.png" alt="Lite Solutions" style="width:76px; filter: drop-shadow(0 0 28px rgba(0,194,255,.18));" />
       <div class="loading-hint">Ładuje doświadczenie</div>
       <div class="loading-bar" aria-hidden="true"><div></div></div>
     </div>
@@ -758,6 +904,56 @@
 
     function clamp01(x){ return Math.max(0, Math.min(1, x)); }
     function easeOutCubic(p){ return 1 - Math.pow(1 - p, 3); }
+
+    // --- Icon set (spójne, rounded, inline) ---
+    const Icons = {
+      Shield: (props) => (
+        <svg {...props} viewBox="0 0 24 24" fill="none">
+          <path d="M12 3l8 4v6c0 5-3.5 9.4-8 11-4.5-1.6-8-6-8-11V7l8-4z" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"/>
+          <path d="M9.3 12l1.9 1.9 3.8-4.2" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      Spark: (props) => (
+        <svg {...props} viewBox="0 0 24 24" fill="none">
+          <path d="M12 2l2.2 6.1L20 10l-5.8 1.9L12 18l-2.2-6.1L4 10l5.8-1.9L12 2z" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"/>
+        </svg>
+      ),
+      Panel: (props) => (
+        <svg {...props} viewBox="0 0 24 24" fill="none">
+          <path d="M4.5 5.5h15v13h-15v-13z" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"/>
+          <path d="M7.5 8.5h9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round"/>
+          <path d="M7.5 12h6" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round"/>
+          <path d="M7.5 15.5h8" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round"/>
+        </svg>
+      ),
+      Bot: (props) => (
+        <svg {...props} viewBox="0 0 24 24" fill="none">
+          <path d="M9 3h6v3H9V3z" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"/>
+          <path d="M7 9a5 5 0 0110 0v6a4 4 0 01-4 4h-2a4 4 0 01-4-4V9z" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"/>
+          <path d="M9.5 12h.01M14.5 12h.01" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"/>
+          <path d="M10 15.5c.6.7 1.4 1.1 2 1.1s1.4-.4 2-1.1" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round"/>
+        </svg>
+      ),
+      Ticket: (props) => (
+        <svg {...props} viewBox="0 0 24 24" fill="none">
+          <path d="M4.5 8.5a2 2 0 012-2h11a2 2 0 012 2v2a2 2 0 010 4v2a2 2 0 01-2 2h-11a2 2 0 01-2-2v-2a2 2 0 010-4v-2z" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"/>
+          <path d="M12 8.8v6.4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeDasharray="2.2 2.2"/>
+        </svg>
+      ),
+      ArrowRight: (props) => (
+        <svg {...props} viewBox="0 0 24 24" fill="none">
+          <path d="M5 12h12" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round"/>
+          <path d="M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      Wallet: (props) => (
+        <svg {...props} viewBox="0 0 24 24" fill="none">
+          <path d="M5 7.5h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2z" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"/>
+          <path d="M17 12h4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round"/>
+          <path d="M5 7.5V6.2A2.2 2.2 0 017.2 4h12.3" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+    };
 
     function App(){
       const [activeSection, setActiveSection] = useState('hero');
@@ -811,9 +1007,7 @@
 
       const scrollToBottom = () => {
         requestAnimationFrame(() => {
-          if (chatMessagesRef.current) {
-            chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
-          }
+          if (chatMessagesRef.current) chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
         });
       };
 
@@ -875,14 +1069,13 @@
         const t = setTimeout(() => {
           preloader?.classList.add('hidden');
           document.body.classList.remove('loading');
-        }, 1200);
+        }, 1150);
 
         const revealObs = new IntersectionObserver((entries) => {
           for (const e of entries) {
             if (e.isIntersecting) e.target.classList.add('is-visible');
           }
         }, { threshold: 0.18, rootMargin: '0px 0px -60px 0px' });
-
         document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
         const heroStatsEl = document.getElementById('heroStatsSentinel');
@@ -905,7 +1098,6 @@
             .sort((a,b)=> b.intersectionRatio - a.intersectionRatio)[0];
           if (visible?.target?.id) setActiveSection(visible.target.id);
         }, { threshold: 0.35 });
-
         sections.forEach(id => {
           const el = document.getElementById(id);
           if (el) secObs.observe(el);
@@ -951,9 +1143,7 @@
 
                 <div className="header-actions">
                   <a className="pill" href="/auth/discord" aria-label="Przejdź do Panelu Klienta">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                      <path d="M4 4h16a2 2 0 0 1 2 2v4H2V6a2 2 0 0 1 2-2zm-2 8h20v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6zm5 2v4h6v-4H7zm9 1h4v2h-4v-2z"/>
-                    </svg>
+                    <Icons.Wallet style={{width:20,height:20}} aria-hidden="true" />
                     <span>Panel Klienta</span>
                   </a>
                 </div>
@@ -964,11 +1154,11 @@
           <main>
             <section id="hero" className="section">
               <div className="container">
-                <div className="hero-grid">
+                <div className="hero-split">
                   <div className="reveal">
                     <h1 className="hero-title">
                       Budujemy <span className="highlight">Discord boty</span><br/>
-                      z panelami, AI i pełnym zabezpieczeniem.
+                      z panelami, AI i zabezpieczeniem.
                     </h1>
                     <p className="hero-subtitle">
                       Lite Solutions tworzy systemy, które działają jak produkt: stabilne moduły, panel do zarządzania botem,
@@ -976,8 +1166,11 @@
                     </p>
 
                     <div className="hero-cta">
-                      <button className="btn primary" onClick={()=>scrollTo('#contact')}>Skontaktuj się</button>
-                      <button className="btn" onClick={()=>scrollTo('#services')}>Poznaj usługi</button>
+                      <button className="btn btn--primary" onClick={()=>scrollTo('#contact')}>
+                        Skontaktuj się <Icons.ArrowRight style={{width:18,height:18}} aria-hidden="true" />
+                      </button>
+                      <button className="btn btn--soft" onClick={()=>scrollTo('#services')}>Poznaj usługi</button>
+                      <button className="btn btn--ghost" onClick={()=>scrollTo('#ai')}>Zobacz AI</button>
                     </div>
 
                     <div id="heroStatsSentinel" className="stats" aria-label="Najważniejsze liczby">
@@ -1000,6 +1193,67 @@
                     </div>
                   </div>
 
+                  <div className="preview reveal" style={{transitionDelay:'120ms'}} aria-label="Podgląd produktu">
+                    <div className="preview-top">
+                      <div className="dots" aria-hidden="true">
+                        <span className="dot"></span><span className="dot"></span><span className="dot"></span>
+                      </div>
+                      <div className="preview-title">Panel • Monitoring • AI • Security</div>
+                    </div>
+
+                    <div className="preview-grid">
+                      <div className="mini">
+                        <h4 style={{display:'flex',alignItems:'center',gap:10}}>
+                          <span className="icon" style={{width:38,height:38, margin:0}} aria-hidden="true"><Icons.Panel /></span>
+                          Panel admina
+                        </h4>
+                        <p>Konfiguracja modułów, role, logi, tickets, statystyki.</p>
+                        <div className="mini-row">
+                          <span className="tag">Role</span><span className="tag">Logi</span><span className="tag">Integracje</span>
+                        </div>
+                      </div>
+
+                      <div className="mini">
+                        <h4 style={{display:'flex',alignItems:'center',gap:10}}>
+                          <span className="icon" style={{width:38,height:38, margin:0}} aria-hidden="true"><Icons.Bot /></span>
+                          Bot systemowy
+                        </h4>
+                        <p>Moduły: moderacja, ekonomia, rankingi, automaty.</p>
+                        <div className="mini-row">
+                          <span className="tag">Tickets</span><span className="tag">SLA</span>
+                        </div>
+                      </div>
+
+                      <div className="mini">
+                        <h4 style={{display:'flex',alignItems:'center',gap:10}}>
+                          <span className="icon" style={{width:38,height:38, margin:0}} aria-hidden="true"><Icons.Ticket /></span>
+                          Support / Tickets
+                        </h4>
+                        <p>Struktura zgłoszeń, eskalacja, logi, webhooki.</p>
+                        <div className="mini-row">
+                          <span className="tag">Formularze</span><span className="tag">Eskalacja</span>
+                        </div>
+                      </div>
+
+                      <div className="mini">
+                        <h4 style={{display:'flex',alignItems:'center',gap:10}}>
+                          <span className="icon" style={{width:38,height:38, margin:0}} aria-hidden="true"><Icons.Shield /></span>
+                          Security
+                        </h4>
+                        <p>Antyspam, antyraid, audyt uprawnień, alerty.</p>
+                        <div className="mini-row">
+                          <span className="tag">Rate-limit</span><span className="tag">Alerty</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{position:'relative', padding:'12px 8px 6px', color:'rgba(255,255,255,.70)', fontWeight:800, fontSize:'.92rem'}}>
+                      <span style={{display:'inline-flex',alignItems:'center',gap:10}}>
+                        <span className="icon" style={{width:38,height:38, margin:0}} aria-hidden="true"><Icons.Spark /></span>
+                        Premium UX, stabilna architektura, dowożenie na czas.
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
@@ -1009,31 +1263,37 @@
                 <div className="reveal">
                   <h2 className="section-title">Misja: <span className="highlight">produkt</span>, nie “skrypt”</h2>
                   <p className="section-subtitle">
-                    Nie robimy botów “na chwilę”. Budujemy rozwiązania, które da się rozwijać: moduły, panel, monitoring, AI i zabezpieczenia.
+                    Budujemy rozwiązania, które da się rozwijać: moduły, panel, monitoring, AI i zabezpieczenia.
                   </p>
                 </div>
 
-                <div className="grid-3">
-                  <div className="card reveal">
-                    <div className="icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v10H6l-2 2V6zm3 3h10v2H7V9zm0 4h7v2H7v-2z"/></svg>
-                    </div>
-                    <h3 style={{fontWeight:900}}>Jasna architektura</h3>
+                <div className="bento">
+                  <div className="card reveal col-7">
+                    <div className="icon" aria-hidden="true"><Icons.Panel /></div>
+                    <h3>Jasna architektura</h3>
                     <p className="muted">Moduły, logika uprawnień, logi i monitoring — gotowe na rozwój.</p>
+                    <div className="hr"></div>
+                    <p className="muted2">Dostajesz strukturę, w której łatwo dodawać funkcje bez długu technicznego.</p>
                   </div>
-                  <div className="card reveal" style={{transitionDelay:'120ms'}}>
-                    <div className="icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"/></svg>
-                    </div>
-                    <h3 style={{fontWeight:900}}>UX premium</h3>
-                    <p className="muted">Panel i komendy tak zaprojektowane, żeby były szybkie i intuicyjne.</p>
+
+                  <div className="card reveal col-5" style={{transitionDelay:'120ms'}}>
+                    <div className="icon" aria-hidden="true"><Icons.Spark /></div>
+                    <h3>UX premium</h3>
+                    <p className="muted">Panel i komendy projektujemy tak, by były szybkie i intuicyjne.</p>
+                    <div className="hr"></div>
+                    <p className="muted2">Mniej klikania. Więcej kontroli.</p>
                   </div>
-                  <div className="card reveal" style={{transitionDelay:'240ms'}}>
-                    <div className="icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l9 4v6c0 5-3.8 9.4-9 12-5.2-2.6-9-7-9-12V5l9-4zm0 6a3 3 0 100 6 3 3 0 000-6z"/></svg>
+
+                  <div className="card reveal col-12" style={{transitionDelay:'240ms'}}>
+                    <div style={{display:'flex',gap:14,alignItems:'flex-start',flexWrap:'wrap'}}>
+                      <div className="icon" aria-hidden="true"><Icons.Shield /></div>
+                      <div style={{minWidth:240, flex:1}}>
+                        <h3>Bezpieczeństwo jako standard</h3>
+                        <p className="muted">Rate-limit, antyspam, wykrywanie anomalii, audyty i kontrola dostępu.</p>
+                        <div className="hr"></div>
+                        <p className="muted2">Zabezpieczenia są częścią projektu, a nie “dopinką na końcu”.</p>
+                      </div>
                     </div>
-                    <h3 style={{fontWeight:900}}>Bezpieczeństwo</h3>
-                    <p className="muted">Rate-limit, antyspam, audyty i kontrola dostępu — mniej incydentów.</p>
                   </div>
                 </div>
               </div>
@@ -1044,45 +1304,37 @@
                 <div className="reveal">
                   <h2 className="section-title">Usługi Lite Solutions</h2>
                   <p className="section-subtitle">
-                    Tylko to, co robimy najlepiej: Discord Boty, panele do zarządzania botem, zabezpieczenia, AI i automatyzacje AI.
+                    Discord Boty, panele webowe, zabezpieczenia oraz AI — składamy to w spójny system.
                   </p>
                 </div>
 
-                <div className="grid-3">
-                  <div className="card reveal">
-                    <div className="icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v2h4a2 2 0 012 2v10a2 2 0 01-2 2h-5l-3 3-3-3H6a2 2 0 01-2-2V6a2 2 0 012-2h4V2zm-3 7h10v2H7V9zm0 4h7v2H7v-2z"/></svg>
-                    </div>
-                    <h3 style={{fontWeight:900}}>Discord Bot</h3>
-                    <p className="muted">
-                      Systemy: moderacja, ekonomia, rankingi, role, logi, tickets, automaty, integracje.
-                    </p>
+                <div className="bento">
+                  <div className="card reveal col-6">
+                    <div className="icon" aria-hidden="true"><Icons.Bot /></div>
+                    <h3>Discord Bot</h3>
+                    <p className="muted">Moderacja, ekonomia, rankingi, role, logi, tickets, automaty, integracje.</p>
                     <div className="hr"></div>
-                    <p className="muted"><strong>Opcjonalnie:</strong> hosting, monitoring, SLA, aktualizacje.</p>
+                    <p className="muted2"><strong>Opcjonalnie:</strong> hosting, monitoring, SLA, aktualizacje.</p>
                   </div>
 
-                  <div className="card reveal" style={{transitionDelay:'120ms'}}>
-                    <div className="icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16v14H4V5zm2 2v2h12V7H6zm0 4v6h12v-6H6z"/></svg>
-                    </div>
-                    <h3 style={{fontWeight:900}}>Panele webowe do zarządzania botem</h3>
-                    <p className="muted">
-                      Panel admina: konfiguracja modułów, role, logi, tickets, integracje, statystyki i uprawnienia.
-                    </p>
+                  <div className="card reveal col-6" style={{transitionDelay:'120ms'}}>
+                    <div className="icon" aria-hidden="true"><Icons.Panel /></div>
+                    <h3>Panele webowe</h3>
+                    <p className="muted">Konfiguracja modułów, role, logi, tickets, integracje, statystyki, uprawnienia.</p>
                     <div className="hr"></div>
-                    <p className="muted"><strong>Efekt:</strong> mniej ręcznej roboty, pełna kontrola.</p>
+                    <p className="muted2"><strong>Efekt:</strong> mniej ręcznej roboty, pełna kontrola.</p>
                   </div>
 
-                  <div className="card reveal" style={{transitionDelay:'240ms'}}>
-                    <div className="icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l9 4v6c0 5-3.8 9.4-9 12-5.2-2.6-9-7-9-12V5l9-4z"/></svg>
+                  <div className="card reveal col-12" style={{transitionDelay:'240ms'}}>
+                    <div style={{display:'flex',gap:14,alignItems:'flex-start',flexWrap:'wrap'}}>
+                      <div className="icon" aria-hidden="true"><Icons.Shield /></div>
+                      <div style={{minWidth:240, flex:1}}>
+                        <h3>Zabezpieczenia</h3>
+                        <p className="muted">Antyspam, antyraid, rate-limit, wykrywanie anomalii, logi, alerty, audyt uprawnień.</p>
+                        <div className="hr"></div>
+                        <p className="muted2"><strong>Cel:</strong> stabilność i spokój.</p>
+                      </div>
                     </div>
-                    <h3 style={{fontWeight:900}}>Zabezpieczenia</h3>
-                    <p className="muted">
-                      Antyspam, antyraid, rate-limit, wykrywanie anomalii, logi, alerty, audyt uprawnień.
-                    </p>
-                    <div className="hr"></div>
-                    <p className="muted"><strong>Cel:</strong> stabilność i spokój.</p>
                   </div>
                 </div>
               </div>
@@ -1093,39 +1345,37 @@
                 <div className="reveal">
                   <h2 className="section-title">AI i Automatyzacje AI</h2>
                   <p className="section-subtitle">
-                    Wprowadzamy AI tam, gdzie realnie oszczędza czas i zwiększa jakość obsługi użytkowników.
+                    AI dokładamy tam, gdzie realnie oszczędza czas i zwiększa jakość obsługi.
                   </p>
                 </div>
 
-                <div className="grid-3">
-                  <div className="card reveal">
-                    <div className="icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 2h6v2h2a2 2 0 012 2v2h-2V6H5v2H3V6a2 2 0 012-2h2V2zm-6 8h18v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10zm4 3h6v2H7v-2z"/></svg>
-                    </div>
-                    <h3 style={{fontWeight:900}}>Rozwiązania AI</h3>
-                    <p className="muted">
-                      Inteligentne klasyfikowanie, rekomendacje, analiza treści, automatyczne akcje na bazie reguł + AI.
-                    </p>
+                <div className="bento">
+                  <div className="card reveal col-4">
+                    <div className="icon" aria-hidden="true"><Icons.Spark /></div>
+                    <h3>Rozwiązania AI</h3>
+                    <p className="muted">Klasyfikacja, rekomendacje, analiza treści, akcje na bazie reguł + AI.</p>
                   </div>
 
-                  <div className="card reveal" style={{transitionDelay:'120ms'}}>
-                    <div className="icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 019 9v3a3 3 0 01-3 3h-2v-2h2a1 1 0 001-1v-3a7 7 0 10-14 0v3a1 1 0 001 1h2v2H6a3 3 0 01-3-3v-3a9 9 0 019-9zm-1 6h2v6h-2V9zm0 8h2v2h-2v-2z"/></svg>
-                    </div>
-                    <h3 style={{fontWeight:900}}>Bot odpowiada na zgłoszenia</h3>
+                  <div className="card reveal col-8" style={{transitionDelay:'120ms'}}>
+                    <div className="icon" aria-hidden="true"><Icons.Ticket /></div>
+                    <h3>Bot odpowiada na zgłoszenia</h3>
                     <p className="muted">
-                      Automatyzacja tickets: bot zbiera dane, odpowiada, proponuje rozwiązanie i eskaluje do staffu, gdy trzeba.
+                      Automatyzacja tickets: bot zbiera dane, odpowiada, dopytuje i eskaluje do staffu, gdy trzeba.
                     </p>
+                    <div className="hr"></div>
+                    <p className="muted2">Możemy dodać bazę wiedzy, priorytety oraz podsumowania sprawy dla staffu.</p>
                   </div>
 
-                  <div className="card reveal" style={{transitionDelay:'240ms'}}>
-                    <div className="icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10v2H7V2zm-2 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zm2 4v2h10v-2H7zm0 4v2h7v-2H7z"/></svg>
+                  <div className="card reveal col-12" style={{transitionDelay:'240ms'}}>
+                    <div style={{display:'flex',gap:14,alignItems:'flex-start',flexWrap:'wrap'}}>
+                      <div className="icon" aria-hidden="true"><Icons.Panel /></div>
+                      <div style={{minWidth:240, flex:1}}>
+                        <h3>Automatyzacje workflow</h3>
+                        <p className="muted">“Jeśli X → zrób Y”, auto-raporty, notyfikacje, synchronizacja danych, webhooki.</p>
+                        <div className="hr"></div>
+                        <p className="muted2">W praktyce: mniej manuala, szybsza obsługa, lepsze KPI.</p>
+                      </div>
                     </div>
-                    <h3 style={{fontWeight:900}}>Automatyzacje workflow</h3>
-                    <p className="muted">
-                      Akcje typu: “jeśli X → zrób Y”, auto-raporty, auto-notyfikacje, synchronizacja danych, webhooki.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -1136,30 +1386,30 @@
                 <div className="reveal">
                   <h2 className="section-title">Proces współpracy</h2>
                   <p className="section-subtitle">
-                    Prosto i szybko: ustalamy cel, projektujemy moduły + panel, wdrażamy i dowozimy opiekę.
+                    Ustalamy cel, projektujemy moduły + panel, wdrażamy i dowozimy opiekę.
                   </p>
                 </div>
 
-                <div className="grid-3">
-                  <div className="card reveal">
-                    <h3 style={{fontWeight:900}}>1) Analiza</h3>
+                <div className="bento">
+                  <div className="card reveal col-4">
+                    <h3>1) Analiza</h3>
                     <p className="muted">Zakres, priorytety, role, tickets, integracje, wymagania AI i bezpieczeństwa.</p>
                     <div className="hr"></div>
-                    <p className="muted"><strong>Wynik:</strong> plan + wycena + harmonogram.</p>
+                    <p className="muted2"><strong>Wynik:</strong> plan + wycena + harmonogram.</p>
                   </div>
 
-                  <div className="card reveal" style={{transitionDelay:'120ms'}}>
-                    <h3 style={{fontWeight:900}}>2) Budowa</h3>
-                    <p className="muted">Bot + panel admina + automatyzacje AI. Testy i dopieszczony UX.</p>
+                  <div className="card reveal col-4" style={{transitionDelay:'120ms'}}>
+                    <h3>2) Budowa</h3>
+                    <p className="muted">Bot + panel + automatyzacje AI. Testy i dopieszczony UX.</p>
                     <div className="hr"></div>
-                    <p className="muted"><strong>Wynik:</strong> wersja MVP + iteracje.</p>
+                    <p className="muted2"><strong>Wynik:</strong> MVP + iteracje.</p>
                   </div>
 
-                  <div className="card reveal" style={{transitionDelay:'240ms'}}>
-                    <h3 style={{fontWeight:900}}>3) Wdrożenie</h3>
+                  <div className="card reveal col-4" style={{transitionDelay:'240ms'}}>
+                    <h3>3) Wdrożenie</h3>
                     <p className="muted">Hosting, monitoring, alerty, zabezpieczenia, dokumentacja, opieka.</p>
                     <div className="hr"></div>
-                    <p className="muted"><strong>Wynik:</strong> stabilny release + wsparcie.</p>
+                    <p className="muted2"><strong>Wynik:</strong> stabilny release + wsparcie.</p>
                   </div>
                 </div>
               </div>
@@ -1231,7 +1481,6 @@
                     </div>
                   </div>
                 </div>
-
               </div>
             </section>
 
@@ -1252,23 +1501,21 @@
                       </div>
                       <div className="discord-text">
                         <h3>Dołącz na nasz serwer Discord</h3>
-                        <p>
-                          Support, wycena, szybkie pytania i brief projektu — wszystko ogarniemy na miejscu.
-                        </p>
+                        <p>Support, wycena, szybkie pytania i brief projektu — wszystko ogarniemy na miejscu.</p>
                       </div>
                     </div>
 
                     <div className="discord-actions">
                       <a
-                        className="btn primary discord"
+                        className="btn btn--primary"
                         href="https://discord.gg/pxbhAEnUpu"
                         target="_blank"
                         rel="noreferrer"
                         aria-label="Dołącz do naszego Discorda"
                       >
-                        Dołącz teraz
+                        Dołącz teraz <Icons.ArrowRight style={{width:18,height:18}} aria-hidden="true" />
                       </a>
-                      <button className="btn" onClick={toggleChat} aria-label="Otwórz czat wsparcia na stronie">
+                      <button className="btn btn--soft" onClick={toggleChat} aria-label="Otwórz czat wsparcia na stronie">
                         Otwórz wsparcie
                       </button>
                     </div>
@@ -1334,8 +1581,8 @@
           </div>
 
           <div id="chat-toggle" onClick={toggleChat} aria-label="Otwórz czat">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M21 4H3C1.897 4 1 4.897 1 6V16C1 17.103 1.897 18 3 18H8.813C8.901 18.411 9.034 18.809 9.208 19.187L9.687 20.14C10.152 21.07 11.053 21.625 12 21.625C12.947 21.625 13.848 21.07 14.313 20.14L14.792 19.187C14.966 18.809 15.099 18.411 15.187 18H21C22.103 18 23 17.103 23 16V6C23 4.897 22.103 4 21 4zM8 11C7.448 11 7 10.552 7 10S7.448 9 8 9S9 9.448 9 10S8.552 11 8 11zm8 0c-0.552 0-1-0.448-1-1s0.448-1 1-1s1 0.448 1 1S16.552 11 16 11z"></path>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M21 4H3C1.897 4 1 4.897 1 6V16C1 17.103 1.897 18 3 18H8.813C8.901 18.411 9.034 18.809 9.208 19.187L9.687 20.14C10.152 21.07 11.053 21.625 12 21.625C12.947 21.625 13.848 21.07 14.313 20.14L14.792 19.187C14.966 18.809 15.099 18.411 15.187 18H21C22.103 18 23 17.103 23 16V6C23 4.897 22.103 4 21 4zM8 11C7.448 11 7 10.552 7 10S7.448 9 8 9S9 9.448 9 10S8.552 11 8 11zm8 0c-0.552 0-1-0.448-1-1s0.448-1 1-1s1 0.448 1 1S16.552 11 16 11z"/>
             </svg>
           </div>
         </div>
