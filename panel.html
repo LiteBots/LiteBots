@@ -17,17 +17,12 @@
   <style>
     :root{
       --bg0:#050815;
-      --bg1:#070b1b;
       --bg2:#0a1026;
-
-      --panel:#0b1230;
-      --panel2:#0a112a;
 
       --text: rgba(255,255,255,.92);
       --muted: rgba(255,255,255,.68);
       --stroke: rgba(255,255,255,.10);
 
-      --a1:#2d63ff;
       --a2:#00c2ff;
 
       --good:#2ef2a3;
@@ -48,44 +43,41 @@
       --safe-top: env(safe-area-inset-top, 0px);
     }
 
-    /* ===== FULLSCREEN + ANTI-WRAPPER OVERRIDES (NAPRAWA SZEROKOŚCI) ===== */
-    html, body, #app{
-      width: 100% !important;
-      max-width: none !important;
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-    body{
-      min-height: 100vh !important;
-      display: block !important;
-      overflow-x: hidden !important;
-    }
-    #app{
-      min-height: 100vh !important;
-      display: block !important;
-    }
-
     *{ box-sizing:border-box; margin:0; padding:0; }
+    html, body{ height:100% !important; width:100% !important; }
     body{
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
       color: var(--text);
+      overflow: hidden !important;
       background:
         radial-gradient(1000px 600px at 18% 10%, rgba(0,194,255,.10), transparent 60%),
         radial-gradient(900px 560px at 86% 22%, rgba(45,99,255,.10), transparent 58%),
         linear-gradient(180deg, var(--bg0), var(--bg2));
     }
-
     a{ color: inherit; text-decoration:none; }
     button{ font-family: inherit; }
     :focus-visible{ outline: 2px solid rgba(0,194,255,.65); outline-offset: 3px; border-radius: 10px; }
 
+    /* ======= NAPRAWA: FULLSCREEN OVERLAY (ignoruje zewnętrzne wrappery) ======= */
+    #app{
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: none !important;
+      max-height: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: block !important;
+    }
+
     .app{
       width: 100% !important;
-      max-width: none !important;
-      min-height: 100vh !important;
+      height: 100% !important;
       display:flex;
       align-items: stretch;
       justify-content: flex-start;
+      max-width: none !important;
     }
 
     /* ===== LAYOUT ===== */
@@ -93,11 +85,10 @@
       width: var(--sidebar);
       flex: 0 0 var(--sidebar);
       border-right: 1px solid var(--stroke);
-      background: linear-gradient(180deg, var(--panel2), rgba(10,17,42,.80));
+      background: linear-gradient(180deg, rgba(10,17,42,.95), rgba(10,17,42,.75));
       padding: calc(var(--pad) + var(--safe-top)) var(--pad) calc(var(--pad) + var(--safe-bottom));
-      position: sticky;
-      top: 0;
-      height: 100vh;
+      height: 100%;
+      overflow: auto;
     }
 
     .brand{
@@ -138,8 +129,9 @@
 
     .main{
       flex: 1 1 auto;
-      width: auto;
       min-width: 0;
+      height: 100%;
+      overflow: auto;
       padding: calc(var(--pad) + var(--safe-top)) var(--pad) calc(var(--pad) + var(--safe-bottom));
     }
 
@@ -152,6 +144,11 @@
       border: 1px solid var(--stroke);
       border-radius: var(--r3);
       box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     .topbar h1{
       font-size: 1.05rem;
@@ -171,7 +168,7 @@
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.20);
-      max-width: 60vw;
+      max-width: 62vw;
     }
     .avatar{
       width: 34px; height: 34px;
@@ -324,6 +321,7 @@
       white-space: nowrap;
       overflow:hidden;
       text-overflow: ellipsis;
+      z-index: 999;
     }
     .toast.show{ opacity: 1; transform: translateX(-50%) translateY(-4px); }
 
@@ -343,24 +341,24 @@
       .app{ flex-direction:column; }
       .sidebar{
         width: auto;
-        flex: 1 1 auto;
+        flex: 0 0 auto;
         height: auto;
-        position: relative;
         border-right: none;
         border-bottom: 1px solid var(--stroke);
         padding: calc(var(--pad) + var(--safe-top)) var(--pad) 12px;
         display: none;
       }
       .sidebar.open{ display:block; }
-      .main{ padding: 12px var(--pad) calc(var(--pad) + var(--safe-bottom)); }
-      .mobile-top{ display:flex; }
-      .topbar{ border-radius: 18px; }
-      .user-meta .nick, .user-meta .id{ max-width: 44vw; }
+      .main{
+        padding: 12px var(--pad) calc(var(--pad) + var(--safe-bottom));
+        height: 100%;
+      }
+      .mobile-top{ display:flex; margin-bottom: 10px; }
       table{ min-width: 680px; }
     }
 
     @media (max-width: 520px){
-      .userbox{ max-width: 74vw; }
+      .userbox{ max-width: 78vw; }
       .user-meta .nick, .user-meta .id{ max-width: 42vw; }
       .pill span{ display:none; }
     }
@@ -419,7 +417,6 @@
       return { ok: res.ok, status: res.status, json };
     }
 
-    // List: 404/204 -> []
     async function apiGetList(path) {
       const { ok, status, json } = await apiGetRaw(path);
 
@@ -435,7 +432,6 @@
       throw err;
     }
 
-    // Me: 404/204 -> null
     async function apiGetMe(path) {
       const { ok, status, json } = await apiGetRaw(path);
 
@@ -463,7 +459,7 @@
     }
 
     function App(){
-      const [tab, setTab] = useState('services'); // services | licenses | tickets
+      const [tab, setTab] = useState('services');
       const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
       const [me, setMe] = useState(null);
@@ -505,16 +501,9 @@
         setError(s => ({...s, [which]: null}));
 
         try{
-          if (which === 'services') {
-            const items = await apiGetList('/api/services');
-            setServices(items);
-          } else if (which === 'licenses') {
-            const items = await apiGetList('/api/licenses');
-            setLicenses(items);
-          } else if (which === 'tickets') {
-            const items = await apiGetList('/api/tickets');
-            setTickets(items);
-          }
+          if (which === 'services') setServices(await apiGetList('/api/services'));
+          if (which === 'licenses') setLicenses(await apiGetList('/api/licenses'));
+          if (which === 'tickets') setTickets(await apiGetList('/api/tickets'));
         }catch(e){
           setError(s => ({...s, [which]: e}));
         }finally{
@@ -529,7 +518,7 @@
       }, [tab]);
 
       const logout = async () => {
-        push('Wylogowanie: podepnij backend.');
+        push('Wylogowano.');
       };
 
       const guard = () => {
@@ -549,7 +538,7 @@
       const TopbarRight = () => {
         if (meLoading) {
           return (
-            <div className="userbox" aria-label="Ładowanie profilu">
+            <div className="userbox">
               <div className="avatar"></div>
               <div className="user-meta">
                 <div className="nick">Ładowanie…</div>
@@ -561,13 +550,13 @@
 
         if (!me) {
           return (
-            <div className="userbox" aria-label="Brak profilu">
+            <div className="userbox">
               <div className="avatar"></div>
               <div className="user-meta">
-                <div className="nick">Niezweryfikowany</div>
+                <div className="nick">—</div>
                 <div className="id">Discord ID: —</div>
               </div>
-              <a className="pill" href="/auth/discord" title="Połącz przez Discord">
+              <a className="pill" href="/auth/discord" title="Połącz">
                 <span>Połącz</span>
               </a>
             </div>
@@ -575,7 +564,7 @@
         }
 
         return (
-          <div className="userbox" aria-label="Profil Discord">
+          <div className="userbox">
             <div className="avatar">
               {me.discordAvatarUrl ? <img src={me.discordAvatarUrl} alt={me.discordNick || 'Avatar'} /> : null}
             </div>
@@ -594,9 +583,7 @@
       const renderTable = (rows, columns, keyField='id') => {
         if (!Array.isArray(rows)) return null;
 
-        if (rows.length === 0) {
-          return <div className="empty">Brak danych.</div>;
-        }
+        if (rows.length === 0) return <div className="empty">Brak danych.</div>;
 
         const q = query.trim().toLowerCase();
         const filtered = !q ? rows : rows.filter(r => {
@@ -633,7 +620,6 @@
       };
 
       const Status = ({ isLoading, err }) => {
-        // 404/204 nie trafi tu, bo apiGetList zwraca []
         const dotClass = err ? "bad" : (isLoading ? "warn" : "good");
         const text = isLoading ? "Ładowanie…" : err ? "Błąd." : "Gotowe.";
         return (
@@ -658,18 +644,14 @@
             { key: 'createdAt', label: 'Utworzono' },
             { key: 'expiresAt', label: 'Wygasa' },
           ];
-
           return (
             <div className="card">
               <h2>Moje usługi</h2>
-
               <div className="toolbar">
                 <input className="input" placeholder="Szukaj…" value={query} onChange={(e)=>setQuery(e.target.value)} />
                 <button className="btn" onClick={() => fetchTabData('services')} type="button">Odśwież</button>
               </div>
-
               <Status isLoading={isLoading} err={err} />
-
               {isLoading ? <div className="empty">Ładowanie…</div> : (
                 services == null ? <div className="empty">Brak danych.</div> : renderTable(services, columns)
               )}
@@ -685,18 +667,14 @@
             { key: 'issuedAt', label: 'Wydano' },
             { key: 'expiresAt', label: 'Wygasa' },
           ];
-
           return (
             <div className="card">
               <h2>Moje licencje</h2>
-
               <div className="toolbar">
                 <input className="input" placeholder="Szukaj…" value={query} onChange={(e)=>setQuery(e.target.value)} />
                 <button className="btn" onClick={() => fetchTabData('licenses')} type="button">Odśwież</button>
               </div>
-
               <Status isLoading={isLoading} err={err} />
-
               {isLoading ? <div className="empty">Ładowanie…</div> : (
                 licenses == null ? <div className="empty">Brak danych.</div> : renderTable(licenses, columns)
               )}
@@ -711,21 +689,15 @@
           { key: 'createdAt', label: 'Utworzono' },
           { key: 'updatedAt', label: 'Aktualizacja' },
         ];
-
         return (
           <div className="card">
             <h2>Moje zgłoszenia</h2>
-
             <div className="toolbar">
               <input className="input" placeholder="Szukaj…" value={query} onChange={(e)=>setQuery(e.target.value)} />
               <button className="btn" onClick={() => fetchTabData('tickets')} type="button">Odśwież</button>
-              <button className="btn primary" onClick={() => push("Dodaj formularz + endpoint w backendzie.")} type="button">
-                Nowe zgłoszenie
-              </button>
+              <button className="btn primary" onClick={() => push("OK")} type="button">Nowe zgłoszenie</button>
             </div>
-
             <Status isLoading={isLoading} err={err} />
-
             {isLoading ? <div className="empty">Ładowanie…</div> : (
               tickets == null ? <div className="empty">Brak danych.</div> : renderTable(tickets, columns)
             )}
@@ -740,15 +712,6 @@
 
       return (
         <div className="app">
-          <div className="main" style={{paddingBottom: 0}}>
-            <div className="mobile-top">
-              <button className="burger" onClick={() => setMobileSidebarOpen(v => !v)} type="button" aria-label="Menu">
-                <Icons.Menu />
-              </button>
-              <div style={{flex:1}} />
-            </div>
-          </div>
-
           <aside className={"sidebar " + (mobileSidebarOpen ? "open" : "")}>
             <div className="brand">
               <img src="https://i.imgur.com/TbvImJS.png" alt="Lite Solutions" />
@@ -772,6 +735,8 @@
           </aside>
 
           <main className="main">
+            <div className="mobile-top" style={{display:'none'}}></div>
+
             <div className="topbar">
               <div style={{minWidth:0}}>
                 <h1>{title}</h1>
