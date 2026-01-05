@@ -195,6 +195,8 @@
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       box-shadow: var(--shadow2);
+      position: relative;
+      z-index: 2;
     }
     .logo{ display:flex; align-items:center; gap:12px; padding: 6px 10px; border-radius:999px; }
     .logo img{
@@ -249,6 +251,7 @@
       box-shadow: 0 18px 70px rgba(0,194,255,.08);
       position: relative;
       overflow:hidden;
+      white-space: nowrap;
     }
     .pill::after{
       content:"";
@@ -299,6 +302,7 @@
       user-select:none;
       position: relative;
       overflow: hidden;
+      text-align: center;
     }
     .btn::before{
       content:"";
@@ -657,7 +661,12 @@
     }
     .chat-close-btn:hover{ transform: scale(1.05); background: rgba(255,255,255,.08); }
 
-    .chat-messages{ flex:1; overflow:auto; padding: 16px; }
+    .chat-messages{
+      flex:1;
+      overflow:auto;
+      padding: 16px;
+      -webkit-overflow-scrolling: touch;
+    }
     .message{ display:flex; gap: 10px; margin-bottom: 12px; max-width: 88%; }
     .message.user{ margin-left:auto; flex-direction: row-reverse; }
     .message-avatar{
@@ -675,6 +684,7 @@
       border: 1px solid rgba(255,255,255,.10);
       color: rgba(255,255,255,.82);
       font-weight: 700;
+      word-break: break-word;
     }
     .message.user .message-content{
       background: linear-gradient(180deg, rgba(0,194,255,.92), rgba(45,99,255,.92));
@@ -723,6 +733,166 @@
       html{ scroll-behavior: auto; }
       *{ animation: none !important; transition: none !important; }
       .reveal{ opacity: 1; transform:none; }
+    }
+
+    /* =========================
+       MOBILE MENU (NEW)
+       ========================= */
+    .mobile-menu-btn{
+      width: 44px; height: 44px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      display:none;
+      place-items:center;
+      cursor:pointer;
+      transition: transform var(--speed) var(--ease), background var(--speed) var(--ease), border-color var(--speed) var(--ease);
+    }
+    .mobile-menu-btn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.08);
+      border-color: rgba(0,194,255,.22);
+    }
+    .mobile-menu-btn svg{ width: 22px; height: 22px; color: rgba(255,255,255,.92); }
+
+    .mobile-menu{
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      max-width: var(--container);
+      padding: 0 var(--padX);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity .22s var(--ease), transform .22s var(--ease);
+      z-index: 1;
+    }
+    .mobile-menu.is-open{
+      pointer-events: auto;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .mobile-menu-panel{
+      background: rgba(10,14,30,.86);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 22px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: var(--shadow2);
+      padding: 12px;
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+    }
+    .mobile-menu-panel a{
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      font-weight: 900;
+      color: rgba(255,255,255,.86);
+    }
+    .mobile-menu-panel a:hover{
+      background: rgba(255,255,255,.06);
+      border-color: rgba(0,194,255,.20);
+      color: rgba(255,255,255,.94);
+    }
+    @media (max-width: 980px){
+      .mobile-menu-btn{ display:grid; }
+    }
+
+    /* =========================
+       FULL MOBILE RESPONSIVENESS (NEW)
+       ========================= */
+    :root{
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
+    }
+    button, a{ -webkit-tap-highlight-color: transparent; }
+    .btn, .pill, .option-btn{ min-height: 44px; }
+
+    #app-header{
+      top: calc(10px + var(--safe-top));
+      left: 10px;
+      right: 10px;
+    }
+
+    @media (max-width: 720px){
+      :root{ --padX: 16px; }
+
+      .section{ padding: 76px 0; }
+      #hero{ padding-top: 118px; min-height: auto; }
+
+      .hero-title{
+        letter-spacing: -0.05em;
+        line-height: 1.03;
+        margin: 10px 0 12px;
+      }
+      .hero-subtitle{
+        font-size: 1.02rem;
+        max-width: 62ch;
+      }
+
+      .hero-cta{ gap: 10px; }
+      .hero-cta .btn{ width: 100%; justify-content: center; }
+
+      .header-nav{
+        padding: 10px 12px;
+        border-radius: 22px;
+      }
+
+      .logo{ gap: 10px; padding: 6px 8px; }
+      .logo img{ height: 30px; }
+      .logo-text{ font-size: .98rem; }
+
+      .pill{ padding: 10px 12px; }
+      .pill span{ font-size: .92rem; }
+
+      .bento{ gap: 12px; }
+      .card{ padding: 18px; border-radius: 18px; }
+      .icon{ width: 44px; height: 44px; border-radius: 14px; }
+
+      .section-subtitle{ margin-bottom: 34px; font-size: 1rem; }
+
+      .team-card{ aspect-ratio: 4/5; border-radius: 22px; }
+      .team-overlay{ padding: 14px; }
+
+      #chat-toggle{
+        right: 14px;
+        bottom: calc(14px + var(--safe-bottom));
+        width: 56px; height: 56px;
+      }
+      #chat-toggle svg{ width: 28px; height: 28px; }
+
+      #chat-widget{
+        left: 14px;
+        right: 14px;
+        width: auto;
+        bottom: calc(82px + var(--safe-bottom));
+        height: min(72vh, 560px);
+        border-radius: 20px;
+      }
+
+      .chat-messages{ padding: 14px; }
+      .message{ max-width: 92%; }
+    }
+
+    @media (max-width: 420px){
+      .section{ padding: 66px 0; }
+      #hero{ padding-top: 110px; }
+
+      .hero-title{ font-size: clamp(2.15rem, 9.5vw, 3.2rem); }
+      .header-nav{ border-radius: 18px; }
+
+      .btn{ padding: 13px 16px; }
+      .pill{ padding: 10px 11px; }
+
+      #chat-widget{
+        bottom: calc(78px + var(--safe-bottom));
+        height: min(74vh, 540px);
+      }
     }
   </style>
 </head>
@@ -803,6 +973,9 @@
     function App(){
       const [activeSection, setActiveSection] = useState('hero');
 
+      // NEW: mobile menu
+      const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
       const [isChatOpen, setIsChatOpen] = useState(false);
       const [isBotThinking, setIsBotThinking] = useState(false);
       const chatMessagesRef = useRef(null);
@@ -848,6 +1021,8 @@
       const scrollTo = (selector) => {
         const el = document.querySelector(selector);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // NEW: close mobile menu after navigation
+        setIsMobileMenuOpen(false);
       };
 
       const scrollToBottom = () => {
@@ -925,11 +1100,20 @@
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
 
+        // NEW: close mobile menu on outside click
+        const onDocClick = (e) => {
+          const btn = e.target.closest?.('.mobile-menu-btn');
+          const panel = e.target.closest?.('.mobile-menu-panel');
+          if (!btn && !panel) setIsMobileMenuOpen(false);
+        };
+        document.addEventListener('click', onDocClick);
+
         return () => {
           clearTimeout(t);
           revealObs.disconnect();
           secObs.disconnect();
           window.removeEventListener('scroll', onScroll);
+          document.removeEventListener('click', onDocClick);
         };
       }, []);
 
@@ -953,12 +1137,40 @@
                 </ul>
 
                 <div className="header-actions">
+                  {/* NEW: hamburger for mobile */}
+                  <button
+                    className="mobile-menu-btn"
+                    onClick={() => setIsMobileMenuOpen(v => !v)}
+                    aria-label={isMobileMenuOpen ? "Zamknij menu" : "Otwórz menu"}
+                    type="button"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      {isMobileMenuOpen ? (
+                        <path d="M18.3 5.7a1 1 0 0 0-1.4 0L12 10.6 7.1 5.7A1 1 0 0 0 5.7 7.1L10.6 12l-4.9 4.9a1 1 0 1 0 1.4 1.4L12 13.4l4.9 4.9a1 1 0 0 0 1.4-1.4L13.4 12l4.9-4.9a1 1 0 0 0 0-1.4z" />
+                      ) : (
+                        <path d="M4 7.5h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm0 6h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2zm0 6h16a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2z" />
+                      )}
+                    </svg>
+                  </button>
+
                   <a className="pill" href="/auth/discord" aria-label="Przejdź do Panelu Klienta">
                     <Icons.Wallet style={{width:20,height:20}} aria-hidden="true" />
                     <span>Panel Klienta</span>
                   </a>
                 </div>
               </nav>
+
+              {/* NEW: dropdown mobile menu */}
+              <div className={"mobile-menu " + (isMobileMenuOpen ? "is-open" : "")} aria-hidden={!isMobileMenuOpen}>
+                <div className="mobile-menu-panel">
+                  <a href="#about" onClick={(e)=>{e.preventDefault(); scrollTo('#about');}}>O nas</a>
+                  <a href="#services" onClick={(e)=>{e.preventDefault(); scrollTo('#services');}}>Usługi</a>
+                  <a href="#ai" onClick={(e)=>{e.preventDefault(); scrollTo('#ai');}}>AI</a>
+                  <a href="#process" onClick={(e)=>{e.preventDefault(); scrollTo('#process');}}>Proces</a>
+                  <a href="#team" onClick={(e)=>{e.preventDefault(); scrollTo('#team');}}>Zespół</a>
+                  <a href="#contact" onClick={(e)=>{e.preventDefault(); scrollTo('#contact');}}>Kontakt</a>
+                </div>
+              </div>
             </div>
           </header>
 
@@ -1274,7 +1486,7 @@
                 <img src="https://i.imgur.com/6Lsxvnw.png" alt="" />
                 Lite Solutions — Centrum Wsparcia
               </h3>
-              <button className="chat-close-btn" onClick={toggleChat} aria-label="Zamknij czat">×</button>
+              <button className="chat-close-btn" onClick={toggleChat} aria-label="Zamknij czat" type="button">×</button>
             </div>
 
             <div className="chat-messages" ref={chatMessagesRef} aria-live="polite">
@@ -1303,6 +1515,7 @@
                   key={opt.text}
                   className="option-btn"
                   onClick={() => handleOptionClick(opt)}
+                  type="button"
                 >
                   {opt.text}
                 </button>
@@ -1310,7 +1523,7 @@
             </div>
           </div>
 
-          <div id="chat-toggle" onClick={toggleChat} aria-label="Otwórz czat">
+          <div id="chat-toggle" onClick={toggleChat} aria-label="Otwórz czat" role="button" tabIndex="0">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M21 4H3C1.897 4 1 4.897 1 6V16C1 17.103 1.897 18 3 18H8.813C8.901 18.411 9.034 18.809 9.208 19.187L9.687 20.14C10.152 21.07 11.053 21.625 12 21.625C12.947 21.625 13.848 21.07 14.313 20.14L14.792 19.187C14.966 18.809 15.099 18.411 15.187 18H21C22.103 18 23 17.103 23 16V6C23 4.897 22.103 4 21 4zM8 11C7.448 11 7 10.552 7 10S7.448 9 8 9S9 9.448 9 10S8.552 11 8 11zm8 0c-0.552 0-1-0.448-1-1s0.448-1 1-1s1 0.448 1 1S16.552 11 16 11z"/>
             </svg>
