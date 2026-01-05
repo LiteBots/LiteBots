@@ -2,693 +2,865 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lite Solutions — Panel Klienta</title>
-  <meta name="theme-color" content="#0b0b10" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Panel Klienta — Lite Solutions</title>
+  <meta name="theme-color" content="#050815" />
 
-  <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- React 18 UMD + Babel -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
     :root{
-      --bg0:#06060a;
-      --bg1:#0b0b10;
+      --bg0:#050815;
+      --bg1:#070b1b;
+      --bg2:#0a1026;
 
-      --card: rgba(18,18,24,.54);
-      --card2: rgba(12,12,18,.50);
+      --panel:#0b1230;        /* flat */
+      --panel2:#0a112a;       /* flat darker */
+      --card:#0c1433;         /* flat card */
 
-      --text:#f4f4f7;
-      --muted: rgba(244,244,247,.66);
-      --muted2: rgba(244,244,247,.52);
-      --border: rgba(255,255,255,.10);
-      --border2: rgba(255,255,255,.08);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+      --muted2: rgba(255,255,255,.52);
 
-      --p1:#1e4dff;
-      --p2:#00a3ff;
-      --p3:#33e6ff;
-      --pGlow: rgba(0,163,255,.30);
+      --stroke: rgba(255,255,255,.10);
+      --stroke2: rgba(255,255,255,.16);
 
-      --radius: 18px;
-      --radius2: 22px;
+      --a1:#2d63ff;
+      --a2:#00c2ff;
+      --a3:#7cf7ff;
 
-      --shadow: 0 24px 80px rgba(0,0,0,.50);
-      --shadow2: 0 14px 34px rgba(0,0,0,.38);
+      --good:#2ef2a3;
+      --warn:#ffcf5a;
+      --bad:#ff5a6f;
 
+      --r1: 12px;
+      --r2: 16px;
+      --r3: 22px;
+
+      --shadow: 0 18px 48px rgba(0,0,0,.40);
       --ease: cubic-bezier(.16, 1, .3, 1);
       --speed: .22s;
 
-      --grid: rgba(255,255,255,.05);
-      --focus: rgba(51,230,255,.55);
+      --container: 1180px;
+      --pad: 18px;
+      --sidebar: 270px;
+
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
     }
 
     *{ box-sizing:border-box; margin:0; padding:0; }
-    html{ scroll-behavior:smooth; }
+    html, body{ height:100%; }
     body{
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
       color: var(--text);
       background:
-        radial-gradient(1200px 800px at 18% 10%, rgba(0,163,255,.12), transparent 65%),
-        radial-gradient(1000px 700px at 92% 22%, rgba(30,77,255,.10), transparent 60%),
-        radial-gradient(900px 700px at 60% 92%, rgba(51,230,255,.07), transparent 55%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      min-height:100vh;
+        radial-gradient(1000px 600px at 18% 10%, rgba(0,194,255,.10), transparent 60%),
+        radial-gradient(900px 560px at 86% 22%, rgba(45,99,255,.10), transparent 58%),
+        linear-gradient(180deg, var(--bg0), var(--bg2));
       overflow-x:hidden;
-      line-height: 1.55;
     }
 
-    a{ color:inherit; text-decoration:none; }
+    a{ color: inherit; text-decoration:none; }
     button{ font-family: inherit; }
-    ::selection{ background: rgba(0,163,255,.25); }
-
-    /* Subtle grid + noise */
-    .bg-grid{
-      position: fixed; inset:0; z-index:-3; pointer-events:none;
-      background-image:
-        linear-gradient(to right, var(--grid) 1px, transparent 1px),
-        linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
-      background-size: 54px 54px;
-      opacity: .45;
-      mask-image: radial-gradient(1000px 700px at 40% 0%, rgba(0,0,0,.95), transparent 70%);
-    }
-    .bg-noise{
-      position: fixed; inset:0; z-index:-2; pointer-events:none;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
-      mix-blend-mode: overlay;
-      opacity:.25;
+    :focus-visible{ outline: 2px solid rgba(124,247,255,.82); outline-offset: 3px; border-radius: 10px; }
+    .app{
+      min-height: 100%;
+      display:flex;
     }
 
-    /* Layout */
-    .shell{
-      display:grid;
-      grid-template-columns: 300px 1fr;
-      min-height: 100vh;
-    }
-    @media (max-width: 1020px){
-      .shell{ grid-template-columns: 1fr; }
-    }
-
-    /* Sidebar */
+    /* ====== LAYOUT ====== */
     .sidebar{
+      width: var(--sidebar);
+      border-right: 1px solid var(--stroke);
+      background: linear-gradient(180deg, var(--panel2), rgba(10,17,42,.80));
+      padding: calc(var(--pad) + var(--safe-top)) var(--pad) calc(var(--pad) + var(--safe-bottom));
       position: sticky;
       top: 0;
       height: 100vh;
-      padding: 20px;
-      border-right: 1px solid var(--border2);
-      background: rgba(6,6,10,.35);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      display:flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    @media (max-width: 1020px){
-      .sidebar{
-        position: relative;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--border2);
-      }
     }
 
     .brand{
       display:flex; align-items:center; gap: 12px;
-      padding: 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.03);
-      box-shadow: var(--shadow2);
+      padding: 10px 12px;
+      border-radius: var(--r2);
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--stroke);
+      margin-bottom: 14px;
     }
-    .brand img{
-      width: 38px; height: 38px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.12);
-      filter: drop-shadow(0 0 18px rgba(0,163,255,.22));
-    }
-    .brand .name{
-      font-weight: 900;
-      letter-spacing: -.02em;
-      line-height: 1.05;
-    }
-    .brand .sub{
-      margin-top: 2px;
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 800;
-    }
+    .brand img{ width: 34px; height: 34px; border-radius: 10px; }
+    .brand strong{ font-weight: 950; letter-spacing: -.02em; }
+    .brand small{ display:block; color: var(--muted); font-weight: 700; margin-top: 2px; }
 
     .nav{
-      display:flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 2px;
+      display:flex; flex-direction:column; gap: 8px;
+      margin-top: 10px;
     }
-
-    .navItem{
-      display:flex; align-items:center; justify-content:space-between;
-      gap: 10px;
+    .nav a{
+      display:flex; align-items:center; gap: 10px;
       padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--r2);
+      border: 1px solid transparent;
+      color: rgba(255,255,255,.78);
       background: rgba(255,255,255,.02);
-      cursor: pointer;
-      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), background var(--speed) var(--ease);
-      text-align:left;
+      transition: transform var(--speed) var(--ease), background var(--speed) var(--ease), border-color var(--speed) var(--ease), color var(--speed) var(--ease);
+      font-weight: 900;
+      letter-spacing:.01em;
     }
-    .navItem:hover{
+    .nav a:hover{
       transform: translateY(-1px);
-      border-color: rgba(0,163,255,.28);
-      background: rgba(255,255,255,.04);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      border-color: rgba(255,255,255,.08);
     }
-    .navItem.active{
-      border-color: rgba(0,163,255,.42);
-      background: linear-gradient(90deg, rgba(0,163,255,.16), rgba(30,77,255,.10), rgba(51,230,255,.06));
-      box-shadow: 0 0 0 1px rgba(0,163,255,.06) inset;
-    }
-    .navItem .left{
-      display:flex; flex-direction: column; gap: 2px;
-    }
-    .navItem .title{
-      font-weight: 900;
-      color: rgba(244,244,247,.92);
-      letter-spacing: -.01em;
-    }
-    .navItem .hint{
-      font-size: 12px;
-      color: var(--muted2);
-      font-weight: 800;
-    }
-    .badge{
-      font-size: 12px;
-      font-weight: 900;
-      color: rgba(244,244,247,.80);
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.16);
+    .nav a.active{
+      background: rgba(0,194,255,.10);
+      border-color: rgba(0,194,255,.22);
+      color: var(--text);
     }
 
-    .sidebarFooter{
-      margin-top: auto;
-      padding-top: 12px;
+    .side-footer{
+      margin-top: 14px;
+      padding-top: 14px;
       border-top: 1px solid rgba(255,255,255,.08);
-      display:flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .quickLinks{
-      display:flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .linkPill{
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.02);
-      font-weight: 900;
-      color: rgba(244,244,247,.88);
-      transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease);
-    }
-    .linkPill:hover{
-      transform: translateY(-1px);
-      border-color: rgba(0,163,255,.28);
-    }
-    .copyright{
-      font-size: 12px;
-      color: rgba(244,244,247,.55);
-      font-weight: 800;
+      color: var(--muted2);
+      font-weight: 700;
+      font-size: .92rem;
+      line-height:1.4;
     }
 
-    /* Main */
     .main{
-      padding: 22px;
+      flex:1;
+      min-width: 0;
+      padding: calc(var(--pad) + var(--safe-top)) var(--pad) calc(var(--pad) + var(--safe-bottom));
     }
+
+    /* ====== TOPBAR ====== */
     .topbar{
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 14px 16px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(18,18,24,.48);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      box-shadow: var(--shadow2);
+      display:flex; align-items:center; justify-content:space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--stroke);
+      border-radius: var(--r3);
+      box-shadow: var(--shadow);
     }
-    .topbar .pageTitle{
-      display:flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .topbar .pageTitle h1{
-      font-size: 16px;
-      font-weight: 900;
+    .topbar h1{
+      font-size: 1.05rem;
+      font-weight: 950;
       letter-spacing: -.02em;
-      line-height: 1.05;
     }
-    .topbar .pageTitle p{
-      font-size: 12px;
+    .crumb{
       color: var(--muted);
-      font-weight: 800;
+      font-weight: 750;
+      font-size: .94rem;
+      margin-top: 3px;
     }
 
-    .userArea{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      max-width: 520px;
-    }
-
-    .userChip{
-      display:flex;
-      align-items:center;
-      gap: 10px;
+    .userbox{
+      display:flex; align-items:center; gap: 10px;
       padding: 8px 10px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.02);
-    }
-    .userChip img{
-      width: 34px; height: 34px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.20);
+      max-width: 54vw;
     }
-    .userMeta{
-      display:flex;
-      flex-direction: column;
-      gap: 1px;
-      min-width: 0;
+    .avatar{
+      width: 34px; height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      overflow:hidden;
+      flex-shrink:0;
     }
-    .userMeta .uname{
-      font-weight: 900;
-      font-size: 13px;
-      letter-spacing: -.01em;
+    .avatar img{ width:100%; height:100%; object-fit: cover; display:block; }
+    .user-meta{ min-width: 0; }
+    .user-meta .nick{
+      font-weight: 950;
       white-space: nowrap;
-      overflow: hidden;
+      overflow:hidden;
       text-overflow: ellipsis;
-      max-width: 260px;
+      max-width: 280px;
     }
-    .userMeta .uid{
-      font-size: 12px;
-      color: var(--muted2);
-      font-weight: 800;
+    .user-meta .id{
+      color: var(--muted);
+      font-weight: 750;
+      font-size: .88rem;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      max-width: 280px;
     }
-
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap: 10px;
+    .pill{
+      display:inline-flex; align-items:center; gap: 8px;
       padding: 10px 12px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.02);
-      color: rgba(244,244,247,.92);
-      font-weight: 900;
+      border: 1px solid rgba(0,194,255,.22);
+      background: rgba(0,194,255,.10);
+      font-weight: 950;
       cursor:pointer;
       transition: transform var(--speed) var(--ease), border-color var(--speed) var(--ease), background var(--speed) var(--ease);
-      user-select:none;
       white-space: nowrap;
     }
-    .btn:hover{
-      transform: translateY(-1px);
-      border-color: rgba(0,163,255,.28);
-      background: rgba(255,255,255,.04);
-    }
-    .btn.primary{
-      border-color: rgba(0,163,255,.36);
-      background: linear-gradient(90deg, rgba(0,163,255,.24), rgba(30,77,255,.16), rgba(51,230,255,.10));
-      box-shadow: 0 0 26px rgba(0,163,255,.10);
-    }
+    .pill:hover{ transform: translateY(-1px); border-color: rgba(0,194,255,.35); background: rgba(0,194,255,.13); }
 
-    /* Content card */
-    .panel{
-      margin-top: 16px;
-      border-radius: var(--radius2);
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(18,18,24,.42);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      box-shadow: 0 14px 40px rgba(0,0,0,.34);
-      overflow:hidden;
-    }
-    .panelHead{
-      padding: 16px 16px 12px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      display:flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .panelHead .hgroup{
-      display:flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .panelHead h2{
-      font-size: 14px;
-      font-weight: 900;
-      letter-spacing: -.01em;
-    }
-    .panelHead .desc{
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 800;
-      max-width: 78ch;
-    }
-    .panelBody{
-      padding: 16px;
-    }
-
-    .stats{
+    /* ====== CONTENT ====== */
+    .content{
+      margin-top: 14px;
       display:grid;
-      grid-template-columns: repeat(3, 1fr);
       gap: 12px;
     }
-    @media (max-width: 1020px){
-      .stats{ grid-template-columns: 1fr; }
-      .userMeta .uname{ max-width: 160px; }
+
+    .card{
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--stroke);
+      border-radius: var(--r3);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    .card h2{
+      font-size: 1.05rem;
+      font-weight: 950;
+      letter-spacing: -.02em;
+    }
+    .card p{ color: var(--muted); margin-top: 8px; font-weight: 700; }
+
+    .toolbar{
+      display:flex; gap: 10px; align-items:center; flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .input{
+      flex: 1;
+      min-width: 220px;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      font-weight: 700;
+      outline:none;
+    }
+    .btn{
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-weight: 950;
+      cursor:pointer;
+      transition: transform var(--speed) var(--ease), background var(--speed) var(--ease), border-color var(--speed) var(--ease);
+      white-space: nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(0,194,255,.22); }
+    .btn.primary{
+      border-color: rgba(0,194,255,.26);
+      background: rgba(0,194,255,.12);
+    }
+    .btn.danger{
+      border-color: rgba(255,90,111,.28);
+      background: rgba(255,90,111,.10);
     }
 
-    .stat{
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(10,10,14,.40);
-      padding: 14px;
+    .statusline{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-weight: 750;
+      font-size: .93rem;
     }
-    .stat .k{
-      font-size: 12px;
-      color: var(--muted2);
-      font-weight: 900;
+    .dot{ width: 9px; height: 9px; border-radius:999px; background: var(--muted2); display:inline-block; }
+    .dot.good{ background: var(--good); }
+    .dot.warn{ background: var(--warn); }
+    .dot.bad{ background: var(--bad); }
+
+    .table-wrap{ overflow:auto; border-radius: 14px; border: 1px solid rgba(255,255,255,.10); margin-top: 12px; }
+    table{
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+      background: rgba(0,0,0,.18);
     }
-    .stat .v{
-      margin-top: 6px;
-      font-size: 14px;
-      font-weight: 900;
-      color: rgba(244,244,247,.92);
-      letter-spacing: -.01em;
+    th, td{
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      text-align: left;
+      font-weight: 750;
+      color: rgba(255,255,255,.84);
+      vertical-align: top;
     }
+    th{
+      position: sticky;
+      top: 0;
+      background: rgba(10,16,38,.92);
+      color: rgba(255,255,255,.90);
+      font-weight: 950;
+      z-index: 1;
+    }
+    tr:hover td{ background: rgba(255,255,255,.03); }
 
     .empty{
-      margin-top: 12px;
-      padding: 14px;
-      border-radius: 16px;
+      padding: 16px;
+      color: var(--muted);
+      font-weight: 750;
       border: 1px dashed rgba(255,255,255,.16);
-      background: rgba(10,10,14,.26);
-      color: rgba(244,244,247,.68);
-      font-weight: 900;
-      font-size: 13px;
-    }
-
-    .error{
+      border-radius: 14px;
+      background: rgba(255,255,255,.02);
       margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,120,120,.30);
-      background: rgba(255,120,120,.08);
-      color: rgba(255,160,160,.95);
-      font-weight: 900;
-      font-size: 13px;
     }
 
-    /* Focus */
-    :focus-visible{
-      outline: 2px solid var(--focus);
-      outline-offset: 3px;
+    .toast{
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: calc(16px + var(--safe-bottom));
+      background: rgba(0,0,0,.55);
+      border: 1px solid rgba(255,255,255,.16);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      font-weight: 800;
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .22s var(--ease), transform .22s var(--ease);
+      max-width: 92vw;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    .toast.show{ opacity: 1; transform: translateX(-50%) translateY(-4px); }
+
+    /* ====== MOBILE ====== */
+    .mobile-top{
+      display:none;
+      gap: 10px;
+      align-items:center;
+    }
+    .burger{
+      width: 44px; height: 44px;
+      display:grid; place-items:center;
       border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      cursor:pointer;
+    }
+    .burger svg{ width: 22px; height: 22px; color: rgba(255,255,255,.92); }
+
+    @media (max-width: 980px){
+      .app{ flex-direction:column; }
+      .sidebar{
+        width: auto;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--stroke);
+        padding: calc(var(--pad) + var(--safe-top)) var(--pad) 12px;
+        display: none;
+      }
+      .sidebar.open{ display:block; }
+      .main{ padding: 12px var(--pad) calc(var(--pad) + var(--safe-bottom)); }
+      .mobile-top{ display:flex; }
+      .topbar{ border-radius: 18px; }
+      .user-meta .nick, .user-meta .id{ max-width: 44vw; }
+      table{ min-width: 680px; }
     }
 
-    @media (prefers-reduced-motion: reduce){
-      *{ transition:none !important; }
+    @media (max-width: 520px){
+      .userbox{ max-width: 70vw; }
+      .user-meta .nick, .user-meta .id{ max-width: 42vw; }
+      .pill span{ display:none; } /* zostaje sama ikonka/label w razie */
     }
   </style>
 </head>
 
 <body>
-  <div class="bg-grid"></div>
-  <div class="bg-noise"></div>
   <div id="app"></div>
 
   <script type="text/babel">
-    const { useEffect, useMemo, useState } = React;
+    const { useEffect, useMemo, useRef, useState } = React;
 
-    function normalizeDiscordUser(input){
-      const raw = input || {};
-      const discordId =
-        raw.discordId ?? raw.discord_id ?? raw.id ?? raw.userId ?? raw.user_id ?? "";
+    const Icons = {
+      Grid: (p) => (
+        <svg {...p} viewBox="0 0 24 24" fill="none">
+          <path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z" stroke="currentColor" strokeWidth="1.9" />
+        </svg>
+      ),
+      Key: (p) => (
+        <svg {...p} viewBox="0 0 24 24" fill="none">
+          <path d="M7.5 14.5a5.5 5.5 0 118.8 4.2L14 21H11v-2H9v-2H7.5v-2.5z" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"/>
+          <path d="M16.2 7.8h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+        </svg>
+      ),
+      Ticket: (p) => (
+        <svg {...p} viewBox="0 0 24 24" fill="none">
+          <path d="M4.5 8.5a2 2 0 012-2h11a2 2 0 012 2v2a2 2 0 010 4v2a2 2 0 01-2 2h-11a2 2 0 01-2-2v-2a2 2 0 010-4v-2z" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"/>
+          <path d="M12 8.8v6.4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeDasharray="2.2 2.2"/>
+        </svg>
+      ),
+      Menu: (p) => (
+        <svg {...p} viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 7.5h16a1 1 0 000-2H4a1 1 0 000 2zm0 6h16a1 1 0 000-2H4a1 1 0 000 2zm0 6h16a1 1 0 000-2H4a1 1 0 000 2z"/>
+        </svg>
+      ),
+      Logout: (p) => (
+        <svg {...p} viewBox="0 0 24 24" fill="none">
+          <path d="M10 7V6a2 2 0 012-2h7a2 2 0 012 2v12a2 2 0 01-2 2h-7a2 2 0 01-2-2v-1" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"/>
+          <path d="M3 12h10" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round"/>
+          <path d="M7 8l-4 4 4 4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )
+    };
 
-      const username =
-        raw.username ?? raw.global_name ?? raw.globalName ?? raw.name ?? raw.login ?? "Użytkownik";
+    // ====== API HELPERS ======
+    async function apiGet(path) {
+      const res = await fetch(path, {
+        method: 'GET',
+        credentials: 'include', // ważne dla cookie/session po Discord OAuth
+        headers: { 'Accept': 'application/json' },
+      });
 
-      let avatarUrl =
-        raw.avatarUrl ?? raw.avatar_url ?? raw.picture ?? "";
+      // np. 401 gdy brak sesji
+      const text = await res.text();
+      let json = null;
+      try { json = text ? JSON.parse(text) : null; } catch { json = null; }
 
-      const avatarHash = raw.avatar ?? raw.avatar_hash ?? raw.avatarHash ?? "";
-
-      if (!avatarUrl && discordId && avatarHash){
-        avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${avatarHash}.png?size=128`;
+      if (!res.ok) {
+        const msg = (json && (json.error || json.message)) || `Błąd ${res.status}`;
+        const err = new Error(msg);
+        err.status = res.status;
+        err.payload = json;
+        throw err;
       }
-      if (!avatarUrl){
-        avatarUrl = "https://cdn.discordapp.com/embed/avatars/0.png";
-      }
+      return json;
+    }
 
-      return {
-        discordId: String(discordId || ""),
-        username: String(username || "Użytkownik"),
-        avatarUrl
+    function useToast() {
+      const [toast, setToast] = useState({ show:false, text:'' });
+      const tRef = useRef(null);
+
+      const push = (text) => {
+        setToast({ show:true, text });
+        clearTimeout(tRef.current);
+        tRef.current = setTimeout(() => setToast(v => ({...v, show:false})), 2400);
       };
+
+      useEffect(() => () => clearTimeout(tRef.current), []);
+      return { toast, push };
     }
 
     function App(){
-      const tabs = useMemo(() => ([
-        { id:"services", label:"Moje usługi", hint:"Status i zakres", badge:"Brak" },
-        { id:"licenses", label:"Moje licencje", hint:"Klucze i ważność", badge:"Brak" },
-        { id:"tickets",  label:"Moje zgłoszenia", hint:"Obsługa i historia", badge:"Brak" },
-      ]), []);
+      const [tab, setTab] = useState('services'); // services | licenses | tickets
+      const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-      const [active, setActive] = useState("services");
+      const [me, setMe] = useState(null);            // { discordId, discordNick, discordAvatarUrl }
+      const [meLoading, setMeLoading] = useState(true);
+      const [meError, setMeError] = useState(null);
 
-      const [me, setMe] = useState(null);
-      const [loadingMe, setLoadingMe] = useState(true);
-      const [meErr, setMeErr] = useState("");
+      // Dane z Mongo przez backend (nie trzymamy mocków)
+      const [services, setServices] = useState(null);
+      const [licenses, setLicenses] = useState(null);
+      const [tickets, setTickets] = useState(null);
 
-      useEffect(() => {
-        let alive = true;
+      const [loading, setLoading] = useState({ services:false, licenses:false, tickets:false });
+      const [error, setError] = useState({ services:null, licenses:null, tickets:null });
 
-        (async () => {
-          setLoadingMe(true);
-          setMeErr("");
+      const [query, setQuery] = useState('');
 
-          try {
-            const res = await fetch("/api/me", { credentials: "include" });
+      const { toast, push } = useToast();
 
-            if (res.status === 401) {
-              window.location.href = "/auth/discord";
-              return;
-            }
+      const title = useMemo(() => {
+        if (tab === 'services') return 'Moje usługi';
+        if (tab === 'licenses') return 'Moje licencje';
+        return 'Moje zgłoszenia';
+      }, [tab]);
 
-            if (!res.ok) {
-              if (!alive) return;
-              setMeErr("Nie udało się pobrać profilu użytkownika.");
-              return;
-            }
-
-            const data = await res.json();
-            const rawUser = data?.user ?? data?.me ?? data?.profile ?? data;
-
-            if (!rawUser) {
-              if (!alive) return;
-              setMeErr("API /api/me zwróciło pustą odpowiedź profilu.");
-              return;
-            }
-
-            const normalized = normalizeDiscordUser(rawUser);
-
-            if (!alive) return;
-            setMe(normalized);
-          } catch (e) {
-            if (!alive) return;
-            setMeErr("Błąd połączenia z serwerem. Spróbuj odświeżyć.");
-          } finally {
-            if (!alive) return;
-            setLoadingMe(false);
-          }
-        })();
-
-        return () => { alive = false; };
-      }, []);
-
-      const logout = async () => {
+      const fetchMe = async () => {
+        setMeLoading(true);
+        setMeError(null);
         try{
-          await fetch("/auth/logout", {
-            method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" }
-          });
-        }catch(e){}
-        window.location.href = "/";
+          const data = await apiGet('/api/me');
+          setMe(data?.user || null);
+        }catch(e){
+          setMe(null);
+          setMeError(e);
+        }finally{
+          setMeLoading(false);
+        }
       };
 
-      const view = useMemo(() => {
-        if (active === "services") {
-          return {
-            title: "Moje usługi",
-            desc: "Brak",
-            stats: [
-              { k: "Status", v: "Brak" },
-              { k: "Monitoring / SLA", v: "Brak" },
-              { k: "Ostatnia zmiana", v: "Brak" },
-            ],
-            cta: { label: "Brak", onClick: () => {} },
-            empty: "Brak"
-          };
+      const fetchTabData = async (which) => {
+        setLoading(s => ({...s, [which]: true}));
+        setError(s => ({...s, [which]: null}));
+        try{
+          if (which === 'services') {
+            const data = await apiGet('/api/services');
+            setServices(data?.items ?? data ?? null);
+          } else if (which === 'licenses') {
+            const data = await apiGet('/api/licenses');
+            setLicenses(data?.items ?? data ?? null);
+          } else if (which === 'tickets') {
+            const data = await apiGet('/api/tickets');
+            setTickets(data?.items ?? data ?? null);
+          }
+        }catch(e){
+          setError(s => ({...s, [which]: e}));
+        }finally{
+          setLoading(s => ({...s, [which]: false}));
         }
-        if (active === "licenses") {
-          return {
-            title: "Moje licencje",
-            desc: "Brak",
-            stats: [
-              { k: "Aktywne licencje", v: "Brak" },
-              { k: "Najbliższe wygaśnięcie", v: "Brak" },
-              { k: "Ostatni klucz", v: "Brak" },
-            ],
-            cta: { label: "Brak", onClick: () => {} },
-            empty: "Brak"
-          };
-        }
-        return {
-          title: "Moje zgłoszenia",
-          desc: "Brak",
-          stats: [
-            { k: "Otwarte", v: "Brak" },
-            { k: "W trakcie", v: "Brak" },
-            { k: "Zamknięte", v: "Brak" },
-          ],
-          cta: { label: "Brak", onClick: () => {} },
-          empty: "Brak"
-        };
-      }, [active]);
+      };
 
-      const subtitle = useMemo(() => {
-        if (active === "services") return "Moje usługi";
-        if (active === "licenses") return "Moje licencje";
-        return "Moje zgłoszenia";
-      }, [active]);
+      useEffect(() => { fetchMe(); }, []);
+
+      useEffect(() => {
+        // wczytujemy dane tylko dla aktywnej zakładki (bez prototypów)
+        fetchTabData(tab);
+        setMobileSidebarOpen(false);
+      }, [tab]);
+
+      const logout = async () => {
+        // jeżeli masz endpoint do wylogowania:
+        // await fetch('/api/logout', { method:'POST', credentials:'include' })
+        push('Wylogowanie: podepnij /api/logout w backendzie.');
+      };
+
+      const guard = () => {
+        // jeśli brak sesji (np. 401), kierujesz na auth
+        if (meError?.status === 401) {
+          return (
+            <div className="card">
+              <h2>Brak sesji</h2>
+              <p>Wygląda na to, że nie jesteś zalogowany przez Discord OAuth.</p>
+              <div className="toolbar">
+                <a className="btn primary" href="/auth/discord">Zaloguj przez Discord</a>
+              </div>
+            </div>
+          );
+        }
+        return null;
+      };
+
+      const TopbarRight = () => {
+        if (meLoading) {
+          return (
+            <div className="userbox" aria-label="Ładowanie profilu">
+              <div className="avatar"></div>
+              <div className="user-meta">
+                <div className="nick">Ładowanie…</div>
+                <div className="id">Discord ID: —</div>
+              </div>
+            </div>
+          );
+        }
+        if (!me) {
+          return (
+            <div className="userbox" aria-label="Brak profilu">
+              <div className="avatar"></div>
+              <div className="user-meta">
+                <div className="nick">Niezalogowany</div>
+                <div className="id">Discord ID: —</div>
+              </div>
+            </div>
+          );
+        }
+        return (
+          <div className="userbox" aria-label="Profil Discord">
+            <div className="avatar">
+              {me.discordAvatarUrl ? <img src={me.discordAvatarUrl} alt={me.discordNick || 'Avatar'} /> : null}
+            </div>
+            <div className="user-meta">
+              <div className="nick" title={me.discordNick || ''}>{me.discordNick || '—'}</div>
+              <div className="id" title={me.discordId || ''}>Discord ID: {me.discordId || '—'}</div>
+            </div>
+            <button className="pill" onClick={logout} type="button" title="Wyloguj">
+              <Icons.Logout style={{width:18,height:18}} />
+              <span>Wyloguj</span>
+            </button>
+          </div>
+        );
+      };
+
+      const renderTable = (rows, columns, keyField='id') => {
+        if (!Array.isArray(rows)) return null;
+        if (rows.length === 0) {
+          // NIE prototypujemy danych: pokazujemy tylko neutralny stan.
+          return <div className="empty">Brak rekordów do wyświetlenia (API zwróciło pustą listę).</div>;
+        }
+
+        // proste filtrowanie po stringach (opcjonalne)
+        const q = query.trim().toLowerCase();
+        const filtered = !q ? rows : rows.filter(r => {
+          try{
+            return Object.values(r).some(v => (typeof v === 'string' || typeof v === 'number') && String(v).toLowerCase().includes(q));
+          }catch{ return false; }
+        });
+
+        return (
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  {columns.map(c => <th key={c.key}>{c.label}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((r, idx) => (
+                  <tr key={(r && r[keyField]) ? r[keyField] : idx}>
+                    {columns.map(c => (
+                      <td key={c.key}>
+                        {c.render ? c.render(r) : (r?.[c.key] ?? '—')}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      };
+
+      const TabView = () => {
+        const g = guard();
+        if (g) return g;
+
+        const isLoading = loading[tab];
+        const err = error[tab];
+
+        // Kolumny przykładowe — NIE dane. Backend ma zwracać pola, które tu mapujesz.
+        // Jeśli wolisz inne pola, zmieniasz tylko definicje columns.
+        if (tab === 'services') {
+          const columns = [
+            { key: 'name', label: 'Usługa' },
+            { key: 'status', label: 'Status' },
+            { key: 'createdAt', label: 'Utworzono' },
+            { key: 'expiresAt', label: 'Wygasa' },
+          ];
+
+          return (
+            <div className="card">
+              <h2>Moje usługi</h2>
+              <p>Lista usług przypisana do konta. Dane są pobierane z backendu (MongoDB).</p>
+
+              <div className="toolbar">
+                <input
+                  className="input"
+                  placeholder="Szukaj…"
+                  value={query}
+                  onChange={(e)=>setQuery(e.target.value)}
+                />
+                <button className="btn" onClick={() => fetchTabData('services')} type="button">Odśwież</button>
+              </div>
+
+              <div className="statusline">
+                <span className={"dot " + (err ? "bad" : (isLoading ? "warn" : "good"))}></span>
+                {isLoading ? 'Pobieranie danych…' : err ? `Błąd: ${err.message}` : 'OK'}
+              </div>
+
+              {isLoading ? <div className="empty">Trwa pobieranie…</div> : (
+                services == null
+                  ? <div className="empty">Brak danych w stanie aplikacji. Backend powinien zwrócić tablicę w /api/services.</div>
+                  : renderTable(services, columns)
+              )}
+            </div>
+          );
+        }
+
+        if (tab === 'licenses') {
+          const columns = [
+            { key: 'product', label: 'Produkt' },
+            { key: 'licenseKey', label: 'Klucz' },
+            { key: 'status', label: 'Status' },
+            { key: 'issuedAt', label: 'Wydano' },
+            { key: 'expiresAt', label: 'Wygasa' },
+          ];
+
+          return (
+            <div className="card">
+              <h2>Moje licencje</h2>
+              <p>Klucze/licencje powiązane z Twoim kontem.</p>
+
+              <div className="toolbar">
+                <input
+                  className="input"
+                  placeholder="Szukaj…"
+                  value={query}
+                  onChange={(e)=>setQuery(e.target.value)}
+                />
+                <button className="btn" onClick={() => fetchTabData('licenses')} type="button">Odśwież</button>
+              </div>
+
+              <div className="statusline">
+                <span className={"dot " + (err ? "bad" : (isLoading ? "warn" : "good"))}></span>
+                {isLoading ? 'Pobieranie danych…' : err ? `Błąd: ${err.message}` : 'OK'}
+              </div>
+
+              {isLoading ? <div className="empty">Trwa pobieranie…</div> : (
+                licenses == null
+                  ? <div className="empty">Brak danych w stanie aplikacji. Backend powinien zwrócić tablicę w /api/licenses.</div>
+                  : renderTable(licenses, columns)
+              )}
+            </div>
+          );
+        }
+
+        // tickets
+        const columns = [
+          { key: 'ticketId', label: 'Ticket ID' },
+          { key: 'subject', label: 'Temat' },
+          { key: 'status', label: 'Status' },
+          { key: 'createdAt', label: 'Utworzono' },
+          { key: 'updatedAt', label: 'Aktualizacja' },
+        ];
+
+        return (
+          <div className="card">
+            <h2>Moje zgłoszenia</h2>
+            <p>Zgłoszenia supportowe i ich statusy. Źródło: backend + MongoDB.</p>
+
+            <div className="toolbar">
+              <input
+                className="input"
+                placeholder="Szukaj…"
+                value={query}
+                onChange={(e)=>setQuery(e.target.value)}
+              />
+              <button className="btn" onClick={() => fetchTabData('tickets')} type="button">Odśwież</button>
+              <button
+                className="btn primary"
+                onClick={() => push('Tworzenie zgłoszeń: podepnij POST /api/tickets w backendzie i dodaj modal/formularz.')}
+                type="button"
+              >
+                Nowe zgłoszenie
+              </button>
+            </div>
+
+            <div className="statusline">
+              <span className={"dot " + (err ? "bad" : (isLoading ? "warn" : "good"))}></span>
+              {isLoading ? 'Pobieranie danych…' : err ? `Błąd: ${err.message}` : 'OK'}
+            </div>
+
+            {isLoading ? <div className="empty">Trwa pobieranie…</div> : (
+              tickets == null
+                ? <div className="empty">Brak danych w stanie aplikacji. Backend powinien zwrócić tablicę w /api/tickets.</div>
+                : renderTable(tickets, columns)
+            )}
+          </div>
+        );
+      };
+
+      const setTabAndClear = (next) => {
+        setQuery('');
+        setTab(next);
+      };
 
       return (
-        <div className="shell">
+        <div className="app">
+          {/* MOBILE TOP (burger) */}
+          <div className="main" style={{paddingBottom: 0}}>
+            <div className="mobile-top">
+              <button className="burger" onClick={() => setMobileSidebarOpen(v => !v)} type="button" aria-label="Menu">
+                <Icons.Menu />
+              </button>
+              <div style={{flex:1}} />
+            </div>
+          </div>
+
           {/* SIDEBAR */}
-          <aside className="sidebar">
-            <div className="brand" aria-label="Lite Solutions">
-              <img src="https://i.imgur.com/6Lsxvnw.png" alt="Lite Solutions" />
+          <aside className={"sidebar " + (mobileSidebarOpen ? "open" : "")}>
+            <div className="brand">
+              <img src="https://i.imgur.com/TbvImJS.png" alt="Lite Solutions" />
               <div style={{minWidth:0}}>
-                <div className="name">Lite Solutions</div>
-                <div className="sub">Panel Klienta</div>
+                <strong>Lite Solutions</strong>
+                <small>Panel Klienta</small>
               </div>
             </div>
 
             <nav className="nav" aria-label="Nawigacja panelu">
-              {tabs.map(t => (
-                <button
-                  key={t.id}
-                  className={"navItem " + (active === t.id ? "active" : "")}
-                  onClick={() => setActive(t.id)}
-                  type="button"
-                >
-                  <div className="left">
-                    <div className="title">{t.label}</div>
-                    <div className="hint">{t.hint}</div>
-                  </div>
-                  <div className="badge">{t.badge}</div>
-                </button>
-              ))}
+              <a
+                href="#services"
+                className={tab === 'services' ? 'active' : ''}
+                onClick={(e)=>{e.preventDefault(); setTabAndClear('services');}}
+              >
+                <Icons.Grid style={{width:18,height:18}} />
+                Moje usługi
+              </a>
+              <a
+                href="#licenses"
+                className={tab === 'licenses' ? 'active' : ''}
+                onClick={(e)=>{e.preventDefault(); setTabAndClear('licenses');}}
+              >
+                <Icons.Key style={{width:18,height:18}} />
+                Moje Licencje
+              </a>
+              <a
+                href="#tickets"
+                className={tab === 'tickets' ? 'active' : ''}
+                onClick={(e)=>{e.preventDefault(); setTabAndClear('tickets');}}
+              >
+                <Icons.Ticket style={{width:18,height:18}} />
+                Moje Zgłoszenia
+              </a>
             </nav>
 
-            <div className="sidebarFooter">
-              <div className="quickLinks">
-                <a className="linkPill" href="workspace.html">Kreator bota</a>
-                <a className="linkPill" href="/">Strona główna</a>
-              </div>
-              <div className="copyright">© 2025 Lite Solutions</div>
+            <div className="side-footer">
+              <div><span style={{color:'rgba(255,255,255,.82)', fontWeight:950}}>API:</span> /api/me, /api/services, /api/licenses, /api/tickets</div>
+              <div style={{marginTop:8}}>Po stronie backendu mapujesz MongoDB → JSON.</div>
             </div>
           </aside>
 
           {/* MAIN */}
           <main className="main">
-            <div className="topbar" aria-label="Górny pasek">
-              <div className="pageTitle">
-                <h1>{subtitle}</h1>
-                <p>Minimalnie. Profesjonalnie. Najważniejsze informacje w jednym miejscu.</p>
+            <div className="topbar">
+              <div style={{minWidth:0}}>
+                <h1>{title}</h1>
+                <div className="crumb">Panel klienta · flat UI · kolorystyka Lite</div>
               </div>
-
-              <div className="userArea">
-                {!loadingMe && me ? (
-                  <>
-                    <div className="userChip" title={me.discordId ? ("Discord ID: " + me.discordId) : "Profil Discord"}>
-                      <img src={me.avatarUrl} alt="avatar" />
-                      <div className="userMeta">
-                        <div className="uname">{me.username || "Użytkownik"}</div>
-                        <div className="uid">{me.discordId ? ("ID: " + me.discordId) : "ID: —"}</div>
-                      </div>
-                    </div>
-                    <button className="btn" onClick={logout} type="button">Wyloguj</button>
-                  </>
-                ) : (
-                  <div className="userChip" aria-label="Ładowanie profilu">
-                    <div className="userMeta">
-                      <div className="uname" style={{color:"rgba(244,244,247,.75)"}}>
-                        {meErr ? "Brak profilu" : "Ładowanie…"}
-                      </div>
-                      <div className="uid">{meErr ? "Sprawdź /api/me" : " "}</div>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <TopbarRight />
             </div>
 
-            {meErr && <div className="error">{meErr}</div>}
-
-            <section className="panel" aria-label="Zawartość">
-              <div className="panelHead">
-                <div className="hgroup">
-                  <h2>{view.title}</h2>
-                  <div className="desc">{view.desc}</div>
-                </div>
-                <button className="btn primary" onClick={view.cta.onClick} type="button" disabled>
-                  {view.cta.label}
-                </button>
-              </div>
-
-              <div className="panelBody">
-                <div className="stats">
-                  {view.stats.map((s, idx) => (
-                    <div key={idx} className="stat">
-                      <div className="k">{s.k}</div>
-                      <div className="v">{s.v}</div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="empty">
-                  Brak
+            {meError && meError.status !== 401 ? (
+              <div className="content">
+                <div className="card">
+                  <h2>Nie udało się pobrać profilu</h2>
+                  <p>{meError.message}</p>
+                  <div className="toolbar">
+                    <button className="btn" onClick={fetchMe} type="button">Spróbuj ponownie</button>
+                    <a className="btn" href="/auth/discord">Discord OAuth</a>
+                  </div>
                 </div>
               </div>
-            </section>
+            ) : null}
+
+            <div className="content">
+              <TabView />
+
+              <div className="card">
+                <h2>Integracja z MongoDB (bez prototypów)</h2>
+                <p>
+                  Ten panel nie zawiera “na sztywno” żadnych rekordów.
+                  Wyświetli dane dopiero gdy backend zwróci je z MongoDB przez API.
+                </p>
+                <div className="toolbar">
+                  <button className="btn" onClick={() => push('Tip: ustaw credentials:include i zwracaj JSON z backendu.')} type="button">Tip</button>
+                  <button className="btn danger" onClick={() => push('W produkcji trzymaj sesję w httpOnly cookie i waliduj po stronie API.')} type="button">Bezpieczeństwo</button>
+                </div>
+              </div>
+            </div>
           </main>
+
+          <div className={"toast " + (toast.show ? "show" : "")} role="status" aria-live="polite">
+            {toast.text}
+          </div>
         </div>
       );
     }
 
-    ReactDOM.createRoot(document.getElementById("app")).render(<App />);
+    ReactDOM.createRoot(document.getElementById('app')).render(<App />);
   </script>
 </body>
 </html>
