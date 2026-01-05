@@ -80,6 +80,7 @@
       max-width: none !important;
     }
 
+    /* ===== Sidebar desktop ===== */
     .sidebar{
       width: var(--sidebar);
       flex: 0 0 var(--sidebar);
@@ -159,6 +160,29 @@
       font-size: .94rem;
       margin-top: 3px;
     }
+
+    .topbar-left{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .menu-btn{
+      display:none;
+      align-items:center;
+      justify-content:center;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      cursor:pointer;
+      transition: transform var(--speed) var(--ease), background var(--speed) var(--ease), border-color var(--speed) var(--ease);
+      flex-shrink:0;
+    }
+    .menu-btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(0,194,255,.22); }
 
     .userbox{
       display:flex; align-items:center; gap: 10px;
@@ -322,22 +346,135 @@
     }
     .toast.show{ opacity: 1; transform: translateX(-50%) translateY(-4px); }
 
-    @media (max-width: 980px){
-      .app{ flex-direction:column; }
-      .sidebar{
-        width: auto;
-        flex: 0 0 auto;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--stroke);
-      }
-      table{ min-width: 680px; }
+    /* ===== Mobile drawer ===== */
+    .drawer-backdrop{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--speed) var(--ease);
+      z-index: 50;
+    }
+    .drawer-backdrop.show{
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .drawer{
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: min(92vw, 320px);
+      transform: translateX(-105%);
+      transition: transform var(--speed) var(--ease);
+      z-index: 60;
+      border-right: 1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(10,17,42,.98), rgba(10,17,42,.80));
+      padding: calc(var(--pad) + var(--safe-top)) var(--pad) calc(var(--pad) + var(--safe-bottom));
+      overflow: auto;
+      box-shadow: 0 30px 80px rgba(0,0,0,.55);
+    }
+    .drawer.show{ transform: translateX(0); }
+
+    .drawer-top{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom: 10px;
+    }
+    .drawer-close{
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      cursor:pointer;
+      transition: transform var(--speed) var(--ease), background var(--speed) var(--ease), border-color var(--speed) var(--ease);
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0;
+    }
+    .drawer-close:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); border-color: rgba(0,194,255,.22); }
+
+    /* ===== Mobile list view for tables ===== */
+    .list{
+      margin-top: 12px;
+      display:grid;
+      gap: 10px;
+    }
+    .rowcard{
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .rowline{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 8px 0;
+      border-top: 1px dashed rgba(255,255,255,.10);
+    }
+    .rowline:first-child{ border-top: none; padding-top: 0; }
+    .rowk{
+      color: var(--muted);
+      font-weight: 800;
+      font-size: .88rem;
+      flex: 0 0 44%;
+      max-width: 44%;
+    }
+    .rowv{
+      font-weight: 850;
+      color: rgba(255,255,255,.88);
+      flex: 1 1 auto;
+      min-width: 0;
+      text-align: right;
+      word-break: break-word;
     }
 
-    @media (max-width: 520px){
-      .userbox{ max-width: 78vw; }
-      .user-meta .nick, .user-meta .id{ max-width: 42vw; }
+    /* ===== Breakpoints ===== */
+    @media (max-width: 980px){
+      /* Zamiast układu kolumnowego -> główna kolumna, sidebar znika (zastąpiony drawerem) */
+      .app{ flex-direction:column; }
+      .sidebar{ display:none; }
+      .menu-btn{ display:flex; }
+      .main{
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+      table{ min-width: 680px; } /* nadal działa scroll, ale na mobile preferujemy listę */
+      .topbar{
+        border-radius: 18px;
+        padding: 10px 12px;
+      }
+      .card{
+        border-radius: 18px;
+        padding: 14px;
+      }
+    }
+
+    @media (max-width: 640px){
+      .userbox{
+        border-radius: 18px;
+        padding: 8px;
+        max-width: 60vw;
+      }
+      .user-meta .nick, .user-meta .id{ max-width: 44vw; }
+      .pill{ padding: 10px 10px; }
       .pill span{ display:none; }
+      .input{ min-width: 160px; }
+      .btn{ padding: 12px 12px; }
+    }
+
+    @media (max-width: 420px){
+      .main{ padding-left: 12px; padding-right: 12px; }
+      .topbar h1{ font-size: 1.0rem; }
+      .crumb{ font-size: .90rem; }
+      .userbox{ max-width: 58vw; }
+      .user-meta .nick{ max-width: 40vw; }
+      .user-meta .id{ display:none; } /* ciasno na ultra małych ekranach */
     }
   </style>
 </head>
@@ -371,6 +508,16 @@
           <path d="M10 7V6a2 2 0 012-2h7a2 2 0 012 2v12a2 2 0 01-2 2h-7a2 2 0 01-2-2v-1" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"/>
           <path d="M3 12h10" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round"/>
           <path d="M7 8l-4 4 4 4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      Menu: (p) => (
+        <svg {...p} viewBox="0 0 24 24" fill="none">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round"/>
+        </svg>
+      ),
+      X: (p) => (
+        <svg {...p} viewBox="0 0 24 24" fill="none">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round"/>
         </svg>
       )
     };
@@ -416,7 +563,6 @@
         discordAvatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${rawAvatar}.png?size=128`;
       } else if (discordId) {
         // fallback: default avatar
-        // (Discord ma kilka domyślnych; tu nie robimy "modulo", żeby nie bawić się w detale – dajemy jeden neutralny)
         discordAvatarUrl = `https://cdn.discordapp.com/embed/avatars/0.png`;
       }
 
@@ -471,6 +617,32 @@
       return { toast, push };
     }
 
+    function useMediaQuery(query) {
+      const [matches, setMatches] = useState(() => {
+        try { return window.matchMedia(query).matches; } catch { return false; }
+      });
+
+      useEffect(() => {
+        let mql;
+        try { mql = window.matchMedia(query); } catch { return; }
+
+        const onChange = () => setMatches(mql.matches);
+
+        // Safari fallback
+        if (mql.addEventListener) mql.addEventListener('change', onChange);
+        else mql.addListener(onChange);
+
+        setMatches(mql.matches);
+
+        return () => {
+          if (mql.removeEventListener) mql.removeEventListener('change', onChange);
+          else mql.removeListener(onChange);
+        };
+      }, [query]);
+
+      return matches;
+    }
+
     function App(){
       const [tab, setTab] = useState('services');
 
@@ -487,6 +659,10 @@
 
       const [query, setQuery] = useState('');
       const { toast, push } = useToast();
+
+      const isMobile = useMediaQuery('(max-width: 640px)');
+      const isDrawerMode = useMediaQuery('(max-width: 980px)');
+      const [drawerOpen, setDrawerOpen] = useState(false);
 
       const title = useMemo(() => {
         if (tab === 'services') return 'Moje usługi';
@@ -526,8 +702,30 @@
       useEffect(() => { fetchMe(); }, []);
       useEffect(() => { fetchTabData(tab); }, [tab]);
 
-      const logout = async () => {
-        push('Wylogowano.');
+      // Gdy wychodzimy z trybu mobile -> zamknij drawer
+      useEffect(() => {
+        if (!isDrawerMode) setDrawerOpen(false);
+      }, [isDrawerMode]);
+
+      // UX: ESC zamyka drawer
+      useEffect(() => {
+        const onKey = (e) => {
+          if (e.key === 'Escape') setDrawerOpen(false);
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+      }, []);
+
+      const goTab = (next) => {
+        setQuery('');
+        setTab(next);
+        if (isDrawerMode) setDrawerOpen(false);
+      };
+
+      const logout = () => {
+        // wymaganie: przekieruj do index.html
+        // (relatywnie jest bezpieczniej na różnych domenach/ścieżkach)
+        window.location.href = 'index.html';
       };
 
       const guard = () => {
@@ -589,6 +787,39 @@
         );
       };
 
+      const renderList = (rows, columns, keyField='id') => {
+        if (!Array.isArray(rows)) return null;
+        if (rows.length === 0) return <div className="empty">Brak danych.</div>;
+
+        const q = query.trim().toLowerCase();
+        const filtered = !q ? rows : rows.filter(r => {
+          try{
+            return Object.values(r).some(v =>
+              (typeof v === 'string' || typeof v === 'number') &&
+              String(v).toLowerCase().includes(q)
+            );
+          }catch{ return false; }
+        });
+
+        return (
+          <div className="list">
+            {filtered.map((r, idx) => (
+              <div className="rowcard" key={(r && r[keyField]) ? r[keyField] : idx}>
+                {columns.map((c) => {
+                  const val = c.render ? c.render(r) : (r?.[c.key] ?? '—');
+                  return (
+                    <div className="rowline" key={c.key}>
+                      <div className="rowk">{c.label}</div>
+                      <div className="rowv">{val}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        );
+      };
+
       const renderTable = (rows, columns, keyField='id') => {
         if (!Array.isArray(rows)) return null;
         if (rows.length === 0) return <div className="empty">Brak danych.</div>;
@@ -638,12 +869,32 @@
         );
       };
 
+      const SidebarNav = ({ mode = "sidebar" }) => (
+        <nav className="nav" aria-label="Nawigacja panelu">
+          <a href="#services" className={tab === 'services' ? 'active' : ''} onClick={(e)=>{e.preventDefault(); goTab('services');}}>
+            <Icons.Grid style={{width:18,height:18}} /> Moje usługi
+          </a>
+          <a href="#licenses" className={tab === 'licenses' ? 'active' : ''} onClick={(e)=>{e.preventDefault(); goTab('licenses');}}>
+            <Icons.Key style={{width:18,height:18}} /> Moje Licencje
+          </a>
+          <a href="#tickets" className={tab === 'tickets' ? 'active' : ''} onClick={(e)=>{e.preventDefault(); goTab('tickets');}}>
+            <Icons.Ticket style={{width:18,height:18}} /> Moje Zgłoszenia
+          </a>
+        </nav>
+      );
+
       const TabView = () => {
         const g = guard();
         if (g) return g;
 
         const isLoading = loading[tab];
         const err = error[tab];
+
+        const view = (rows, columns) => {
+          if (isLoading) return <div className="empty">Ładowanie…</div>;
+          if (rows == null) return <div className="empty">Brak danych.</div>;
+          return isMobile ? renderList(rows, columns) : renderTable(rows, columns);
+        };
 
         if (tab === 'services') {
           const columns = [
@@ -660,9 +911,7 @@
                 <button className="btn" onClick={() => fetchTabData('services')} type="button">Odśwież</button>
               </div>
               <Status isLoading={isLoading} err={err} />
-              {isLoading ? <div className="empty">Ładowanie…</div> : (
-                services == null ? <div className="empty">Brak danych.</div> : renderTable(services, columns)
-              )}
+              {view(services, columns)}
             </div>
           );
         }
@@ -683,9 +932,7 @@
                 <button className="btn" onClick={() => fetchTabData('licenses')} type="button">Odśwież</button>
               </div>
               <Status isLoading={isLoading} err={err} />
-              {isLoading ? <div className="empty">Ładowanie…</div> : (
-                licenses == null ? <div className="empty">Brak danych.</div> : renderTable(licenses, columns)
-              )}
+              {view(licenses, columns)}
             </div>
           );
         }
@@ -705,15 +952,14 @@
               <button className="btn" onClick={() => fetchTabData('tickets')} type="button">Odśwież</button>
             </div>
             <Status isLoading={isLoading} err={err} />
-            {isLoading ? <div className="empty">Ładowanie…</div> : (
-              tickets == null ? <div className="empty">Brak danych.</div> : renderTable(tickets, columns)
-            )}
+            {view(tickets, columns)}
           </div>
         );
       };
 
       return (
         <div className="app">
+          {/* Desktop sidebar */}
           <aside className="sidebar">
             <div className="brand">
               <img src="https://i.imgur.com/TbvImJS.png" alt="Lite Solutions" />
@@ -722,25 +968,47 @@
                 <small>Panel Klienta</small>
               </div>
             </div>
-
-            <nav className="nav" aria-label="Nawigacja panelu">
-              <a href="#services" className={tab === 'services' ? 'active' : ''} onClick={(e)=>{e.preventDefault(); setQuery(''); setTab('services');}}>
-                <Icons.Grid style={{width:18,height:18}} /> Moje usługi
-              </a>
-              <a href="#licenses" className={tab === 'licenses' ? 'active' : ''} onClick={(e)=>{e.preventDefault(); setQuery(''); setTab('licenses');}}>
-                <Icons.Key style={{width:18,height:18}} /> Moje Licencje
-              </a>
-              <a href="#tickets" className={tab === 'tickets' ? 'active' : ''} onClick={(e)=>{e.preventDefault(); setQuery(''); setTab('tickets');}}>
-                <Icons.Ticket style={{width:18,height:18}} /> Moje Zgłoszenia
-              </a>
-            </nav>
+            <SidebarNav />
           </aside>
+
+          {/* Mobile drawer */}
+          {isDrawerMode ? (
+            <>
+              <div
+                className={"drawer-backdrop " + (drawerOpen ? "show" : "")}
+                onClick={() => setDrawerOpen(false)}
+                aria-hidden={!drawerOpen}
+              />
+              <aside className={"drawer " + (drawerOpen ? "show" : "")} role="dialog" aria-modal="true" aria-label="Menu panelu">
+                <div className="drawer-top">
+                  <div className="brand" style={{marginBottom:0, flex:1}}>
+                    <img src="https://i.imgur.com/TbvImJS.png" alt="Lite Solutions" />
+                    <div style={{minWidth:0}}>
+                      <strong>Lite Solutions</strong>
+                      <small>Panel Klienta</small>
+                    </div>
+                  </div>
+                  <button className="drawer-close" onClick={() => setDrawerOpen(false)} type="button" title="Zamknij">
+                    <Icons.X style={{width:18, height:18}} />
+                  </button>
+                </div>
+                <SidebarNav mode="drawer" />
+              </aside>
+            </>
+          ) : null}
 
           <main className="main">
             <div className="topbar">
-              <div style={{minWidth:0}}>
-                <h1>{title}</h1>
-                <div className="crumb">Panel klienta</div>
+              <div className="topbar-left" style={{minWidth:0}}>
+                {isDrawerMode ? (
+                  <button className="menu-btn" onClick={() => setDrawerOpen(true)} type="button" title="Menu">
+                    <Icons.Menu style={{width:18, height:18}} />
+                  </button>
+                ) : null}
+                <div style={{minWidth:0}}>
+                  <h1>{title}</h1>
+                  <div className="crumb">Panel klienta</div>
+                </div>
               </div>
               <TopbarRight />
             </div>
