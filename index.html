@@ -25,7 +25,6 @@
 
   <style>
     :root{
-      /* --- Foundation --- */
       --bg0: #050815;
       --bg1: #070b1b;
       --bg2: #0a1026;
@@ -47,10 +46,9 @@
       --ease: cubic-bezier(.16, 1, .3, 1);
       --speed: .30s;
 
-      /* --- Brand --- */
-      --a1: #2d63ff;   /* royal */
-      --a2: #00c2ff;   /* cyan */
-      --a3: #7cf7ff;   /* ice */
+      --a1: #2d63ff;
+      --a2: #00c2ff;
+      --a3: #7cf7ff;
 
       --glow1: rgba(0,194,255,.22);
       --glow2: rgba(45,99,255,.16);
@@ -58,7 +56,6 @@
       --grid: rgba(255,255,255,.038);
       --focus: rgba(124,247,255,.80);
 
-      /* --- Sizing --- */
       --container: 1180px;
       --padX: 22px;
     }
@@ -87,7 +84,6 @@
     .muted{ color: var(--muted); }
     .muted2{ color: var(--muted2); }
 
-    /* --- Background layers --- */
     #grid-background{
       position:fixed; inset:0; z-index:-4;
       background-image:
@@ -144,7 +140,6 @@
       to{ transform: translate3d(110px, -62px, 0) rotate(16deg) scale(1.06); }
     }
 
-    /* subtle rings */
     .rings{
       position:fixed; inset:0; z-index:-3; pointer-events:none;
       opacity:.22;
@@ -155,7 +150,6 @@
       filter: blur(1px);
     }
 
-    /* --- Preloader --- */
     #preloader{
       position:fixed; inset:0; display:grid; place-items:center; z-index:9999;
       background: rgba(5,8,21,.62);
@@ -183,7 +177,6 @@
     }
     @keyframes load{ 0%{ transform: translateX(-60%);} 100%{ transform: translateX(260%);} }
 
-    /* --- Scroll progress --- */
     .scroll-progress{
       position:fixed; top:0; left:0; height:3px; width: 0%;
       background: linear-gradient(90deg, var(--a2), var(--a1), var(--a3));
@@ -191,7 +184,6 @@
       box-shadow: 0 0 14px rgba(0,194,255,.16);
     }
 
-    /* --- Header --- */
     #app-header{ position:fixed; top:18px; left:18px; right:18px; z-index:2000; }
     .header-nav{
       display:flex; align-items:center; justify-content:space-between;
@@ -242,7 +234,6 @@
 
     .header-actions{ display:flex; gap: 10px; align-items:center; }
 
-    /* --- CTA in header --- */
     .pill{
       display:inline-flex; gap:10px; align-items:center;
       padding: 10px 14px;
@@ -274,7 +265,6 @@
     }
     .pill svg{ width: 20px; height: 20px; }
 
-    /* --- Typography --- */
     .hero-title{
       font-size: clamp(2.65rem, 6.2vw, 5.35rem);
       font-weight: 950;
@@ -295,7 +285,6 @@
       max-width: 70ch;
     }
 
-    /* --- Buttons --- */
     .btn{
       display:inline-flex; gap: 10px; align-items:center; justify-content:center;
       padding: 14px 18px;
@@ -354,7 +343,6 @@
       font-size: 1.06rem;
     }
 
-    /* --- Layout grids --- */
     .grid-2{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
     @media (max-width: 980px){ .grid-2{ grid-template-columns: 1fr; } }
 
@@ -373,7 +361,6 @@
       .col-6,.col-7,.col-5,.col-4,.col-8{ grid-column: span 12; }
     }
 
-    /* --- Cards (gradient border illusion) --- */
     .card{
       background: rgba(10,14,30,.62);
       border-radius: var(--r2);
@@ -415,7 +402,6 @@
 
     .hr{ width: 100%; height: 1px; background: rgba(255,255,255,.08); margin: 16px 0; }
 
-    /* icons */
     .icon{
       width: 46px; height: 46px;
       border-radius: 16px;
@@ -440,7 +426,6 @@
       position:relative;
     }
 
-    /* --- Reveal --- */
     .reveal{
       opacity: 0;
       transform: translateY(22px) scale(.987);
@@ -452,11 +437,10 @@
       transform: translateY(0) scale(1);
     }
 
-    /* --- HERO: teraz jednokolumnowy --- */
     #hero{ min-height:100vh; display:flex; align-items:center; padding-top: 130px; }
     .hero-split{
       display:grid;
-      grid-template-columns: 1fr; /* kluczowa zmiana */
+      grid-template-columns: 1fr;
       gap: 18px;
       align-items:start;
     }
@@ -466,38 +450,6 @@
       display:flex; gap: 12px; flex-wrap:wrap; align-items:center;
     }
 
-    .stats{
-      display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
-      margin-top: 22px;
-      max-width: 920px;
-    }
-    @media (max-width: 980px){ .stats{ grid-template-columns: 1fr 1fr; } }
-    .stat{
-      border-radius: var(--r2);
-      background: rgba(0,0,0,.16);
-      border: 1px solid rgba(255,255,255,.10);
-      padding: 14px;
-      position: relative;
-      overflow:hidden;
-    }
-    .stat::before{
-      content:"";
-      position:absolute; inset:-2px;
-      background: radial-gradient(520px 180px at 22% 0%, rgba(0,194,255,.10), transparent 60%);
-      opacity:.55;
-      pointer-events:none;
-    }
-    .stat .num{
-      position:relative;
-      font-size: 1.70rem;
-      font-weight: 950;
-      letter-spacing:-.03em;
-      background: linear-gradient(90deg, rgba(255,255,255,.92), rgba(255,255,255,.60));
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    }
-    .stat .lbl{ position:relative; color: rgba(255,255,255,.70); font-weight: 900; font-size: .95rem; margin-top: 2px; }
-
-    /* --- FAQ --- */
     .faq{
       max-width: 920px; margin: 0 auto;
       display:flex; flex-direction:column; gap: 12px;
@@ -535,7 +487,6 @@
     .faq summary::-webkit-details-marker{ display:none; }
     .faq .ans{ margin-top: 10px; color: rgba(255,255,255,.72); font-weight: 700; }
 
-    /* --- Team --- */
     .team-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     @media (max-width: 980px){ .team-grid{ grid-template-columns: 1fr; } }
     .team-card{
@@ -572,7 +523,6 @@
     .role.manager{ background-image: linear-gradient(90deg, #2d63ff, #0047b8); }
     .role.engineer{ background-image: linear-gradient(90deg, #7cf7ff, #00c2ff); }
 
-    /* --- Contact banner --- */
     .contact-banner{ max-width: 1120px; margin: 26px auto 0; padding: 0; }
     .discord-banner{
       width: 100%;
@@ -626,7 +576,6 @@
       .discord-actions .btn{ width:100%; }
     }
 
-    /* --- Footer --- */
     footer{
       padding: 60px 0;
       border-top: 1px solid rgba(255,255,255,.08);
@@ -647,7 +596,6 @@
     }
     .footer-links a:hover{ transform: translateY(-1px); border-color: rgba(0,194,255,.20); background: rgba(255,255,255,.05); }
 
-    /* --- Chat toggle + widget --- */
     #chat-toggle{
       position:fixed; right: 22px; bottom: 22px;
       width: 62px; height: 62px;
@@ -803,9 +751,6 @@
   <script type="text/babel">
     const { useEffect, useMemo, useRef, useState } = React;
 
-    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
-    function easeOutCubic(p){ return 1 - Math.pow(1 - p, 3); }
-
     const Icons = {
       Shield: (props) => (
         <svg {...props} viewBox="0 0 24 24" fill="none">
@@ -943,26 +888,6 @@
         }, 900);
       };
 
-      const statsTarget = useMemo(() => ({ projects: 120, uptime: 99.9, response: 2, delivery: 7 }), []);
-      const [animatedStats, setAnimatedStats] = useState({ projects: 0, uptime: 0, response: 0, delivery: 0 });
-      const statsAnimatedOnceRef = useRef(false);
-
-      const animateNumber = (key, to, duration=900) => {
-        const start = performance.now();
-        const from = 0;
-        const tick = (now) => {
-          const p = clamp01((now - start) / duration);
-          const eased = easeOutCubic(p);
-          const val = from + (to - from) * eased;
-          setAnimatedStats(prev => ({
-            ...prev,
-            [key]: (key === 'uptime') ? Math.round(val * 10) / 10 : Math.round(val)
-          }));
-          if (p < 1) requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
-      };
-
       useEffect(() => {
         const preloader = document.getElementById('preloader');
         document.body.classList.add('loading');
@@ -977,19 +902,6 @@
           }
         }, { threshold: 0.18, rootMargin: '0px 0px -60px 0px' });
         document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
-
-        const heroStatsEl = document.getElementById('heroStatsSentinel');
-        const statsObs = new IntersectionObserver((entries) => {
-          const vis = entries.some(x => x.isIntersecting);
-          if (vis && !statsAnimatedOnceRef.current) {
-            statsAnimatedOnceRef.current = true;
-            animateNumber('projects', statsTarget.projects, 900);
-            animateNumber('uptime', statsTarget.uptime, 900);
-            animateNumber('response', statsTarget.response, 900);
-            animateNumber('delivery', statsTarget.delivery, 900);
-          }
-        }, { threshold: 0.25 });
-        if (heroStatsEl) statsObs.observe(heroStatsEl);
 
         const sections = ['hero','about','services','ai','process','faq','team','contact'];
         const secObs = new IntersectionObserver((entries) => {
@@ -1017,10 +929,9 @@
           clearTimeout(t);
           revealObs.disconnect();
           secObs.disconnect();
-          statsObs.disconnect();
           window.removeEventListener('scroll', onScroll);
         };
-      }, [statsTarget]);
+      }, []);
 
       return (
         <div>
@@ -1072,28 +983,7 @@
                       <button className="btn btn--soft" onClick={()=>scrollTo('#services')}>Poznaj usługi</button>
                       <button className="btn btn--ghost" onClick={()=>scrollTo('#ai')}>Zobacz AI</button>
                     </div>
-
-                    <div id="heroStatsSentinel" className="stats" aria-label="Najważniejsze liczby">
-                      <div className="stat">
-                        <div className="num">{animatedStats.projects}</div>
-                        <div className="lbl">wdrożeń</div>
-                      </div>
-                      <div className="stat">
-                        <div className="num">{animatedStats.uptime}%</div>
-                        <div className="lbl">uptime (SLA)</div>
-                      </div>
-                      <div className="stat">
-                        <div className="num">{animatedStats.response}h</div>
-                        <div className="lbl">czas reakcji</div>
-                      </div>
-                      <div className="stat">
-                        <div className="num">{animatedStats.delivery}d</div>
-                        <div className="lbl">MVP średnio</div>
-                      </div>
-                    </div>
                   </div>
-
-                  {/* USUNIĘTE: prawa kolumna preview */}
                 </div>
               </div>
             </section>
