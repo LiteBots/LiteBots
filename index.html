@@ -292,7 +292,7 @@
     .hero-subtitle{
       color: var(--muted);
       font-size: clamp(1.05rem, 1.55vw, 1.18rem);
-      max-width: 62ch;
+      max-width: 70ch;
     }
 
     /* --- Buttons --- */
@@ -333,16 +333,8 @@
       box-shadow: 0 26px 100px rgba(0,194,255,.10);
     }
     .btn--primary:hover{ box-shadow: 0 34px 120px rgba(0,194,255,.14); }
-    .btn--ghost{
-      background: rgba(255,255,255,.03);
-      border-color: rgba(255,255,255,.12);
-    }
-    .btn--soft{
-      background:
-        radial-gradient(120% 220% at 18% 0%, rgba(124,247,255,.10), transparent 56%),
-        rgba(255,255,255,.05);
-      border-color: rgba(255,255,255,.12);
-    }
+    .btn--ghost{ background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.12); }
+    .btn--soft{ background: radial-gradient(120% 220% at 18% 0%, rgba(124,247,255,.10), transparent 56%), rgba(255,255,255,.05); border-color: rgba(255,255,255,.12); }
 
     .section-title{
       text-align:center;
@@ -460,17 +452,15 @@
       transform: translateY(0) scale(1);
     }
 
-    /* --- HERO (new split) --- */
+    /* --- HERO: teraz jednokolumnowy --- */
     #hero{ min-height:100vh; display:flex; align-items:center; padding-top: 130px; }
     .hero-split{
       display:grid;
-      grid-template-columns: 1.15fr .85fr;
+      grid-template-columns: 1fr; /* kluczowa zmiana */
       gap: 18px;
       align-items:start;
     }
-    @media (max-width: 980px){
-      .hero-split{ grid-template-columns: 1fr; }
-    }
+
     .hero-cta{
       margin-top: 22px;
       display:flex; gap: 12px; flex-wrap:wrap; align-items:center;
@@ -479,6 +469,7 @@
     .stats{
       display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
       margin-top: 22px;
+      max-width: 920px;
     }
     @media (max-width: 980px){ .stats{ grid-template-columns: 1fr 1fr; } }
     .stat{
@@ -505,96 +496,6 @@
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     }
     .stat .lbl{ position:relative; color: rgba(255,255,255,.70); font-weight: 900; font-size: .95rem; margin-top: 2px; }
-
-    /* right side preview */
-    .preview{
-      position:relative;
-      border-radius: var(--r3);
-      overflow:hidden;
-      background: rgba(10,14,30,.55);
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: var(--shadow);
-      padding: 16px;
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-    }
-    .preview::before{
-      content:"";
-      position:absolute; inset:-2px;
-      background:
-        radial-gradient(700px 220px at 20% 0%, rgba(124,247,255,.14), transparent 60%),
-        radial-gradient(700px 220px at 80% 40%, rgba(45,99,255,.12), transparent 62%);
-      opacity:.75;
-      pointer-events:none;
-    }
-    .preview-top{
-      position:relative;
-      display:flex; justify-content:space-between; align-items:center;
-      gap: 10px;
-      padding: 10px 10px 14px;
-    }
-    .dots{ display:flex; gap:6px; }
-    .dot{ width:10px; height:10px; border-radius:999px; background: rgba(255,255,255,.14); }
-    .dot:nth-child(1){ background: rgba(255,90,90,.35); }
-    .dot:nth-child(2){ background: rgba(255,200,90,.30); }
-    .dot:nth-child(3){ background: rgba(124,247,255,.26); }
-    .preview-title{
-      font-weight: 950; letter-spacing:-.02em;
-      color: rgba(255,255,255,.86);
-      font-size: .95rem;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
-    .preview-grid{
-      position:relative;
-      display:grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      padding: 6px 8px 10px;
-    }
-    .mini{
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.16);
-      padding: 12px;
-      overflow:hidden;
-      position:relative;
-      min-height: 104px;
-    }
-    .mini::before{
-      content:"";
-      position:absolute; inset:-2px;
-      background: radial-gradient(320px 140px at 18% 0%, rgba(0,194,255,.12), transparent 62%);
-      opacity:.70;
-      pointer-events:none;
-    }
-    .mini h4{
-      position:relative;
-      font-size: .95rem;
-      font-weight: 950;
-      letter-spacing:-.02em;
-    }
-    .mini p{
-      position:relative;
-      margin-top: 6px;
-      color: rgba(255,255,255,.66);
-      font-weight: 700;
-      font-size: .92rem;
-      line-height:1.45;
-    }
-    .mini-row{
-      position:relative;
-      margin-top: 10px;
-      display:flex; gap: 8px; flex-wrap:wrap;
-    }
-    .tag{
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-weight: 900;
-      font-size: .78rem;
-      color: rgba(255,255,255,.82);
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
-    }
 
     /* --- FAQ --- */
     .faq{
@@ -905,7 +806,6 @@
     function clamp01(x){ return Math.max(0, Math.min(1, x)); }
     function easeOutCubic(p){ return 1 - Math.pow(1 - p, 3); }
 
-    // --- Icon set (spójne, rounded, inline) ---
     const Icons = {
       Shield: (props) => (
         <svg {...props} viewBox="0 0 24 24" fill="none">
@@ -1193,67 +1093,7 @@
                     </div>
                   </div>
 
-                  <div className="preview reveal" style={{transitionDelay:'120ms'}} aria-label="Podgląd produktu">
-                    <div className="preview-top">
-                      <div className="dots" aria-hidden="true">
-                        <span className="dot"></span><span className="dot"></span><span className="dot"></span>
-                      </div>
-                      <div className="preview-title">Panel • Monitoring • AI • Security</div>
-                    </div>
-
-                    <div className="preview-grid">
-                      <div className="mini">
-                        <h4 style={{display:'flex',alignItems:'center',gap:10}}>
-                          <span className="icon" style={{width:38,height:38, margin:0}} aria-hidden="true"><Icons.Panel /></span>
-                          Panel admina
-                        </h4>
-                        <p>Konfiguracja modułów, role, logi, tickets, statystyki.</p>
-                        <div className="mini-row">
-                          <span className="tag">Role</span><span className="tag">Logi</span><span className="tag">Integracje</span>
-                        </div>
-                      </div>
-
-                      <div className="mini">
-                        <h4 style={{display:'flex',alignItems:'center',gap:10}}>
-                          <span className="icon" style={{width:38,height:38, margin:0}} aria-hidden="true"><Icons.Bot /></span>
-                          Bot systemowy
-                        </h4>
-                        <p>Moduły: moderacja, ekonomia, rankingi, automaty.</p>
-                        <div className="mini-row">
-                          <span className="tag">Tickets</span><span className="tag">SLA</span>
-                        </div>
-                      </div>
-
-                      <div className="mini">
-                        <h4 style={{display:'flex',alignItems:'center',gap:10}}>
-                          <span className="icon" style={{width:38,height:38, margin:0}} aria-hidden="true"><Icons.Ticket /></span>
-                          Support / Tickets
-                        </h4>
-                        <p>Struktura zgłoszeń, eskalacja, logi, webhooki.</p>
-                        <div className="mini-row">
-                          <span className="tag">Formularze</span><span className="tag">Eskalacja</span>
-                        </div>
-                      </div>
-
-                      <div className="mini">
-                        <h4 style={{display:'flex',alignItems:'center',gap:10}}>
-                          <span className="icon" style={{width:38,height:38, margin:0}} aria-hidden="true"><Icons.Shield /></span>
-                          Security
-                        </h4>
-                        <p>Antyspam, antyraid, audyt uprawnień, alerty.</p>
-                        <div className="mini-row">
-                          <span className="tag">Rate-limit</span><span className="tag">Alerty</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style={{position:'relative', padding:'12px 8px 6px', color:'rgba(255,255,255,.70)', fontWeight:800, fontSize:'.92rem'}}>
-                      <span style={{display:'inline-flex',alignItems:'center',gap:10}}>
-                        <span className="icon" style={{width:38,height:38, margin:0}} aria-hidden="true"><Icons.Spark /></span>
-                        Premium UX, stabilna architektura, dowożenie na czas.
-                      </span>
-                    </div>
-                  </div>
+                  {/* USUNIĘTE: prawa kolumna preview */}
                 </div>
               </div>
             </section>
